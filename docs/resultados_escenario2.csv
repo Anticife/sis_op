@@ -1,0 +1,34 @@
+Algoritmo,PID,Nombre,Llegada,PrioridadBase,PrioridadDinamica,TotalCPU,TotalIO,Inicio,Fin,Retorno,Espera,Respuesta,CambiosContexto
+"FCFS (First-Come, First-Served)",1,"Web_Search",0,1,1,5,6,0,24,24,13,0,1
+"FCFS (First-Come, First-Served)",2,"DB_Report",1,3,3,11,4,4,30,29,13,3,2
+"FCFS (First-Come, First-Served)",3,"File_Upload",2,2,2,5,8,11,36,34,20,9,2
+"FCFS (First-Come, First-Served)",4,"API_Auth",4,1,1,3,3,14,32,28,21,10,2
+"FCFS (First-Come, First-Served)",5,"Cache_Worker",6,2,2,6,2,17,39,33,24,11,2
+"Round Robin (RR, q=4)",1,"Web_Search",0,1,1,5,6,0,24,24,13,0,1
+"Round Robin (RR, q=4)",2,"DB_Report",1,3,3,11,4,4,42,41,23,3,4
+"Round Robin (RR, q=4)",3,"File_Upload",2,2,2,5,8,8,30,28,14,6,2
+"Round Robin (RR, q=4)",4,"API_Auth",4,1,1,3,3,11,26,22,15,7,2
+"Round Robin (RR, q=4)",5,"Cache_Worker",6,2,2,6,2,14,39,33,23,8,3
+"SRTF (Shortest Remaining Time First - Apropiativo)",1,"Web_Search",0,1,1,5,6,0,12,12,1,0,1
+"SRTF (Shortest Remaining Time First - Apropiativo)",2,"DB_Report",1,3,3,11,4,28,42,41,25,27,2
+"SRTF (Shortest Remaining Time First - Apropiativo)",3,"File_Upload",2,2,2,5,8,4,18,16,2,2,2
+"SRTF (Shortest Remaining Time First - Apropiativo)",4,"API_Auth",4,1,1,3,3,7,14,10,3,3,2
+"SRTF (Shortest Remaining Time First - Apropiativo)",5,"Cache_Worker",6,2,2,6,2,19,27,21,12,13,2
+"Prioridad Apropiativa Estricta (Sin Aging)",1,"Web_Search",0,1,1,5,6,0,11,11,0,0,1
+"Prioridad Apropiativa Estricta (Sin Aging)",2,"DB_Report",1,3,3,11,4,30,44,43,27,29,2
+"Prioridad Apropiativa Estricta (Sin Aging)",3,"File_Upload",2,2,2,5,8,14,29,27,11,12,4
+"Prioridad Apropiativa Estricta (Sin Aging)",4,"API_Auth",4,1,1,3,3,5,13,9,2,1,2
+"Prioridad Apropiativa Estricta (Sin Aging)",5,"Cache_Worker",6,2,2,6,2,17,25,19,10,11,2
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",1,"Web_Search",0,1,1,5,6,0,11,11,0,0,1
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",2,"DB_Report",1,3,1,11,4,15,31,30,13,14,3
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",3,"File_Upload",2,2,1,5,8,12,25,23,8,10,3
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",4,"API_Auth",4,1,1,3,3,5,33,29,22,1,2
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",5,"Cache_Worker",6,2,1,6,2,34,41,35,27,28,1
+
+--- RESUMEN GLOBAL DE METRICAS ---
+Algoritmo,TiempoTotal,CPU_Utilizacion_Pct,CPU_Overhead_Pct,Throughput,Promedio_Retorno,Promedio_Espera,Promedio_Respuesta,Total_Cambios_Contexto,Indice_Jain
+"FCFS (First-Come, First-Served)",39,76.9231,23.0769,0.128205,29.6,18.2,6.6,9,0.826922
+"Round Robin (RR, q=4)",42,71.4286,28.5714,0.119048,29.6,17.6,4.8,12,0.95259
+"SRTF (Shortest Remaining Time First - Apropiativo)",42,71.4286,21.4286,0.119048,20,8.6,9,9,0.973599
+"Prioridad Apropiativa Estricta (Sin Aging)",44,68.1818,25,0.113636,21.8,10,10.6,11,0.922695
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",41,73.1707,24.3902,0.121951,25.6,14,10.6,10,0.805422

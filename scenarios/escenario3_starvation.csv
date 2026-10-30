@@ -1,0 +1,11 @@
+# Escenario 3: Riesgo de Inanición (Starvation) y Solución por Envejecimiento (Aging)
+# Formato: PID,Nombre,Llegada,Prioridad (1 = Mayor, 5 = Menor),Rafagas
+# Objetivo: Demostrar cómo un proceso de baja prioridad sufre inanición ante un flujo constante de tareas prioritarias, y cómo el Aging lo rescata.
+PID,Nombre,Llegada,Prioridad,Rafagas
+1,Tarea_Fondo_Batch,0,5,C25
+2,Urgente_Alarma_1,1,1,C3
+3,Urgente_Alarma_2,4,1,C3
+4,Urgente_Alarma_3,7,1,C3
+5,Urgente_Alarma_4,10,1,C3
+6,Urgente_Alarma_5,13,2,C4
+7,Urgente_Alarma_6,17,2,C4

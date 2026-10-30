@@ -1,0 +1,9 @@
+# Escenario 1: Demostración del Efecto Convoy (Carga Heterogénea CPU-Bound)
+# Formato: PID,Nombre,Llegada,Prioridad,Rafagas (CPU,E/S,...)
+# Objetivo: Evidenciar cómo un proceso batch largo bloquea peticiones web interactivas en FCFS vs Round Robin y SRTF.
+PID,Nombre,Llegada,Prioridad,Rafagas
+1,Analitica_Batch,0,3,C35
+2,API_Login,1,2,C2
+3,API_Payment,2,1,C3
+4,API_Profile,3,2,C2
+5,API_Catalog,4,2,C2

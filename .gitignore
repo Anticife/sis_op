@@ -1,0 +1,4 @@
+build/
+simulador
+*.o
+.DS_Store
