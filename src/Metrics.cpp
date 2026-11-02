@@ -257,5 +257,19 @@ void Metrics::export_csv(const std::string& filepath, const std::vector<Simulati
              << res.jains_fairness_index << "\n";
     }
 
+    // Sección de Diagrama de Gantt
+    file << "\n--- DIAGRAMA DE GANTT ---\n";
+    file << "Algoritmo,Inicio,Fin,PID,Etiqueta\n";
+
+    for (const auto& res : results_list) {
+        for (const auto& seg : res.gantt_chart) {
+            file << "\"" << res.algorithm_name << "\","
+                 << seg.start_time << ","
+                 << seg.end_time << ","
+                 << seg.pid << ","
+                 << "\"" << seg.label << "\"\n";
+        }
+    }
+
     file.close();
 }

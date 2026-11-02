@@ -20,7 +20,7 @@ SRCS = $(SRC_DIR)/Process.cpp \
 
 OBJS = $(SRCS:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
 
-.PHONY: all clean test debug run pdf
+.PHONY: all clean test debug run pdf plots
 
 all: $(TARGET)
 
@@ -50,9 +50,15 @@ test: all
 	./$(TARGET) --scenario scenarios/escenario3_starvation.csv --algo all --export docs/resultados_escenario3.csv
 	@echo "Todas las pruebas completadas. Resultados guardados en docs/."
 
+plots:
+	@echo "Generando visualizaciones gráficas y diagramas de Gantt..."
+	@mkdir -p docs/graficas
+	python3 scripts/plot_metrics.py
+	@echo "Gráficas generadas exitosamente en docs/graficas/."
+
 pdf:
 	@echo "Compilando informe técnico en PDF..."
-	/home/azmuth/miniconda3/bin/python scripts/generate_pdf.py docs/informe_tecnico.md docs/informe_tecnico.pdf
+	python3 scripts/generate_pdf.py docs/informe_tecnico.md docs/informe_tecnico.pdf
 
 run: all
 	./$(TARGET)
