@@ -193,6 +193,11 @@ bool Process::spawn_posix_process() {
         }
         close(sync_pipe[1]);
 
+        // Si existe el archivo real subido en uploads/<name>, abrirlo con open() para procesar sus bytes reales
+        std::string upload_path = "uploads/" + name;
+        int file_fd = open(upload_path.c_str(), O_RDONLY);
+        unsigned char file_buf[512];
+
         // Bucle de trabajo real del proceso hijo gobernado por señales POSIX (SIGSTOP/SIGCONT) y pipe
         volatile uint64_t hash_accum = 0x9E3779B97F4A7C15ULL ^ static_cast<uint64_t>(getpid());
         while (true) {
@@ -210,7 +215,17 @@ bool Process::spawn_posix_process() {
                     break;
                 }
             } else {
-                // Modo Ráfaga de CPU: ejecutar operaciones reales de ALU y medir reloj de CPU del proceso
+                // Modo Ráfaga de CPU: procesar bytes reales del archivo subido (si existe) y ejecutar operaciones de hash
+                if (file_fd >= 0) {
+                    ssize_t rbytes = read(file_fd, file_buf, sizeof(file_buf));
+                    if (rbytes <= 0) {
+                        lseek(file_fd, 0, SEEK_SET);
+                    } else {
+                        for (ssize_t b = 0; b < rbytes; ++b) {
+                            hash_accum = (hash_accum ^ file_buf[b]) * 0x100000001b3ULL;
+                        }
+                    }
+                }
                 for (int i = 0; i < 2500; ++i) {
                     hash_accum ^= (hash_accum << 13);
                     hash_accum ^= (hash_accum >> 7);
@@ -226,6 +241,7 @@ bool Process::spawn_posix_process() {
             }
         }
 
+        if (file_fd >= 0) close(file_fd);
         close(io_pipe_fd[0]);
         _exit(0);
     }

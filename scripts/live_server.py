@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
 """
 scripts/live_server.py
-Servidor HTTP en tiempo real conectado al binario POSIX ./simulador y al comando 'ps' de Linux.
-Permite:
-1. Iniciar el proceso real ./simulador en segundo plano con ticks de 1 segundo (--live --tick-ms 1000)
-   para que el árbol de procesos hijos (R+, S+, T+, Z+ <defunct>) exista durante 30-45 segundos
-   y sea observable tanto desde cualquier terminal Linux (watch ps) como desde la interfaz web.
-2. Consultar en vivo (/api/live) la salida real de:
-   - ps -C simulador -o pid,ppid,stat,ni,pcpu,wchan:18,etime,comm,args --forest
-   - ps aux --sort=-%cpu | head -12
-   junto con el estado instantáneo del planificador (/tmp/simulador_live_state.json).
+Servidor Web de Subida y Procesamiento de Archivos en Linux conectado al Planificador POSIX (./simulador).
+- Guarda archivos reales subidos desde el navegador en /mnt/d/sis_op/uploads/
+- Calcula su hash SHA-256 real y genera la cola de trabajo para ./simulador
+- Lanza ./simulador --live creando un proceso hijo real (fork) por cada archivo subido
+- Expone en /api/live el progreso por archivo y la salida real de 'ps -C simulador --forest'
 """
 
 import os
+import re
+import time
 import json
+import base64
 import signal
+import hashlib
 import subprocess
 import tempfile
 from urllib.parse import urlparse, parse_qs
@@ -22,10 +22,20 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DOCS_DIR = os.path.join(PROJECT_DIR, "docs")
+UPLOADS_DIR = os.path.join(PROJECT_DIR, "uploads")
 SIM_BIN = os.path.join(PROJECT_DIR, "simulador")
 LIVE_STATE_FILE = "/tmp/simulador_live_state.json"
 
+os.makedirs(UPLOADS_DIR, exist_ok=True)
+
 ACTIVE_PROC = None
+UPLOADED_FILES_META = {}
+
+
+def sanitize_filename(name):
+    clean = re.sub(r"[^a-zA-Z0-9._-]", "_", os.path.basename(name))
+    clean = clean.strip("_")
+    return clean if clean else "archivo.dat"
 
 
 def get_real_ps_outputs():
@@ -73,79 +83,165 @@ def stop_active_simulador():
         ACTIVE_PROC = None
 
 
-class PosixSimulatorHandler(SimpleHTTPRequestHandler):
+def infer_bursts_from_size(size_bytes, custom_bursts=None):
+    """Calcula las ráfagas de CPU y E/S (lectura de disco/pipe) según el tamaño del archivo."""
+    if custom_bursts:
+        return custom_bursts
+    kb = max(1, size_bytes // 1024)
+    if kb < 50:
+        return "C2,I3,C2"
+    elif kb < 500:
+        return "C3,I5,C3"
+    elif kb < 2048:
+        return "C5,I4,C4"
+    else:
+        return "C8,I5,C6"
+
+
+class ReusableThreadingHTTPServer(ThreadingHTTPServer):
+    allow_reuse_address = True
+
+
+class PosixFileServerHandler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=DOCS_DIR, **kwargs)
 
+    def handle_one_request(self):
+        try:
+            super().handle_one_request()
+        except (BrokenPipeError, ConnectionResetError):
+            # Ignorar desconexiones prematuras del navegador sin ensuciar la consola
+            pass
+
     def log_message(self, format, *args):
-        # Evitar inundar la terminal con logs de polling de /api/live cada 500ms
         if "/api/live" in (args[0] if args else ""):
             return
         super().log_message(format, *args)
 
     def send_json(self, status_code, data):
-        payload = json.dumps(data).encode("utf-8")
-        self.send_response(status_code)
-        self.send_header("Content-Type", "application/json; charset=utf-8")
-        self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Cache-Control", "no-store, no-cache, must-revalidate")
-        self.send_header("Content-Length", str(len(payload)))
-        self.end_headers()
-        self.wfile.write(payload)
+        try:
+            payload = json.dumps(data).encode("utf-8")
+            self.send_response(status_code)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.send_header("Cache-Control", "no-store, no-cache, must-revalidate")
+            self.send_header("Content-Length", str(len(payload)))
+            self.end_headers()
+            self.wfile.write(payload)
+        except (BrokenPipeError, ConnectionResetError):
+            pass
 
-    def do_GET(self):
-        global ACTIVE_PROC
+    def do_POST(self):
+        global ACTIVE_PROC, UPLOADED_FILES_META
         parsed = urlparse(self.path)
 
-        if parsed.path == "/api/start":
-            params = parse_qs(parsed.query)
-            scen_id = params.get("scenario", ["2"])[0]
-            algo = params.get("algo", ["rr"])[0]
-            quantum = params.get("quantum", ["4"])[0]
-            cs_cost = params.get("cs", ["1"])[0]
-            aging_th = params.get("aging", ["5"])[0]
-            tick_ms = params.get("tick_ms", ["1000"])[0]
-
-            scen_map = {
-                "1": "scenarios/escenario1_convoy.csv",
-                "2": "scenarios/escenario2_io_bursts.csv",
-                "3": "scenarios/escenario3_starvation.csv",
-            }
-            scen_path = os.path.join(PROJECT_DIR, scen_map.get(scen_id, "scenarios/escenario2_io_bursts.csv"))
-
-            stop_active_simulador()
-            if os.path.exists(LIVE_STATE_FILE):
-                try:
-                    os.remove(LIVE_STATE_FILE)
-                except OSError:
-                    pass
-
-            cmd = [
-                SIM_BIN,
-                "--live",
-                "--scenario", scen_path,
-                "--algo", algo,
-                "--quantum", str(quantum),
-                "--cs-cost", str(cs_cost),
-                "--aging-th", str(aging_th),
-                "--tick-ms", str(tick_ms),
-                "--live-state", LIVE_STATE_FILE
-            ]
-
+        if parsed.path == "/api/upload":
             try:
+                content_len = int(self.headers.get("Content-Length", "0"))
+                raw_body = self.rfile.read(content_len)
+                body = json.loads(raw_body.decode("utf-8"))
+
+                files_list = body.get("files", [])
+                algo = body.get("algo", "rr")
+                quantum = int(body.get("quantum", 4))
+                cs_cost = int(body.get("cs", 1))
+                aging_th = int(body.get("aging", 5))
+                tick_ms = int(body.get("tick_ms", 1000))
+
+                if not files_list:
+                    self.send_json(400, {"error": "No se recibieron archivos para procesar."})
+                    return
+
+                stop_active_simulador()
+                if os.path.exists(LIVE_STATE_FILE):
+                    try:
+                        os.remove(LIVE_STATE_FILE)
+                    except OSError:
+                        pass
+
+                UPLOADED_FILES_META = {}
+                csv_lines = [
+                    "# Cola de Archivos Reales Subidos al Servidor Linux",
+                    "PID,Nombre,Llegada,Prioridad,Rafagas"
+                ]
+
+                for idx, fitem in enumerate(files_list, start=1):
+                    fname = sanitize_filename(fitem.get("name", f"archivo_{idx}.dat"))
+                    prio = max(1, min(5, int(fitem.get("priority", 2))))
+                    arrival = max(0, int(fitem.get("arrival", idx - 1)))
+                    b64_data = fitem.get("content_b64", "")
+
+                    disk_path = os.path.join(UPLOADS_DIR, fname)
+                    if b64_data:
+                        raw_bytes = base64.b64decode(b64_data)
+                    else:
+                        # Si es un archivo de prueba o lote rápido, generar contenido binario/texto real en disco
+                        sim_size = int(fitem.get("size", 65536))
+                        header = f"ARCHIVO_REAL_SERVIDOR_POSIX={fname}\nTIMESTAMP={time.time()}\n".encode("utf-8")
+                        repeats = max(1, min(sim_size, 512 * 1024) // len(header))
+                        raw_bytes = header * repeats
+
+                    with open(disk_path, "wb") as wf:
+                        wf.write(raw_bytes)
+
+                    real_size = os.path.getsize(disk_path)
+                    declared_size = int(fitem.get("size", real_size))
+                    sha256_hex = hashlib.sha256(raw_bytes).hexdigest()
+                    bursts_str = infer_bursts_from_size(declared_size, fitem.get("bursts"))
+
+                    UPLOADED_FILES_META[idx] = {
+                        "pid": idx,
+                        "filename": fname,
+                        "disk_path": f"uploads/{fname}",
+                        "size_bytes": declared_size,
+                        "disk_bytes": real_size,
+                        "sha256": sha256_hex[:16] + "...",
+                        "sha256_full": sha256_hex,
+                        "priority": prio,
+                        "arrival": arrival,
+                        "bursts": bursts_str
+                    }
+
+                    csv_lines.append(f"{idx},{fname},{arrival},{prio},{bursts_str}")
+
+                scenario_csv_path = os.path.join(UPLOADS_DIR, "cola_archivos_actual.csv")
+                with open(scenario_csv_path, "w", encoding="utf-8") as cf:
+                    cf.write("\n".join(csv_lines) + "\n")
+
+                cmd = [
+                    SIM_BIN,
+                    "--live",
+                    "--scenario", scenario_csv_path,
+                    "--algo", algo,
+                    "--quantum", str(quantum),
+                    "--cs-cost", str(cs_cost),
+                    "--aging-th", str(aging_th),
+                    "--tick-ms", str(tick_ms),
+                    "--live-state", LIVE_STATE_FILE
+                ]
+
                 ACTIVE_PROC = subprocess.Popen(
                     cmd,
                     cwd=PROJECT_DIR,
                     preexec_fn=os.setsid
                 )
+
                 self.send_json(200, {
                     "started": True,
-                    "pid": ACTIVE_PROC.pid,
+                    "scheduler_pid": ACTIVE_PROC.pid,
+                    "files_count": len(files_list),
+                    "uploaded_files": UPLOADED_FILES_META,
                     "cmd": " ".join(cmd)
                 })
             except Exception as e:
                 self.send_json(500, {"error": str(e)})
             return
+
+        self.send_json(404, {"error": "Ruta POST no encontrada"})
+
+    def do_GET(self):
+        global ACTIVE_PROC
+        parsed = urlparse(self.path)
 
         if parsed.path == "/api/stop":
             stop_active_simulador()
@@ -168,59 +264,14 @@ class PosixSimulatorHandler(SimpleHTTPRequestHandler):
                 "running_in_os": running_in_os,
                 "ps_forest": ps_forest,
                 "ps_top": ps_top,
-                "sim_state": sim_state
+                "sim_state": sim_state,
+                "uploaded_files": UPLOADED_FILES_META
             })
-            return
-
-        if parsed.path == "/api/run":
-            params = parse_qs(parsed.query)
-            scen_id = params.get("scenario", ["1"])[0]
-            algo = params.get("algo", ["rr"])[0]
-            quantum = params.get("quantum", ["4"])[0]
-            cs_cost = params.get("cs", ["1"])[0]
-            aging_th = params.get("aging", ["5"])[0]
-            tick_ms = params.get("tick_ms", ["3"])[0]
-
-            scen_map = {
-                "1": "scenarios/escenario1_convoy.csv",
-                "2": "scenarios/escenario2_io_bursts.csv",
-                "3": "scenarios/escenario3_starvation.csv",
-            }
-            scen_path = os.path.join(PROJECT_DIR, scen_map.get(scen_id, "scenarios/escenario1_convoy.csv"))
-
-            with tempfile.NamedTemporaryFile(mode="w+", suffix=".json", delete=False) as tmp:
-                tmp_json = tmp.name
-
-            try:
-                cmd = [
-                    SIM_BIN,
-                    "--scenario", scen_path,
-                    "--algo", algo,
-                    "--quantum", str(quantum),
-                    "--cs-cost", str(cs_cost),
-                    "--aging-th", str(aging_th),
-                    "--tick-ms", str(tick_ms),
-                    "--export-json", tmp_json
-                ]
-                proc = subprocess.run(cmd, capture_output=True, text=True, check=True)
-                with open(tmp_json, "r", encoding="utf-8") as f:
-                    trace_data = json.load(f)
-                trace_data["console_stdout"] = proc.stdout
-                self.send_json(200, trace_data)
-            except Exception as e:
-                self.send_json(500, {"error": str(e)})
-            finally:
-                if os.path.exists(tmp_json):
-                    os.remove(tmp_json)
             return
 
         if parsed.path == "/" or parsed.path == "":
             self.path = "/presentacion_sustentacion.html"
         return super().do_GET()
-
-
-class ReusableThreadingHTTPServer(ThreadingHTTPServer):
-    allow_reuse_address = True
 
 
 def main():
@@ -231,15 +282,14 @@ def main():
             port = int(sys.argv[1])
         except ValueError:
             pass
-    server = ReusableThreadingHTTPServer(("0.0.0.0", port), PosixSimulatorHandler)
+    server = ReusableThreadingHTTPServer(("0.0.0.0", port), PosixFileServerHandler)
     print("=" * 80)
-    print(f"  SERVIDOR POSIX EN VIVO ACTIVO EN: http://localhost:{port}")
-    print(f"  Binario C++17 conectado: {SIM_BIN}")
-    print("  Cuando inicies la simulación en la web (o con './simulador --live' en consola),")
-    print("  también podrás ver los procesos reales en otra terminal con:")
+    print(f"  SERVIDOR DE SUBIDA Y PROCESAMIENTO DE ARCHIVOS ACTIVO EN: http://localhost:{port}")
+    print(f"  Directorio de archivos reales: {UPLOADS_DIR}")
+    print(f"  Motor de Planificación C++17 : {SIM_BIN}")
+    print("  Para monitorear los procesos reales en otra terminal al subir archivos:")
     print("    make monitor")
     print("    watch -n 0.5 \"ps -C simulador -o pid,ppid,stat,ni,pcpu,wchan:18,etime,comm,args --forest || true\"")
-    print("    watch -n 1 \"ps aux --sort=-%cpu | head -15\"")
     print("  Presiona Ctrl+C para detener.")
     print("=" * 80)
     try:

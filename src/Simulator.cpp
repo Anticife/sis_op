@@ -245,6 +245,11 @@ void Simulator::write_live_state_json(int tick, bool finished) const {
         else if (p->state == ProcessState::WAITING) logical_state = "WAITING_IO";
         else if (p->state == ProcessState::TERMINATED) logical_state = "TERMINATED";
 
+        int total_work = p->total_cpu_time + p->total_io_time;
+        int done_work = p->executed_cpu_time + p->executed_io_time;
+        int progress_pct = (total_work > 0) ? ((done_work * 100) / total_work) : 100;
+        if (p->state == ProcessState::TERMINATED) progress_pct = 100;
+
         out << "    {\"pid\": " << p->pid
             << ", \"os_pid\": " << p->os_pid
             << ", \"name\": \"" << p->name << "\""
@@ -256,11 +261,17 @@ void Simulator::write_live_state_json(int tick, bool finished) const {
             << ", \"proc_state\": \"" << std::string(1, p->linux_kernel_state) << "\""
             << ", \"wchan\": \"" << p->linux_wchan << "\""
             << ", \"rem_burst\": " << p->get_remaining_current_burst()
+            << ", \"total_cpu\": " << p->total_cpu_time
+            << ", \"total_io\": " << p->total_io_time
+            << ", \"exec_cpu\": " << p->executed_cpu_time
+            << ", \"exec_io\": " << p->executed_io_time
+            << ", \"progress_pct\": " << progress_pct
             << ", \"wait_time\": " << p->waiting_time
             << ", \"turnaround\": " << p->get_turnaround_time()
             << ", \"response\": " << p->get_response_time()
             << ", \"zombie\": " << (p->posix_zombie ? "true" : "false")
             << ", \"cpu_ops\": " << p->real_cpu_operations
+            << ", \"cpu_ms\": " << (p->real_user_cpu_ms + p->real_sys_cpu_ms)
             << ", \"syscalls\": " << p->syscalls_executed
             << "}" << (i + 1 < processes.size() ? "," : "") << "\n";
     }
