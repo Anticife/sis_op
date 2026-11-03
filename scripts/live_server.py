@@ -60,26 +60,58 @@ def sanitize_filename(name):
     return clean if clean else "archivo.dat"
 
 
-def infer_priority_and_bursts(size_bytes):
+def infer_priority_and_bursts(size_bytes, algo="rr"):
     """
-    Calcula automáticamente prioridad (1-5), valor nice y ráfagas de CPU y E/S según el peso real.
-    Archivos livianos (< 100 KB) -> Prioridad 1 (nice 0, más interactivos).
-    Archivos medianos (100 KB - 1 MB) -> Prioridad 2 (nice 4).
-    Archivos pesados (1 MB - 5 MB) -> Prioridad 3 (nice 8).
-    Archivos muy pesados (5 MB - 20 MB) -> Prioridad 4 (nice 12).
-    Archivos masivos (> 20 MB) -> Prioridad 5 (nice 16, batch).
+    Calcula automáticamente prioridad (1-5), valor nice y ráfagas según el peso y el algoritmo elegido:
+    - Prioridad Estricta / Aging: El peso define la urgencia del proceso (pequeños = Urgentes/nice 0, pesados = Fondo/nice 16).
+    - SRTF: La ráfaga restante de CPU se deriva del peso, permitiendo que archivos pequeños expropien a los pesados.
+    - Round Robin: Todos los procesos compiten con equidad democrática, y el peso define cuántos quantums necesitan.
+    - FCFS: Orden de llegada, el peso define la retención de CPU (Efecto Convoy en archivos grandes).
     """
     kb = max(1, size_bytes // 1024)
-    if kb < 100:
-        return 1, 0, "C2,I2,C2"
-    elif kb < 1024:
-        return 2, 4, "C4,I3,C3"
-    elif kb < 5120:
-        return 3, 8, "C6,I4,C4"
-    elif kb < 20480:
-        return 4, 12, "C10,I5,C6"
-    else:
-        return 5, 16, "C15,I6,C10"
+
+    if algo in ["priority_strict", "priority_aging"]:
+        if kb < 100:
+            return 1, 0, "C2,I2,C2"      # Urgente / Interactivo
+        elif kb < 1024:
+            return 2, 4, "C4,I3,C3"      # Prioridad Alta
+        elif kb < 5120:
+            return 3, 8, "C6,I4,C4"      # Prioridad Media
+        elif kb < 20480:
+            return 4, 12, "C10,I5,C6"    # Prioridad Baja
+        else:
+            return 5, 16, "C15,I6,C10"   # Tarea de Fondo / Batch
+
+    elif algo == "srtf":
+        if kb < 50:
+            return 1, 0, "C2,I1,C1"      # Ráfaga ultracorta (expropia a tareas pesadas)
+        elif kb < 500:
+            return 2, 4, "C4,I2,C2"
+        elif kb < 2048:
+            return 3, 8, "C7,I3,C4"
+        elif kb < 10240:
+            return 4, 12, "C12,I4,C6"
+        else:
+            return 5, 16, "C20,I5,C10"   # Ráfaga extensa
+
+    elif algo == "rr":
+        # En Round Robin todos tienen prioridad compartida (nice 4) pero el peso define los quantums requeridos
+        if kb < 100:
+            return 2, 4, "C3,I2,C2"      # Cabe en 1 quantum
+        elif kb < 1024:
+            return 2, 4, "C6,I3,C4"      # Requiere 2 quantums
+        elif kb < 5120:
+            return 2, 4, "C10,I4,C6"     # Requiere 3 quantums
+        else:
+            return 2, 4, "C16,I5,C8"     # Requiere múltiples quantums alternados
+
+    else: # fcfs
+        if kb < 200:
+            return 2, 4, "C3,I2,C2"
+        elif kb < 2048:
+            return 2, 4, "C7,I3,C4"
+        else:
+            return 2, 4, "C18,I4,C8"     # Retiene la CPU si llega primero (Efecto Convoy)
 
 
 def get_real_ps_outputs():
@@ -188,7 +220,7 @@ class PosixFileServerHandler(SimpleHTTPRequestHandler):
                     declared_size = max(1, int(fitem.get("size", 1024)))
                     b64_data = fitem.get("content_b64", "")
 
-                    auto_prio, auto_nice, auto_bursts = infer_priority_and_bursts(declared_size)
+                    auto_prio, auto_nice, auto_bursts = infer_priority_and_bursts(declared_size, algo)
 
                     # Si el usuario especificó prioridad explícita la respeta, de lo contrario usa la inferida por peso
                     prio = int(fitem.get("priority", auto_prio)) if fitem.get("priority") else auto_prio

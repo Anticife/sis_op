@@ -253,6 +253,27 @@
             padding: 0 4px;
         }
 
+        /* Panel Explicativo de Algoritmo y Peso */
+        .algo-explanation-box {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 12px;
+            color: #1e40af;
+            line-height: 1.45;
+            transition: all 0.2s ease;
+        }
+
+        .algo-explanation-title {
+            font-weight: 700;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12.5px;
+        }
+
         /* Controles de Configuración */
         .form-section {
             margin-top: 14px;
@@ -554,6 +575,14 @@
                     </select>
                 </div>
 
+                <!-- Panel Explicativo Dinámico: Algoritmo vs Peso -->
+                <div class="algo-explanation-box" id="algoExplanationBox">
+                    <div class="algo-explanation-title" id="algoExplanationTitle">⚖️ Round Robin: Equidad Democrática de CPU</div>
+                    <div class="algo-explanation-body" id="algoExplanationBody">
+                        Todos los archivos tienen la misma prioridad base. El <b>peso del archivo</b> determina cuántos <i>quantums</i> requiere para procesar su hash y transferir datos. Un archivo grande alternará en CPU con archivos pequeños sin monopolizar.
+                    </div>
+                </div>
+
                 <div class="grid-2">
                     <div class="form-row">
                         <label>Quantum RR (ticks)</label>
@@ -624,11 +653,11 @@
                                 <th>Archivo en Disco</th>
                                 <th>Peso Real</th>
                                 <th>PID Linux</th>
-                                <th>Prioridad / Nice</th>
-                                <th>Estado (<code>ps</code>)</th>
-                                <th style="width: 170px;">Progreso</th>
-                                <th>SHA-256</th>
-                                <th>Espera / Retorno</th>
+                                <th>Prioridad / Valor Nice</th>
+                                <th>Estado en Linux (<code>ps</code>)</th>
+                                <th style="width: 170px;">Progreso de Tarea</th>
+                                <th>Cálculo SHA-256</th>
+                                <th>Tiempo Espera / Retorno</th>
                             </tr>
                         </thead>
                         <tbody id="filesTableBody">
@@ -657,10 +686,10 @@
                     <span>$ ps -C simulador -o pid,ppid,stat,ni,pcpu,wchan:18,etime,comm,args --forest</span>
                     <span style="color: #10b981;">● Monitoreo Exclusivo de Instancia</span>
                 </div>
-                <div class="terminal-pre" id="psForestBox">El servidor se encuentra vacío. Cuando subas archivos reales, aquí verás el árbol de procesos:
+                <div class="terminal-pre" id="psForestBox">El servidor se encuentra vacío. Cuando subas archivos reales, aquí verás el árbol de procesos en vivo:
   \_ simulador (PADRE)
-      \_ simulador:P1_Pri1_archivo1.pdf (HIJO R+/S+/T+/Z+)
-      \_ simulador:P2_Pri2_archivo2.dat (HIJO R+/S+/T+/Z+)
+      \_ simulador:P1_[Urgente]_archivo1.pdf (HIJO R+/S+/T+/Z+)
+      \_ simulador:P2_[Alta]_archivo2.dat (HIJO R+/S+/T+/Z+)
 
 También puedes observar en vivo desde tu terminal WSL con: make monitor</div>
             </div>
@@ -701,22 +730,26 @@ También puedes observar en vivo desde tu terminal WSL con: make monitor</div>
             return (bytes / (1024 * 1024)).toFixed(2) + " MB";
         }
 
-        // Calcula automáticamente la prioridad según el tamaño en bytes
-        function inferPriorityFromSize(bytes) {
+        // Calcula automáticamente la prioridad según el tamaño en bytes y el algoritmo
+        function inferPriorityFromSize(bytes, algo) {
             const kb = Math.max(1, Math.floor(bytes / 1024));
-            if (kb < 100) return 1;        // < 100 KB -> Pri 1 (nice 0)
-            if (kb < 1024) return 2;       // 100 KB - 1 MB -> Pri 2 (nice 4)
-            if (kb < 5120) return 3;       // 1 MB - 5 MB -> Pri 3 (nice 8)
-            if (kb < 20480) return 4;      // 5 MB - 20 MB -> Pri 4 (nice 12)
-            return 5;                      // > 20 MB -> Pri 5 (nice 16)
+            if (algo === 'rr' || algo === 'fcfs') {
+                return 2; // Prioridad equitativa compartida (nice 4)
+            }
+            if (kb < 100) return 1;        // < 100 KB -> Pri 1 (nice 0, Urgente)
+            if (kb < 1024) return 2;       // 100 KB - 1 MB -> Pri 2 (nice 4, Alta)
+            if (kb < 5120) return 3;       // 1 MB - 5 MB -> Pri 3 (nice 8, Media)
+            if (kb < 20480) return 4;      // 5 MB - 20 MB -> Pri 4 (nice 12, Baja)
+            return 5;                      // > 20 MB -> Pri 5 (nice 16, Fondo)
         }
 
         function addRealFilesToStage(fileList) {
+            const currentAlgo = document.getElementById('algoSelect').value;
             Array.from(fileList).forEach((file) => {
                 const reader = new FileReader();
                 reader.onload = (ev) => {
                     const base64 = ev.target.result.split(',')[1] || "";
-                    const autoPrio = inferPriorityFromSize(file.size || 1024);
+                    const autoPrio = inferPriorityFromSize(file.size || 1024, currentAlgo);
                     stagedFiles.push({
                         name: file.name,
                         size: file.size || 1024,
@@ -751,11 +784,11 @@ También puedes observar en vivo desde tu terminal WSL con: make monitor</div>
                     </div>
                     <div class="staged-controls">
                         <select class="prio-select" title="Prioridad calculada según peso (modificable)" onchange="stagedFiles[${idx}].priority = parseInt(this.value)">
-                            <option value="1" ${f.priority === 1 ? 'selected' : ''}>Pri 1 (NI:0)</option>
-                            <option value="2" ${f.priority === 2 ? 'selected' : ''}>Pri 2 (NI:4)</option>
-                            <option value="3" ${f.priority === 3 ? 'selected' : ''}>Pri 3 (NI:8)</option>
-                            <option value="4" ${f.priority === 4 ? 'selected' : ''}>Pri 4 (NI:12)</option>
-                            <option value="5" ${f.priority === 5 ? 'selected' : ''}>Pri 5 (NI:16)</option>
+                            <option value="1" ${f.priority === 1 ? 'selected' : ''}>1 - Urgente (nice 0)</option>
+                            <option value="2" ${f.priority === 2 ? 'selected' : ''}>2 - Alta (nice 4)</option>
+                            <option value="3" ${f.priority === 3 ? 'selected' : ''}>3 - Media (nice 8)</option>
+                            <option value="4" ${f.priority === 4 ? 'selected' : ''}>4 - Baja (nice 12)</option>
+                            <option value="5" ${f.priority === 5 ? 'selected' : ''}>5 - Fondo (nice 16)</option>
                         </select>
                         <button class="remove-btn" onclick="stagedFiles.splice(${idx}, 1); renderStagedList();">×</button>
                     </div>
@@ -764,12 +797,56 @@ También puedes observar en vivo desde tu terminal WSL con: make monitor</div>
             });
         }
 
-        function onAlgoChange() {
+        function updateAlgoExplanation() {
             const algo = document.getElementById('algoSelect').value;
-            // Si el usuario cambia a políticas de prioridad, reevaluar prioridades inferidas
-            if (stagedFiles.length > 0) {
-                renderStagedList();
-            }
+            const box = document.getElementById('algoExplanationBox');
+            const title = document.getElementById('algoExplanationTitle');
+            const body = document.getElementById('algoExplanationBody');
+
+            const info = {
+                'rr': {
+                    title: '⚖️ Round Robin: Equidad Democrática de CPU',
+                    body: 'Todos los archivos tienen la misma prioridad base. El <b>peso del archivo</b> determina cuántos <i>quantums</i> requiere para procesar su hash y transferir datos. Un archivo grande alternará en CPU con archivos pequeños sin monopolizar.',
+                    bg: '#eff6ff', border: '#bfdbfe', text: '#1e40af'
+                },
+                'priority_aging': {
+                    title: '⏳ Prioridad con Aging: Prevención de Inanición',
+                    body: 'El <b>peso define la urgencia inicial</b> (archivos livianos = Urgente / nice 0, pesados = Fondo / nice 16). Sin embargo, a medida que un archivo pesado espera en cola, el planificador invoca <code>setpriority()</code> reduciendo dinámicamente su nice para garantizar que sea atendido.',
+                    bg: '#f0fdf4', border: '#bbf7d0', text: '#166534'
+                },
+                'priority_strict': {
+                    title: '⚡ Prioridad Estricta: Inanición de Archivos Pesados',
+                    body: 'El <b>peso fija la prioridad absoluta</b> (archivos livianos siempre tienen ventaja sobre los pesados). Un archivo grande de varios megabytes sufrirá <i>inanición (starvation)</i> mientras existan archivos pequeños en el sistema.',
+                    bg: '#fefce8', border: '#fef08a', text: '#854d0e'
+                },
+                'srtf': {
+                    title: '⏱️ SRTF: Expropiación por Duración Restante',
+                    body: 'El <b>peso se traduce en la ráfaga de CPU requerida</b>. Si un archivo liviano (ej. 20 KB) llega mientras se procesa un archivo pesado (ej. 10 MB), el núcleo <b>expropia la CPU inmediatamente</b> para minimizar el tiempo de espera promedio general.',
+                    bg: '#faf5ff', border: '#e9d5ff', text: '#6b21a8'
+                },
+                'fcfs': {
+                    title: '📦 FCFS: Orden Estricto de Llegada (Efecto Convoy)',
+                    body: 'Se atiende estrictamente en el orden en que se suben los archivos. Si un archivo pesado entra primero a la CPU, provocará el <b>Efecto Convoy</b>, retrasando a todos los archivos livianos posteriores.',
+                    bg: '#f8fafc', border: '#cbd5e1', text: '#334155'
+                }
+            };
+
+            const cur = info[algo] || info['rr'];
+            box.style.background = cur.bg;
+            box.style.borderColor = cur.border;
+            box.style.color = cur.text;
+            title.innerHTML = cur.title;
+            body.innerHTML = cur.body;
+        }
+
+        function onAlgoChange() {
+            updateAlgoExplanation();
+            const algo = document.getElementById('algoSelect').value;
+            // Actualizar prioridades inferidas para archivos en cola si cambian a/de política de prioridad
+            stagedFiles.forEach(f => {
+                f.priority = inferPriorityFromSize(f.size, algo);
+            });
+            renderStagedList();
         }
 
         async function uploadAndProcessFiles() {
@@ -829,23 +906,31 @@ También puedes observar en vivo desde tu terminal WSL con: make monitor</div>
             }
         }
 
+        function getPriorityLabel(pri) {
+            if (pri <= 1) return "Urgente";
+            if (pri === 2) return "Alta";
+            if (pri === 3) return "Media";
+            if (pri === 4) return "Baja";
+            return "Fondo";
+        }
+
         function renderStateBadge(p, simActive) {
             if (!simActive && p.logical_state === 'TERMINATED') {
-                return `<span class="badge badge-done">✅ COMPLETADO</span>`;
+                return `<span class="badge badge-done" title="Cómputo completado. Proceso hijo ejecutó _exit(0) y fue limpiado con wait4()">✅ Completado</span>`;
             }
             if (p.zombie || p.proc_state === 'Z') {
-                return `<span class="badge badge-z">🧟 Z+ &lt;defunct&gt;</span>`;
+                return `<span class="badge badge-z" title="Proceso hijo terminó pero su estructura en kernel espera que el padre lea su código de salida con wait4()">🧟 Zombie (wait4)</span>`;
             }
             if (p.logical_state === 'RUNNING' || p.proc_state === 'R') {
-                return `<span class="badge badge-r">🟢 R+ CPU</span>`;
+                return `<span class="badge badge-r" title="Proceso en ejecución en CPU (núcleo 0): calculando SHA-256">🟢 R+ CPU (Cómputo)</span>`;
             }
             if (p.logical_state === 'WAITING_IO' || p.proc_state === 'S') {
-                return `<span class="badge badge-s">🔵 S+ E/S (${p.wchan || 'pipe_read'})</span>`;
+                return `<span class="badge badge-s" title="Proceso bloqueado en llamada al sistema de tubería (${p.wchan || 'pipe_read'}): simulando transferencia de disco">🔵 S+ E/S (${p.wchan || 'pipe_read'})</span>`;
             }
             if (p.logical_state === 'READY') {
-                return `<span class="badge badge-t">🟡 T+ COLA (SIGSTOP)</span>`;
+                return `<span class="badge badge-t" title="Proceso pausado con señal SIGSTOP en cola de listos, esperando turno de CPU">🟡 T+ Cola Listos (SIGSTOP)</span>`;
             }
-            return `<span class="badge badge-done">⏸ T+ ESPERA (t=${p.arrival}s)</span>`;
+            return `<span class="badge badge-done" title="Proceso en espera de su tiempo de llegada configurado">⏸ En Espera (Llegada t=${p.arrival}s)</span>`;
         }
 
         async function pollLiveStatus() {
@@ -933,8 +1018,9 @@ También puedes observar en vivo desde tu terminal WSL con: make monitor</div>
                             <td><b>${meta.size_bytes ? formatBytes(meta.size_bytes) : '-'}</b></td>
                             <td style="font-family: monospace; font-weight: 700; color: #1e40af;">${p.os_pid}</td>
                             <td>
-                                Pri: <b>${p.dynamic_priority}</b> ${prioChanged ? '🔥 (Aging)' : ''}
-                                <span style="font-size: 11px; color: var(--text-muted);">(nice=${p.nice})</span>
+                                Pri <b>${p.dynamic_priority} [${getPriorityLabel(p.dynamic_priority)}]</b>
+                                ${prioChanged ? '<br><span style="color:#d97706; font-size:11px; font-weight:700;">🔥 Promovido por Aging</span>' : ''}
+                                <div style="font-size: 11px; color: var(--text-muted);">Linux nice: ${p.nice}</div>
                             </td>
                             <td>${renderStateBadge(p, sim.active)}</td>
                             <td>
@@ -950,7 +1036,8 @@ También puedes observar en vivo desde tu terminal WSL con: make monitor</div>
                                 ${meta.sha256 || '-'}
                             </td>
                             <td style="font-size: 11.5px;">
-                                W: <b>${p.wait_time}s</b> | T: <b>${p.turnaround > 0 ? p.turnaround + 's' : '-'}</b>
+                                <div>Espera: <b>${p.wait_time}s</b></div>
+                                <div>Retorno: <b>${p.turnaround > 0 ? p.turnaround + 's' : '-'}</b></div>
                             </td>
                         `;
                         tbody.appendChild(tr);
@@ -988,6 +1075,7 @@ También puedes observar en vivo desde tu terminal WSL con: make monitor</div>
 
         // Iniciar con la cola vacía y polling cada 450ms
         window.addEventListener('DOMContentLoaded', () => {
+            updateAlgoExplanation();
             renderStagedList();
             setInterval(pollLiveStatus, 450);
             pollLiveStatus();
