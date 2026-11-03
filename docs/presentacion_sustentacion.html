@@ -912,6 +912,13 @@
                     <button class="reset-btn" onclick="resetSimulation()">
                         🔄 Reiniciar Simulación
                     </button>
+
+                    <button class="play-btn" style="background:#059669; margin-top:4px;" onclick="executeRealPosixBinary()">
+                        ⚡ Ejecutar Binario POSIX ./simulador
+                    </button>
+                    <div id="posixServerStatus" style="font-size:11px; color:#94a3b8; line-height:1.4;">
+                        Modo: Traza POSIX Real C++17 (fork, kill SIGSTOP/SIGCONT, pipe, wait4, /proc). Ejecuta <code>make web</code> para lanzar nuevos procesos desde el navegador.
+                    </div>
                 </div>
 
                 <!-- Panel Principal de Simulación -->
@@ -1074,27 +1081,27 @@
         // ====================================================================
         const SCENARIOS_DATA = {
             1: [
-                { pid: 1, name: "Analitica_Batch", arr: 0, pri: 3, bursts: [{t: 'CPU', d: 35}] },
-                { pid: 2, name: "API_Login",       arr: 1, pri: 2, bursts: [{t: 'CPU', d: 2}] },
-                { pid: 3, name: "API_Payment",     arr: 2, pri: 1, bursts: [{t: 'CPU', d: 3}] },
-                { pid: 4, name: "API_Profile",     arr: 3, pri: 2, bursts: [{t: 'CPU', d: 2}] },
-                { pid: 5, name: "API_Catalog",     arr: 4, pri: 2, bursts: [{t: 'CPU', d: 2}] }
+                { pid: 1, os_pid: 15360, name: "Analitica_Batch", arr: 0, pri: 3, bursts: [{t: 'CPU', d: 35}] },
+                { pid: 2, os_pid: 15361, name: "API_Login",       arr: 1, pri: 2, bursts: [{t: 'CPU', d: 2}] },
+                { pid: 3, os_pid: 15362, name: "API_Payment",     arr: 2, pri: 1, bursts: [{t: 'CPU', d: 3}] },
+                { pid: 4, os_pid: 15363, name: "API_Profile",     arr: 3, pri: 2, bursts: [{t: 'CPU', d: 2}] },
+                { pid: 5, os_pid: 15364, name: "API_Catalog",     arr: 4, pri: 2, bursts: [{t: 'CPU', d: 2}] }
             ],
             2: [
-                { pid: 1, name: "Web_Search",    arr: 0, pri: 1, bursts: [{t: 'CPU', d: 3}, {t: 'IO', d: 6}, {t: 'CPU', d: 2}] },
-                { pid: 2, name: "DB_Report",     arr: 1, pri: 3, bursts: [{t: 'CPU', d: 6}, {t: 'IO', d: 4}, {t: 'CPU', d: 5}] },
-                { pid: 3, name: "File_Upload",   arr: 2, pri: 2, bursts: [{t: 'CPU', d: 2}, {t: 'IO', d: 8}, {t: 'CPU', d: 3}] },
-                { pid: 4, name: "API_Auth",      arr: 4, pri: 1, bursts: [{t: 'CPU', d: 2}, {t: 'IO', d: 3}, {t: 'CPU', d: 1}] },
-                { pid: 5, name: "Cache_Worker",  arr: 6, pri: 2, bursts: [{t: 'CPU', d: 4}, {t: 'IO', d: 2}, {t: 'CPU', d: 2}] }
+                { pid: 1, os_pid: 15385, name: "Web_Search",    arr: 0, pri: 1, bursts: [{t: 'CPU', d: 3}, {t: 'IO', d: 6}, {t: 'CPU', d: 2}] },
+                { pid: 2, os_pid: 15386, name: "DB_Report",     arr: 1, pri: 3, bursts: [{t: 'CPU', d: 6}, {t: 'IO', d: 4}, {t: 'CPU', d: 5}] },
+                { pid: 3, os_pid: 15387, name: "File_Upload",   arr: 2, pri: 2, bursts: [{t: 'CPU', d: 2}, {t: 'IO', d: 8}, {t: 'CPU', d: 3}] },
+                { pid: 4, os_pid: 15388, name: "API_Auth",      arr: 4, pri: 1, bursts: [{t: 'CPU', d: 2}, {t: 'IO', d: 3}, {t: 'CPU', d: 1}] },
+                { pid: 5, os_pid: 15389, name: "Cache_Worker",  arr: 6, pri: 2, bursts: [{t: 'CPU', d: 4}, {t: 'IO', d: 2}, {t: 'CPU', d: 2}] }
             ],
             3: [
-                { pid: 1, name: "Tarea_Fondo_Batch", arr: 0, pri: 5, bursts: [{t: 'CPU', d: 25}] },
-                { pid: 2, name: "Urgente_Alarma_1",   arr: 1, pri: 1, bursts: [{t: 'CPU', d: 3}] },
-                { pid: 3, name: "Urgente_Alarma_2",   arr: 4, pri: 1, bursts: [{t: 'CPU', d: 3}] },
-                { pid: 4, name: "Urgente_Alarma_3",   arr: 7, pri: 1, bursts: [{t: 'CPU', d: 3}] },
-                { pid: 5, name: "Urgente_Alarma_4",   arr: 10, pri: 1, bursts: [{t: 'CPU', d: 3}] },
-                { pid: 6, name: "Urgente_Alarma_5",   arr: 13, pri: 2, bursts: [{t: 'CPU', d: 4}] },
-                { pid: 7, name: "Urgente_Alarma_6",   arr: 17, pri: 2, bursts: [{t: 'CPU', d: 4}] }
+                { pid: 1, os_pid: 15442, name: "Tarea_Fondo_Batch", arr: 0, pri: 5, bursts: [{t: 'CPU', d: 25}] },
+                { pid: 2, os_pid: 15443, name: "Urgente_Alarma_1",   arr: 1, pri: 1, bursts: [{t: 'CPU', d: 3}] },
+                { pid: 3, os_pid: 15444, name: "Urgente_Alarma_2",   arr: 4, pri: 1, bursts: [{t: 'CPU', d: 3}] },
+                { pid: 4, os_pid: 15445, name: "Urgente_Alarma_3",   arr: 7, pri: 1, bursts: [{t: 'CPU', d: 3}] },
+                { pid: 5, os_pid: 15446, name: "Urgente_Alarma_4",   arr: 10, pri: 1, bursts: [{t: 'CPU', d: 3}] },
+                { pid: 6, os_pid: 15447, name: "Urgente_Alarma_5",   arr: 13, pri: 2, bursts: [{t: 'CPU', d: 4}] },
+                { pid: 7, os_pid: 15448, name: "Urgente_Alarma_6",   arr: 17, pri: 2, bursts: [{t: 'CPU', d: 4}] }
             ]
         };
 
@@ -1147,10 +1154,13 @@
             const baseProcs = SCENARIOS_DATA[simState.scenarioId];
             simState.processes = baseProcs.map(p => ({
                 pid: p.pid,
+                os_pid: p.os_pid || (15000 + p.pid),
                 name: p.name,
                 arr: p.arr,
                 basePri: p.pri,
                 dynPri: p.pri,
+                nice: Math.min(19, Math.max(0, (p.pri - 1) * 4)),
+                procState: 'N',
                 bursts: JSON.parse(JSON.stringify(p.bursts)),
                 burstIdx: 0,
                 remBurst: p.bursts[0].d,
@@ -1250,15 +1260,17 @@
 
             const current = simState.tick;
 
-            // 1. Llegadas de procesos NEW
+            // 1. Llegadas de procesos NEW -> Llamadas POSIX: fork() + mmap() + pipe() + sched_setaffinity() + setpriority() + kill(SIGSTOP)
             simState.processes.forEach(p => {
                 if (p.state === 'NEW' && p.arr === current) {
                     p.state = 'READY';
+                    p.procState = 'T';
                     simState.readyQueue.push(p);
-                    logKernel(`Proceso P${p.pid} (${p.name}) entra al sistema en estado READY.`);
+                    logKernel(`syscall: fork() -> OS_PID=${p.os_pid} (${p.name}) | mmap(MAP_SHARED) | pipe() | sched_setaffinity(Core 0) | setpriority(nice=${p.nice}) | kill(${p.os_pid}, SIGSTOP) [/proc/${p.os_pid}/stat = 'T']`);
 
                     if (shouldPreempt(p)) {
-                        logKernel(`⚡ DESALOJO: P${p.pid} tiene mayor prioridad/menor burst que P${simState.runningProc.pid}. Preempting...`, 'preempt');
+                        logKernel(`⚡ syscall: kill(${simState.runningProc.os_pid}, SIGSTOP) + waitpid(WUNTRACED) -> Desalojo apropiativo de P${simState.runningProc.pid} por llegada de P${p.pid} (OS_PID=${p.os_pid}).`, 'preempt');
+                        simState.runningProc.procState = 'T';
                         simState.readyQueue.push(simState.runningProc);
                         simState.runningProc.state = 'READY';
                         simState.runningProc = null;
@@ -1268,7 +1280,7 @@
                 }
             });
 
-            // 2. Progreso de Procesos en E/S
+            // 2. Progreso de Procesos en E/S (Bloqueados en read(io_pipe_fd) -> Despertados con write(io_pipe_fd))
             for (let i = simState.ioQueue.length - 1; i >= 0; i--) {
                 const p = simState.ioQueue[i];
                 p.remBurst--;
@@ -1277,11 +1289,13 @@
                     p.burstIdx++;
                     if (p.burstIdx < p.bursts.length) {
                         p.state = 'READY';
+                        p.procState = 'T';
                         p.remBurst = p.bursts[p.burstIdx].d;
                         simState.readyQueue.push(p);
-                        logKernel(`Proceso P${p.pid} (${p.name}) finalizó E/S y pasa a READY.`);
+                        logKernel(`syscall: write(io_pipe_fd, "I", 1) + kill(${p.os_pid}, SIGSTOP) -> P${p.pid} (OS_PID=${p.os_pid}) desbloqueado de read() y pasa a READY [/proc='T'].`);
                         if (shouldPreempt(p)) {
-                            logKernel(`⚡ DESALOJO por retorno de E/S de P${p.pid}.`, 'preempt');
+                            logKernel(`⚡ syscall: kill(${simState.runningProc.os_pid}, SIGSTOP) -> Desalojo por retorno de E/S de P${p.pid}.`, 'preempt');
+                            simState.runningProc.procState = 'T';
                             simState.readyQueue.push(simState.runningProc);
                             simState.runningProc.state = 'READY';
                             simState.runningProc = null;
@@ -1290,27 +1304,43 @@
                         }
                     } else {
                         p.state = 'TERMINATED';
+                        p.procState = 'Z';
                         p.completionTime = current;
-                        logKernel(`Proceso P${p.pid} (${p.name}) TERMINADO en E/S.`);
+                        logKernel(`syscall: wait4(${p.os_pid}, &status, 0, &rusage) -> Proceso P${p.pid} TERMINADO tras E/S.`);
                     }
                 }
             }
 
-            // 3. Mecanismo de Aging (Envejecimiento Dinámico)
+            // 3. Mecanismo de Aging (Envejecimiento Dinámico con setpriority() real)
             if (simState.algo === 'priority_aging') {
                 simState.readyQueue.forEach(p => {
                     p.readyTicks++;
                     if (p.readyTicks >= simState.agingTh && p.dynPri > 1) {
                         p.dynPri--;
+                        p.nice = Math.min(19, Math.max(0, (p.dynPri - 1) * 4));
                         p.readyTicks = 0;
-                        logKernel(`🔥 AGING: P${p.pid} (${p.name}) promovido a Prioridad ${p.dynPri} tras esperar ${simState.agingTh} ticks.`, 'aging');
+                        logKernel(`🔥 syscall: setpriority(PRIO_PROCESS, ${p.os_pid}, nice=${p.nice}) -> AGING promueve a P${p.pid} (${p.name}) a Prioridad ${p.dynPri}.`, 'aging');
                     }
                 });
+                // Evaluar si algún proceso promovido por Aging debe desalojar al proceso actual
+                if (simState.cpuState === 'RUNNING' && simState.runningProc) {
+                    const higher = simState.readyQueue.find(cand => cand.dynPri < simState.runningProc.dynPri);
+                    if (higher) {
+                        logKernel(`⚡ syscall: kill(${simState.runningProc.os_pid}, SIGSTOP) + waitpid(WUNTRACED) -> Preempción por Aging de P${higher.pid} (OS_PID=${higher.os_pid}).`, 'preempt');
+                        simState.runningProc.procState = 'T';
+                        simState.readyQueue.push(simState.runningProc);
+                        simState.runningProc.state = 'READY';
+                        simState.runningProc = null;
+                        simState.cpuState = 'IDLE';
+                        simState.quantumUsed = 0;
+                    }
+                }
             }
 
             // 4. Preempción en Round Robin por Quantum
             if (simState.algo === 'rr' && shouldPreempt()) {
-                logKernel(`⏰ Quantum expirado (${simState.quantum} ticks) para P${simState.runningProc.pid}. Desalojando a READY.`, 'preempt');
+                logKernel(`⏰ syscall: kill(${simState.runningProc.os_pid}, SIGSTOP) + waitpid(WUNTRACED) -> Quantum expirado (${simState.quantum} ticks) para P${simState.runningProc.pid}. [/proc='T']`, 'preempt');
+                simState.runningProc.procState = 'T';
                 simState.readyQueue.push(simState.runningProc);
                 simState.runningProc.state = 'READY';
                 simState.runningProc = null;
@@ -1329,13 +1359,14 @@
                     simState.csRemaining = simState.csPenalty;
                     simState.pendingProc = nextP;
                     simState.csCount++;
-                    logKernel(`🔄 Conmutación de Contexto hacia P${nextP.pid} (Costo: ${simState.csPenalty} tick).`, 'dispatch');
+                    logKernel(`🔄 syscall: clock_nanosleep(CLOCK_MONOTONIC) -> Conmutación de Contexto hacia P${nextP.pid} (OS_PID=${nextP.os_pid}, costo=${simState.csPenalty} tick).`, 'dispatch');
                 } else {
                     simState.runningProc = nextP;
                     simState.runningProc.state = 'RUNNING';
+                    simState.runningProc.procState = 'R';
                     if (simState.runningProc.firstRun === -1) simState.runningProc.firstRun = current;
                     simState.cpuState = 'RUNNING';
-                    logKernel(`▶ CPU despacha a P${nextP.pid} (${nextP.name}).`, 'dispatch');
+                    logKernel(`▶ syscall: kill(${nextP.os_pid}, SIGCONT) -> CPU despacha a P${nextP.pid} (${nextP.name}) [/proc/${nextP.os_pid}/stat = 'R'].`, 'dispatch');
                 }
                 simState.lastRunningPid = nextP.pid;
             }
@@ -1351,12 +1382,14 @@
                 if (simState.csRemaining <= 0) {
                     simState.runningProc = simState.pendingProc;
                     simState.runningProc.state = 'RUNNING';
+                    simState.runningProc.procState = 'R';
                     if (simState.runningProc.firstRun === -1) simState.runningProc.firstRun = current + 1;
+                    logKernel(`▶ syscall: kill(${simState.runningProc.os_pid}, SIGCONT) -> Fin de Context Switch; P${simState.runningProc.pid} activo en CPU [/proc='R'].`, 'dispatch');
                     simState.pendingProc = null;
                     simState.cpuState = 'RUNNING';
                 }
             } else if (simState.cpuState === 'RUNNING' && simState.runningProc) {
-                simState.gantt.push({ t: current, pid: simState.runningProc.pid, label: `P${simState.runningProc.pid}` });
+                simState.gantt.push({ t: current, pid: simState.runningProc.pid, os_pid: simState.runningProc.os_pid, label: `P${simState.runningProc.pid}` });
                 simState.busyTicks++;
                 simState.quantumUsed++;
                 simState.runningProc.remBurst--;
@@ -1369,18 +1402,21 @@
                         const nextBurst = p.bursts[p.burstIdx];
                         if (nextBurst.t === 'IO') {
                             p.state = 'WAITING';
+                            p.procState = 'S';
                             p.remBurst = nextBurst.d;
                             simState.ioQueue.push(p);
-                            logKernel(`Proceso P${p.pid} pasa a E/S (duración: ${nextBurst.d} ticks).`);
+                            logKernel(`⏳ syscall: read(io_pipe_fd, &buf, 1) [Bloqueante] -> P${p.pid} (OS_PID=${p.os_pid}) entra en espera de E/S por ${nextBurst.d} ticks [/proc/${p.os_pid}/stat = 'S'].`);
                         } else {
                             p.state = 'READY';
+                            p.procState = 'T';
                             p.remBurst = nextBurst.d;
                             simState.readyQueue.push(p);
                         }
                     } else {
                         p.state = 'TERMINATED';
+                        p.procState = 'Z';
                         p.completionTime = current + 1;
-                        logKernel(`✅ Proceso P${p.pid} (${p.name}) FINALIZÓ. Retorno T=${p.completionTime - p.arr}, Espera W=${p.waitTime}.`);
+                        logKernel(`✅ syscall: _exit(0) + wait4(${p.os_pid}, &status, 0, &rusage) -> P${p.pid} (${p.name}) recolectado del kernel. Retorno T=${p.completionTime - p.arr}, Espera W=${p.waitTime}.`);
                     }
                     simState.runningProc = null;
                     simState.cpuState = 'IDLE';
@@ -1431,18 +1467,18 @@
             cpuEl.className = 'cpu-core';
             if (simState.cpuState === 'RUNNING' && simState.runningProc) {
                 cpuEl.classList.add('running');
-                cpuBadge.textContent = 'RUNNING';
+                cpuBadge.textContent = `/proc/${simState.runningProc.os_pid}/stat: R`;
                 statusBadge.className = 'cpu-status-badge status-running';
-                statusBadge.textContent = 'EJECUTANDO';
+                statusBadge.textContent = `OS_PID ${simState.runningProc.os_pid} (SIGCONT)`;
                 procName.textContent = `P${simState.runningProc.pid}: ${simState.runningProc.name}`;
-                procSub.textContent = `Ráfaga Restante: ${simState.runningProc.remBurst} ticks | Pri: ${simState.runningProc.dynPri}`;
+                procSub.textContent = `Ráfaga Rest: ${simState.runningProc.remBurst}t | Nice: ${simState.runningProc.nice} | /proc: ${simState.runningProc.procState}`;
             } else if (simState.cpuState === 'CONTEXT_SWITCH') {
                 cpuEl.classList.add('cs');
                 cpuBadge.textContent = 'CONTEXT_SWITCH';
                 statusBadge.className = 'cpu-status-badge status-cs';
-                statusBadge.textContent = 'CONMUTACIÓN DE CONTEXTO';
-                procName.textContent = `Cambiando a P${simState.pendingProc ? simState.pendingProc.pid : '?'}`;
-                procSub.textContent = `Sobrecarga restante: ${simState.csRemaining} ticks`;
+                statusBadge.textContent = 'SIGSTOP / clock_nanosleep()';
+                procName.textContent = `Despachando P${simState.pendingProc ? simState.pendingProc.pid : '?'} (OS_PID ${simState.pendingProc ? simState.pendingProc.os_pid : '?'})`;
+                procSub.textContent = `Sobrecarga kernel restante: ${simState.csRemaining} ticks`;
             } else {
                 cpuBadge.textContent = 'IDLE';
                 statusBadge.className = 'cpu-status-badge status-idle';
@@ -1453,7 +1489,7 @@
 
             // Cola de Listos
             const readyEl = document.getElementById('readyQueueEl');
-            document.getElementById('badgeReadyCount').textContent = `${simState.readyQueue.length} en cola`;
+            document.getElementById('badgeReadyCount').textContent = `${simState.readyQueue.length} en cola (SIGSTOP)`;
             if (simState.readyQueue.length === 0) {
                 readyEl.innerHTML = '<span class="empty-queue">Cola vacía</span>';
             } else {
@@ -1463,10 +1499,10 @@
                     card.className = 'proc-card';
                     if (p.dynPri < p.basePri) card.classList.add('promoted');
                     card.innerHTML = `
-                        <div class="proc-card-pid">P${p.pid} ${p.dynPri < p.basePri ? '🔥' : ''}</div>
+                        <div class="proc-card-pid">P${p.pid} <span style="font-size:10px; color:#64748b;">(PID:${p.os_pid})</span> ${p.dynPri < p.basePri ? '🔥' : ''}</div>
                         <div style="font-weight:600; font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p.name}</div>
-                        <div class="proc-card-burst">Rem: <b>${p.remBurst}</b></div>
-                        <div class="proc-card-pri">Pri: <span>${p.dynPri}</span> | W: ${p.waitTime}</div>
+                        <div class="proc-card-burst">Rem: <b>${p.remBurst}</b> | /proc: <b>${p.procState}</b></div>
+                        <div class="proc-card-pri">Pri: <span>${p.dynPri}</span> (nice ${p.nice}) | W: ${p.waitTime}</div>
                     `;
                     readyEl.appendChild(card);
                 });
@@ -1474,9 +1510,9 @@
 
             // Cola de E/S
             const ioEl = document.getElementById('ioQueueEl');
-            document.getElementById('badgeIOCount').textContent = `${simState.ioQueue.length} en E/S`;
+            document.getElementById('badgeIOCount').textContent = `${simState.ioQueue.length} en pipe()`;
             if (simState.ioQueue.length === 0) {
-                ioEl.innerHTML = '<span class="empty-queue">Sin procesos bloqueados</span>';
+                ioEl.innerHTML = '<span class="empty-queue">Sin procesos bloqueados en pipe()</span>';
             } else {
                 ioEl.innerHTML = '';
                 simState.ioQueue.forEach(p => {
@@ -1484,9 +1520,9 @@
                     card.className = 'proc-card';
                     card.style.borderColor = '#f59e0b';
                     card.innerHTML = `
-                        <div class="proc-card-pid" style="color:#f59e0b;">P${p.pid}</div>
+                        <div class="proc-card-pid" style="color:#f59e0b;">P${p.pid} <span style="font-size:10px;">(PID:${p.os_pid})</span></div>
                         <div style="font-weight:600; font-size:11px;">${p.name}</div>
-                        <div class="proc-card-burst">E/S Rest: <b>${p.remBurst}</b></div>
+                        <div class="proc-card-burst">E/S Rest: <b>${p.remBurst}</b> | /proc: <b>${p.procState}</b></div>
                     `;
                     ioEl.appendChild(card);
                 });
@@ -1586,6 +1622,64 @@
             if (simState.isPlaying) {
                 clearInterval(simState.timer);
                 simState.timer = setInterval(stepTick, simState.speed);
+            }
+        }
+
+        async function executeRealPosixBinary() {
+            const btn = document.getElementById('btnRealPosix');
+            const origText = btn.innerHTML;
+            btn.innerHTML = '⏳ Ejecutando ./simulador en Linux...';
+            btn.disabled = true;
+
+            try {
+                const url = `/api/run?scenario=${simState.scenarioId}&algo=${simState.algo}&quantum=${simState.quantum}&cs=${simState.csPenalty}&aging=${simState.agingTh}`;
+                const resp = await fetch(url);
+                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+                const data = await resp.json();
+
+                resetSimulation();
+                if (data.processes && Array.isArray(data.processes)) {
+                    data.processes.forEach(realP => {
+                        const localP = simState.processes.find(lp => lp.pid === realP.pid);
+                        if (localP && realP.os_pid > 0) {
+                            localP.os_pid = realP.os_pid;
+                            localP.nice = realP.nice_value;
+                        }
+                    });
+                }
+                logEvent(`<span class="log-aging">⚡ BINARIO POSIX ./simulador EJECUTADO EN VIVO (${data.algorithm})</span>`);
+                if (data.syscalls && Array.isArray(data.syscalls)) {
+                    data.syscalls.slice(0, 12).forEach(sc => {
+                        logEvent(`[KERNEL] [T=${sc.tick}] PID=${sc.pid} (OS_PID=${sc.os_pid}) ${sc.syscall} -> ${sc.detail} [/proc=${sc.proc_state}]`);
+                    });
+                }
+                updateUI();
+            } catch (err) {
+                // Fallback a los archivos JSON generados por make test si no está corriendo make web
+                try {
+                    const fallbackResp = await fetch(`resultados_escenario${simState.scenarioId}.json`);
+                    if (fallbackResp.ok) {
+                        const fallbackList = await fallbackResp.json();
+                        const runData = Array.isArray(fallbackList) ? fallbackList[0] : fallbackList;
+                        if (runData && runData.processes) {
+                            runData.processes.forEach(realP => {
+                                const localP = simState.processes.find(lp => lp.pid === realP.pid);
+                                if (localP && realP.os_pid > 0) {
+                                    localP.os_pid = realP.os_pid;
+                                    localP.nice = realP.nice_value;
+                                }
+                            });
+                            logEvent(`<span class="log-aging">⚡ TRAZA POSIX CARGADA DESDE resultados_escenario${simState.scenarioId}.json (Para ejecución en vivo usa: make web)</span>`);
+                        }
+                    } else {
+                        logEvent(`<span class="log-cs">⚠️ Servidor live_server.py no detectado. Ejecuta 'make web' en la terminal para invocar ./simulador desde el navegador.</span>`);
+                    }
+                } catch (e2) {
+                    logEvent(`<span class="log-cs">⚠️ Ejecuta 'make web' en WSL para conectar el navegador con el binario ./simulador en vivo.</span>`);
+                }
+            } finally {
+                btn.innerHTML = origText;
+                btn.disabled = false;
             }
         }
 

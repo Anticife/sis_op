@@ -4,9 +4,9 @@
 #include <sstream>
 #include <algorithm>
 
-Simulator::Simulator(std::shared_ptr<Scheduler> sched, int context_switch_penalty, bool step_mode)
+Simulator::Simulator(std::shared_ptr<Scheduler> sched, int context_switch_penalty, bool step_mode, int tick_duration_ms)
     : scheduler(std::move(sched)),
-      cpu(context_switch_penalty),
+      cpu(context_switch_penalty, tick_duration_ms),
       current_time(0),
       step_mode(step_mode),
       last_running_pid(-1) {}
@@ -16,6 +16,13 @@ void Simulator::load_processes(const std::vector<std::shared_ptr<Process>>& inpu
     for (const auto& p : input_processes) {
         processes.push_back(p->clone());
     }
+}
+
+void Simulator::record_syscall(int tick, const std::shared_ptr<Process>& p, const std::string& syscall_name, const std::string& details) {
+    pid_t os_id = p ? p->os_pid : 0;
+    int log_id = p ? p->pid : 0;
+    char kstate = p ? p->linux_kernel_state : '-';
+    syscall_log.push_back({tick, os_id, log_id, syscall_name, details, kstate});
 }
 
 std::vector<std::shared_ptr<Process>> Simulator::load_from_csv(const std::string& filepath) {
@@ -28,7 +35,6 @@ std::vector<std::shared_ptr<Process>> Simulator::load_from_csv(const std::string
 
     std::string line;
     while (std::getline(file, line)) {
-        // Ignorar líneas vacías y comentarios
         if (line.empty() || line[0] == '#') continue;
 
         std::stringstream ss(line);
@@ -36,7 +42,6 @@ std::vector<std::shared_ptr<Process>> Simulator::load_from_csv(const std::string
         std::vector<std::string> tokens;
 
         while (std::getline(ss, token, ',')) {
-            // Trim de espacios
             size_t start = token.find_first_not_of(" \t\r\n");
             size_t end = token.find_last_not_of(" \t\r\n");
             if (start != std::string::npos && end != std::string::npos) {
@@ -44,8 +49,8 @@ std::vector<std::shared_ptr<Process>> Simulator::load_from_csv(const std::string
             }
         }
 
-        if (tokens.size() < 5) continue; // Mínimo: PID, Name, Arrival, Priority, Burst1
-        if (tokens[0] == "PID" || tokens[0] == "pid") continue; // Saltar cabecera
+        if (tokens.size() < 5) continue;
+        if (tokens[0] == "PID" || tokens[0] == "pid") continue;
 
         int pid = std::stoi(tokens[0]);
         std::string name = tokens[1];
@@ -69,7 +74,6 @@ std::vector<std::shared_ptr<Process>> Simulator::load_from_csv(const std::string
                 btype = BurstType::IO;
                 duration = std::stoi(b_str.substr(1));
             } else {
-                // Alternar por defecto CPU -> E/S -> CPU...
                 btype = expect_cpu ? BurstType::CPU : BurstType::IO;
                 duration = std::stoi(b_str);
                 expect_cpu = !expect_cpu;
@@ -94,30 +98,37 @@ void Simulator::print_step_state() const {
     // Estado CPU
     std::cout << "CPU: ";
     if (cpu.is_context_switching()) {
-        std::cout << "\033[31m[CAMBIO DE CONTEXTO]\033[0m ";
+        auto pend = cpu.get_pending_process();
+        std::cout << "\033[31m[CAMBIO DE CONTEXTO POSIX -> SIGSTOP/SIGCONT hacia OS_PID:"
+                  << (pend ? pend->os_pid : -1) << "]\033[0m ";
     } else if (cpu.get_current_process()) {
         auto p = cpu.get_current_process();
-        std::cout << "\033[32m[PID: " << p->pid << " - " << p->name 
-                  << " (Rem: " << p->get_remaining_current_burst() << ", DinPri: " << p->dynamic_priority << ")]\033[0m ";
+        std::cout << "\033[32m[P" << p->pid << " (OS_PID:" << p->os_pid << ", /proc:" << p->linux_kernel_state
+                  << ") - " << p->name << " (Rem:" << p->get_remaining_current_burst()
+                  << ", Nice:" << p->nice_value << ")]\033[0m ";
     } else {
         std::cout << "\033[90m[IDLE]\033[0m ";
     }
 
     // Cola de Listos
-    std::cout << "| LISTOS: [ ";
+    std::cout << "| LISTOS (SIGSTOP): [ ";
     for (const auto& p : scheduler->get_ready_processes()) {
-        std::cout << p->name << "(P" << p->pid << ", Pri:" << p->dynamic_priority << ", Rem:" << p->get_remaining_current_burst() << ") ";
+        std::cout << p->name << "(P" << p->pid << ", OS:" << p->os_pid
+                  << ", /proc:" << p->linux_kernel_state
+                  << ", Pri:" << p->dynamic_priority << ", Rem:" << p->get_remaining_current_burst() << ") ";
     }
     std::cout << "] ";
 
     // Cola de E/S
-    std::cout << "| BLOQUEADOS E/S: [ ";
+    std::cout << "| BLOQUEADOS PIPE E/S: [ ";
     for (const auto& p : io_queue.get_waiting_processes()) {
-        std::cout << p->name << "(P" << p->pid << ", RemIO:" << p->get_remaining_current_burst() << ") ";
+        std::cout << p->name << "(P" << p->pid << ", OS:" << p->os_pid
+                  << ", /proc:" << p->linux_kernel_state
+                  << ", RemIO:" << p->get_remaining_current_burst() << ") ";
     }
     std::cout << "]\n";
 
-    std::cout << "Presiona [Enter] para continuar...";
+    std::cout << "Presiona [Enter] para avanzar 1 tick POSIX...";
     std::string dummy;
     std::getline(std::cin, dummy);
 }
@@ -125,11 +136,11 @@ void Simulator::print_step_state() const {
 SimulationResults Simulator::run() {
     current_time = 0;
     raw_gantt.clear();
+    syscall_log.clear();
     last_running_pid = -1;
 
-    // Verificar si no hay procesos
     if (processes.empty()) {
-        return Metrics::compute(scheduler->get_name(), processes, raw_gantt, 0, 0, 0, 0, 0);
+        return Metrics::compute(scheduler->get_name(), processes, raw_gantt, syscall_log, 0, 0, 0, 0, 0, 0.0);
     }
 
     auto all_terminated = [this]() {
@@ -139,22 +150,32 @@ SimulationResults Simulator::run() {
         return true;
     };
 
+    bool prev_tick_executed_cpu = false;
+
     while (!all_terminated()) {
-        // 1. Llegadas de nuevos procesos al sistema en este tick
+        // 1. Llegadas de nuevos procesos: Crear proceso real en el kernel Linux con fork(), mmap(), pipe(), sched_setaffinity(), setpriority() y SIGSTOP
         std::vector<std::shared_ptr<Process>> new_arrivals;
         for (auto& p : processes) {
             if (p->state == ProcessState::NEW && p->arrival_time == current_time) {
+                p->spawn_posix_process();
+                record_syscall(current_time, p, "fork() + mmap() + pipe() + sched_setaffinity()",
+                               "Proceso real creado en Linux con OS_PID=" + std::to_string(p->os_pid) + " y suspendido con SIGSTOP en READY");
                 new_arrivals.push_back(p);
             }
         }
 
-        // 2. Procesos que terminan su ráfaga de E/S en este tick
+        // 2. Procesos que terminan su ráfaga de E/S en este tick (despertados mediante write() en pipe POSIX)
         auto completed_io = io_queue.tick(current_time);
         for (auto& p : completed_io) {
+            record_syscall(current_time, p, "write(io_pipe) + kill(SIGSTOP)",
+                           "Desbloqueo de read() en pipe de E/S; pasa a estado READY");
             p->advance_to_next_burst();
             if (p->is_completed()) {
                 p->completion_time = current_time;
                 p->state = ProcessState::TERMINATED;
+                p->terminate_and_reap_posix();
+                record_syscall(current_time, p, "wait4(OS_PID, &status, 0, &rusage)",
+                               "Proceso finalizado tras E/S y recolectado del kernel");
             } else {
                 new_arrivals.push_back(p);
             }
@@ -164,25 +185,51 @@ SimulationResults Simulator::run() {
         for (auto& p : new_arrivals) {
             scheduler->add_process(p);
 
-            // Si la CPU está ejecutando un proceso, evaluar si el nuevo proceso debe desalojarlo
             if (cpu.get_state() == CPUState::RUNNING) {
                 auto current_p = cpu.get_current_process();
                 if (scheduler->should_preempt(current_p, p)) {
                     auto preempted = cpu.preempt();
+                    record_syscall(current_time, preempted, "kill(OS_PID, SIGSTOP) + waitpid(WUNTRACED)",
+                                   "Desalojo apropiativo de CPU por llegada de P" + std::to_string(p->pid) + " (OS_PID=" + std::to_string(p->os_pid) + ")");
                     scheduler->add_process(preempted);
-                    // El candidato y el desalojado están ahora en el planificador
                 }
             }
         }
 
-        // 3. Notificación de ciclo de reloj al planificador (para aging o quantums de RR)
-        scheduler->on_tick(current_time);
+        // 3. Notificación de ciclo de reloj al planificador (para Aging -> setpriority() o quantums de RR)
+        std::vector<int> prev_prios;
+        for (const auto& rp : scheduler->get_ready_processes()) {
+            prev_prios.push_back(rp->dynamic_priority);
+        }
+        if (prev_tick_executed_cpu || scheduler->get_name().find("Round Robin") == std::string::npos) {
+            scheduler->on_tick(current_time);
+        }
+        auto ready_now = scheduler->get_ready_processes();
+        for (size_t idx = 0; idx < ready_now.size() && idx < prev_prios.size(); ++idx) {
+            if (ready_now[idx]->dynamic_priority != prev_prios[idx]) {
+                record_syscall(current_time, ready_now[idx], "setpriority(PRIO_PROCESS, OS_PID, nice)",
+                               "Aging promovio prioridad a " + std::to_string(ready_now[idx]->dynamic_priority) +
+                               " (nice=" + std::to_string(ready_now[idx]->nice_value) + ")");
+            }
+        }
 
-        // 4. Si la CPU está ocupada, evaluar si el planificador exige preemption (ej. expiró quantum en RR)
+        // 4. Si la CPU está ocupada, evaluar si el planificador exige preemption (ej. expiró quantum en RR o Aging promovió a alguien)
         if (cpu.get_state() == CPUState::RUNNING) {
             auto current_p = cpu.get_current_process();
-            if (scheduler->should_preempt(current_p, nullptr)) {
+            bool preempt_needed = scheduler->should_preempt(current_p, nullptr);
+            if (!preempt_needed) {
+                // Verificar si algún proceso en READY superó la prioridad del proceso en ejecución (por Aging)
+                for (const auto& cand : scheduler->get_ready_processes()) {
+                    if (scheduler->should_preempt(current_p, cand)) {
+                        preempt_needed = true;
+                        break;
+                    }
+                }
+            }
+            if (preempt_needed) {
                 auto preempted = cpu.preempt();
+                record_syscall(current_time, preempted, "kill(OS_PID, SIGSTOP) + waitpid(WUNTRACED)",
+                               "Preempcion de CPU por expiracion de quantum / prioridad envejecida");
                 scheduler->add_process(preempted);
             }
         }
@@ -192,6 +239,13 @@ SimulationResults Simulator::run() {
             auto next_p = scheduler->get_next_process();
             bool needs_cs = (last_running_pid != -1 && last_running_pid != next_p->pid);
             cpu.dispatch(next_p, needs_cs);
+            if (needs_cs) {
+                record_syscall(current_time, next_p, "clock_nanosleep() [Context Switch]",
+                               "Conmutacion de contexto en kernel hacia OS_PID=" + std::to_string(next_p->os_pid));
+            } else {
+                record_syscall(current_time, next_p, "kill(OS_PID, SIGCONT)",
+                               "Despacho directo de proceso en kernel Linux");
+            }
             last_running_pid = next_p->pid;
         }
 
@@ -200,13 +254,15 @@ SimulationResults Simulator::run() {
             print_step_state();
         }
 
-        // 7. Registrar segmento de Gantt en este tick
+        // 7. Registrar segmento de Gantt en este tick con su OS_PID real
         if (cpu.is_context_switching()) {
-            raw_gantt.push_back({current_time, current_time + 1, -2, "CS"});
+            auto pend = cpu.get_pending_process();
+            raw_gantt.push_back({current_time, current_time + 1, -2, pend ? pend->os_pid : 0, "CS"});
         } else if (cpu.get_current_process()) {
-            raw_gantt.push_back({current_time, current_time + 1, cpu.get_current_process()->pid, cpu.get_current_process()->name});
+            auto cur = cpu.get_current_process();
+            raw_gantt.push_back({current_time, current_time + 1, cur->pid, cur->os_pid, cur->name});
         } else {
-            raw_gantt.push_back({current_time, current_time + 1, -1, "IDLE"});
+            raw_gantt.push_back({current_time, current_time + 1, -1, 0, "IDLE"});
         }
 
         // 8. Incrementar tiempo de espera (waiting time) de todos los procesos en estado READY
@@ -214,8 +270,14 @@ SimulationResults Simulator::run() {
             p->waiting_time++;
         }
 
-        // 9. Ejecutar 1 tick de CPU
+        // 9. Ejecutar 1 tick físico real de CPU mediante clock_nanosleep() y lectura de /proc/<os_pid>/stat
+        bool was_cs = cpu.is_context_switching();
+        prev_tick_executed_cpu = (cpu.get_state() == CPUState::RUNNING && cpu.get_current_process() != nullptr);
         bool burst_done = cpu.tick(current_time);
+        if (was_cs && cpu.get_state() == CPUState::RUNNING && cpu.get_current_process()) {
+            record_syscall(current_time + 1, cpu.get_current_process(), "kill(OS_PID, SIGCONT)",
+                           "Fin de cambio de contexto; proceso reanudado en CPU");
+        }
 
         if (burst_done) {
             auto p = cpu.get_current_process();
@@ -225,12 +287,20 @@ SimulationResults Simulator::run() {
             if (p->is_completed()) {
                 p->completion_time = current_time + 1;
                 p->state = ProcessState::TERMINATED;
+                p->terminate_and_reap_posix();
+                record_syscall(current_time + 1, p, "wait4(OS_PID, &status, 0, &rusage)",
+                               "Proceso terminado (_exit(0)) y recolectado; CPU_ms=" +
+                               std::to_string(p->real_user_cpu_ms + p->real_sys_cpu_ms));
                 cpu.release();
             } else {
                 if (p->is_current_burst_io()) {
                     io_queue.add_process(p);
+                    record_syscall(current_time + 1, p, "read(io_pipe_fd) [Blocking I/O]",
+                                   "Proceso bloqueado en pipe POSIX esperando E/S (/proc state='" +
+                                   std::string(1, p->linux_kernel_state) + "')");
                     cpu.release();
                 } else {
+                    p->suspend_posix_process();
                     scheduler->add_process(p);
                     cpu.release();
                 }
@@ -243,9 +313,11 @@ SimulationResults Simulator::run() {
     return Metrics::compute(scheduler->get_name(),
                            processes,
                            raw_gantt,
+                           syscall_log,
                            current_time,
                            cpu.get_total_busy_time(),
                            cpu.get_total_idle_time(),
                            cpu.get_total_cs_time(),
-                           cpu.get_total_context_switches());
+                           cpu.get_total_context_switches(),
+                           cpu.get_real_cs_overhead_ms());
 }

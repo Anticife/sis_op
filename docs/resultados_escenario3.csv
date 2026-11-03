@@ -1,130 +1,281 @@
-Algoritmo,PID,Nombre,Llegada,PrioridadBase,PrioridadDinamica,TotalCPU,TotalIO,Inicio,Fin,Retorno,Espera,Respuesta,CambiosContexto
-"FCFS (First-Come, First-Served)",1,"Tarea_Fondo_Batch",0,5,5,25,0,0,25,25,0,0,0
-"FCFS (First-Come, First-Served)",2,"Urgente_Alarma_1",1,1,1,3,0,26,29,28,24,25,1
-"FCFS (First-Come, First-Served)",3,"Urgente_Alarma_2",4,1,1,3,0,30,33,29,25,26,1
-"FCFS (First-Come, First-Served)",4,"Urgente_Alarma_3",7,1,1,3,0,34,37,30,26,27,1
-"FCFS (First-Come, First-Served)",5,"Urgente_Alarma_4",10,1,1,3,0,38,41,31,27,28,1
-"FCFS (First-Come, First-Served)",6,"Urgente_Alarma_5",13,2,2,4,0,42,46,33,28,29,1
-"FCFS (First-Come, First-Served)",7,"Urgente_Alarma_6",17,2,2,4,0,47,51,34,29,30,1
-"Round Robin (RR, q=4)",1,"Tarea_Fondo_Batch",0,5,5,25,0,0,57,57,28,0,4
-"Round Robin (RR, q=4)",2,"Urgente_Alarma_1",1,1,1,3,0,5,8,7,3,4,1
-"Round Robin (RR, q=4)",3,"Urgente_Alarma_2",4,1,1,3,0,9,12,8,4,5,1
-"Round Robin (RR, q=4)",4,"Urgente_Alarma_3",7,1,1,3,0,17,20,13,9,10,1
-"Round Robin (RR, q=4)",5,"Urgente_Alarma_4",10,1,1,3,0,21,24,14,10,11,1
-"Round Robin (RR, q=4)",6,"Urgente_Alarma_5",13,2,2,4,0,25,38,25,19,12,2
-"Round Robin (RR, q=4)",7,"Urgente_Alarma_6",17,2,2,4,0,33,44,27,21,16,2
-"SRTF (Shortest Remaining Time First - Apropiativo)",1,"Tarea_Fondo_Batch",0,5,5,25,0,0,52,52,26,0,1
-"SRTF (Shortest Remaining Time First - Apropiativo)",2,"Urgente_Alarma_1",1,1,1,3,0,2,5,4,0,1,1
-"SRTF (Shortest Remaining Time First - Apropiativo)",3,"Urgente_Alarma_2",4,1,1,3,0,6,9,5,1,2,1
-"SRTF (Shortest Remaining Time First - Apropiativo)",4,"Urgente_Alarma_3",7,1,1,3,0,10,13,6,2,3,1
-"SRTF (Shortest Remaining Time First - Apropiativo)",5,"Urgente_Alarma_4",10,1,1,3,0,14,17,7,3,4,1
-"SRTF (Shortest Remaining Time First - Apropiativo)",6,"Urgente_Alarma_5",13,2,2,4,0,18,22,9,4,5,1
-"SRTF (Shortest Remaining Time First - Apropiativo)",7,"Urgente_Alarma_6",17,2,2,4,0,23,27,10,5,6,1
-"Prioridad Apropiativa Estricta (Sin Aging)",1,"Tarea_Fondo_Batch",0,5,5,25,0,0,52,52,26,0,1
-"Prioridad Apropiativa Estricta (Sin Aging)",2,"Urgente_Alarma_1",1,1,1,3,0,2,5,4,0,1,1
-"Prioridad Apropiativa Estricta (Sin Aging)",3,"Urgente_Alarma_2",4,1,1,3,0,6,9,5,1,2,1
-"Prioridad Apropiativa Estricta (Sin Aging)",4,"Urgente_Alarma_3",7,1,1,3,0,10,13,6,2,3,1
-"Prioridad Apropiativa Estricta (Sin Aging)",5,"Urgente_Alarma_4",10,1,1,3,0,14,17,7,3,4,1
-"Prioridad Apropiativa Estricta (Sin Aging)",6,"Urgente_Alarma_5",13,2,2,4,0,18,22,9,4,5,1
-"Prioridad Apropiativa Estricta (Sin Aging)",7,"Urgente_Alarma_6",17,2,2,4,0,23,27,10,5,6,1
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",1,"Tarea_Fondo_Batch",0,5,1,25,0,0,47,47,21,0,1
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",2,"Urgente_Alarma_1",1,1,1,3,0,2,5,4,0,1,1
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",3,"Urgente_Alarma_2",4,1,1,3,0,6,9,5,1,2,1
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",4,"Urgente_Alarma_3",7,1,1,3,0,10,13,6,2,3,1
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",5,"Urgente_Alarma_4",10,1,1,3,0,14,17,7,3,4,1
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",6,"Urgente_Alarma_5",13,2,1,4,0,18,22,9,4,5,1
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",7,"Urgente_Alarma_6",17,2,1,4,0,48,52,35,30,31,1
+Algoritmo,PID,Nombre,Llegada,PrioridadBase,PrioridadDinamica,TotalCPU,TotalIO,Inicio,Fin,Retorno,Espera,Respuesta,CambiosContexto,OS_PID,Nice,RealCPU_ms,KernelCS,Syscalls
+"FCFS (First-Come, First-Served)",1,"Tarea_Fondo_Batch",0,5,5,25,0,0,25,25,0,0,0,15414,16,111.541,10,118
+"FCFS (First-Come, First-Served)",2,"Urgente_Alarma_1",1,1,1,3,0,26,29,28,24,25,1,15415,0,9.380,2,30
+"FCFS (First-Come, First-Served)",3,"Urgente_Alarma_2",4,1,1,3,0,30,33,29,25,26,1,15416,0,9.404,2,30
+"FCFS (First-Come, First-Served)",4,"Urgente_Alarma_3",7,1,1,3,0,34,37,30,26,27,1,15417,0,14.127,2,30
+"FCFS (First-Come, First-Served)",5,"Urgente_Alarma_4",10,1,1,3,0,38,41,31,27,28,1,15418,0,9.408,3,30
+"FCFS (First-Come, First-Served)",6,"Urgente_Alarma_5",13,2,2,4,0,42,46,33,28,29,1,15419,4,18.661,3,34
+"FCFS (First-Come, First-Served)",7,"Urgente_Alarma_6",17,2,2,4,0,47,51,34,29,30,1,15420,4,20.820,3,34
+"Round Robin (RR, q=4)",1,"Tarea_Fondo_Batch",0,5,5,25,0,0,53,53,26,0,2,15421,16,98.473,11,136
+"Round Robin (RR, q=4)",2,"Urgente_Alarma_1",1,1,1,3,0,5,8,7,3,4,1,15422,0,9.669,4,30
+"Round Robin (RR, q=4)",3,"Urgente_Alarma_2",4,1,1,3,0,9,12,8,4,5,1,15423,0,9.657,4,30
+"Round Robin (RR, q=4)",4,"Urgente_Alarma_3",7,1,1,3,0,18,21,14,10,11,1,15424,0,9.380,3,30
+"Round Robin (RR, q=4)",5,"Urgente_Alarma_4",10,1,1,3,0,22,25,15,11,12,1,15425,0,9.551,4,30
+"Round Robin (RR, q=4)",6,"Urgente_Alarma_5",13,2,2,4,0,26,30,17,12,13,1,15426,4,18.137,2,34
+"Round Robin (RR, q=4)",7,"Urgente_Alarma_6",17,2,2,4,0,31,35,18,13,14,1,15427,4,15.918,4,34
+"SRTF (Shortest Remaining Time First - Apropiativo)",1,"Tarea_Fondo_Batch",0,5,5,25,0,0,52,52,26,0,1,15428,16,84.037,8,127
+"SRTF (Shortest Remaining Time First - Apropiativo)",2,"Urgente_Alarma_1",1,1,1,3,0,2,5,4,0,1,1,15429,0,10.030,4,30
+"SRTF (Shortest Remaining Time First - Apropiativo)",3,"Urgente_Alarma_2",4,1,1,3,0,6,9,5,1,2,1,15430,0,9.846,4,30
+"SRTF (Shortest Remaining Time First - Apropiativo)",4,"Urgente_Alarma_3",7,1,1,3,0,10,13,6,2,3,1,15431,0,12.340,4,30
+"SRTF (Shortest Remaining Time First - Apropiativo)",5,"Urgente_Alarma_4",10,1,1,3,0,14,17,7,3,4,1,15432,0,12.514,2,30
+"SRTF (Shortest Remaining Time First - Apropiativo)",6,"Urgente_Alarma_5",13,2,2,4,0,18,22,9,4,5,1,15433,4,17.214,3,34
+"SRTF (Shortest Remaining Time First - Apropiativo)",7,"Urgente_Alarma_6",17,2,2,4,0,23,27,10,5,6,1,15434,4,15.632,3,34
+"Prioridad Apropiativa Estricta (Sin Aging)",1,"Tarea_Fondo_Batch",0,5,5,25,0,0,52,52,26,0,1,15435,16,107.946,7,127
+"Prioridad Apropiativa Estricta (Sin Aging)",2,"Urgente_Alarma_1",1,1,1,3,0,2,5,4,0,1,1,15436,0,15.104,4,30
+"Prioridad Apropiativa Estricta (Sin Aging)",3,"Urgente_Alarma_2",4,1,1,3,0,6,9,5,1,2,1,15437,0,9.706,4,30
+"Prioridad Apropiativa Estricta (Sin Aging)",4,"Urgente_Alarma_3",7,1,1,3,0,10,13,6,2,3,1,15438,0,12.306,4,30
+"Prioridad Apropiativa Estricta (Sin Aging)",5,"Urgente_Alarma_4",10,1,1,3,0,14,17,7,3,4,1,15439,0,9.481,2,30
+"Prioridad Apropiativa Estricta (Sin Aging)",6,"Urgente_Alarma_5",13,2,2,4,0,18,22,9,4,5,1,15440,4,15.666,2,34
+"Prioridad Apropiativa Estricta (Sin Aging)",7,"Urgente_Alarma_6",17,2,2,4,0,23,27,10,5,6,1,15441,4,12.478,2,34
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",1,"Tarea_Fondo_Batch",0,5,1,25,0,0,47,47,21,0,1,15442,0,99.635,6,127
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",2,"Urgente_Alarma_1",1,1,1,3,0,2,5,4,0,1,1,15443,0,9.844,3,30
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",3,"Urgente_Alarma_2",4,1,1,3,0,6,9,5,1,2,1,15444,0,11.974,4,30
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",4,"Urgente_Alarma_3",7,1,1,3,0,10,13,6,2,3,1,15445,0,17.327,4,30
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",5,"Urgente_Alarma_4",10,1,1,3,0,14,17,7,3,4,1,15446,0,11.789,2,30
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",6,"Urgente_Alarma_5",13,2,1,4,0,18,22,9,4,5,1,15447,0,12.544,3,34
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",7,"Urgente_Alarma_6",17,2,1,4,0,48,52,35,30,31,1,15448,0,16.697,2,34
 
 --- RESUMEN GLOBAL DE METRICAS ---
-Algoritmo,TiempoTotal,CPU_Utilizacion_Pct,CPU_Overhead_Pct,Throughput,Promedio_Retorno,Promedio_Espera,Promedio_Respuesta,Total_Cambios_Contexto,Indice_Jain
-"FCFS (First-Come, First-Served)",51,88.2353,11.7647,0.137255,30,22.7143,23.5714,6,0.361796
-"Round Robin (RR, q=4)",57,78.9474,21.0526,0.122807,21.5714,13.4286,8.28571,12,0.857399
-"SRTF (Shortest Remaining Time First - Apropiativo)",52,86.5385,13.4615,0.134615,13.2857,5.85714,3,7,0.953971
-"Prioridad Apropiativa Estricta (Sin Aging)",52,86.5385,13.4615,0.134615,13.2857,5.85714,3,7,0.953971
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",52,86.5385,13.4615,0.134615,16.1429,8.71429,6.57143,7,0.876716
+Algoritmo,TiempoTotal,CPU_Utilizacion_Pct,CPU_Overhead_Pct,Throughput,Promedio_Retorno,Promedio_Espera,Promedio_Respuesta,Total_Cambios_Contexto,Indice_Jain,Total_Real_CPU_ms,Total_Kernel_CS,Total_POSIX_Syscalls
+"FCFS (First-Come, First-Served)",51,88.235,11.765,0.137,30.000,22.714,23.571,6,0.362,193.341,25,306
+"Round Robin (RR, q=4)",53,84.906,15.094,0.132,18.857,11.286,8.429,8,0.893,170.785,32,324
+"SRTF (Shortest Remaining Time First - Apropiativo)",52,86.538,13.462,0.135,13.286,5.857,3.000,7,0.954,161.612,28,315
+"Prioridad Apropiativa Estricta (Sin Aging)",52,86.538,13.462,0.135,13.286,5.857,3.000,7,0.954,182.688,25,315
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",52,86.538,13.462,0.135,16.143,8.714,6.571,7,0.877,179.810,24,315
 
 --- DIAGRAMA DE GANTT ---
-Algoritmo,Inicio,Fin,PID,Etiqueta
-"FCFS (First-Come, First-Served)",0,25,1,"Tarea_Fondo_Batch"
-"FCFS (First-Come, First-Served)",25,26,-2,"CS"
-"FCFS (First-Come, First-Served)",26,29,2,"Urgente_Alarma_1"
-"FCFS (First-Come, First-Served)",29,30,-2,"CS"
-"FCFS (First-Come, First-Served)",30,33,3,"Urgente_Alarma_2"
-"FCFS (First-Come, First-Served)",33,34,-2,"CS"
-"FCFS (First-Come, First-Served)",34,37,4,"Urgente_Alarma_3"
-"FCFS (First-Come, First-Served)",37,38,-2,"CS"
-"FCFS (First-Come, First-Served)",38,41,5,"Urgente_Alarma_4"
-"FCFS (First-Come, First-Served)",41,42,-2,"CS"
-"FCFS (First-Come, First-Served)",42,46,6,"Urgente_Alarma_5"
-"FCFS (First-Come, First-Served)",46,47,-2,"CS"
-"FCFS (First-Come, First-Served)",47,51,7,"Urgente_Alarma_6"
-"Round Robin (RR, q=4)",0,4,1,"Tarea_Fondo_Batch"
-"Round Robin (RR, q=4)",4,5,-2,"CS"
-"Round Robin (RR, q=4)",5,8,2,"Urgente_Alarma_1"
-"Round Robin (RR, q=4)",8,9,-2,"CS"
-"Round Robin (RR, q=4)",9,12,3,"Urgente_Alarma_2"
-"Round Robin (RR, q=4)",12,13,-2,"CS"
-"Round Robin (RR, q=4)",13,16,1,"Tarea_Fondo_Batch"
-"Round Robin (RR, q=4)",16,17,-2,"CS"
-"Round Robin (RR, q=4)",17,20,4,"Urgente_Alarma_3"
-"Round Robin (RR, q=4)",20,21,-2,"CS"
-"Round Robin (RR, q=4)",21,24,5,"Urgente_Alarma_4"
-"Round Robin (RR, q=4)",24,25,-2,"CS"
-"Round Robin (RR, q=4)",25,28,6,"Urgente_Alarma_5"
-"Round Robin (RR, q=4)",28,29,-2,"CS"
-"Round Robin (RR, q=4)",29,32,1,"Tarea_Fondo_Batch"
-"Round Robin (RR, q=4)",32,33,-2,"CS"
-"Round Robin (RR, q=4)",33,36,7,"Urgente_Alarma_6"
-"Round Robin (RR, q=4)",36,37,-2,"CS"
-"Round Robin (RR, q=4)",37,38,6,"Urgente_Alarma_5"
-"Round Robin (RR, q=4)",38,39,-2,"CS"
-"Round Robin (RR, q=4)",39,42,1,"Tarea_Fondo_Batch"
-"Round Robin (RR, q=4)",42,43,-2,"CS"
-"Round Robin (RR, q=4)",43,44,7,"Urgente_Alarma_6"
-"Round Robin (RR, q=4)",44,45,-2,"CS"
-"Round Robin (RR, q=4)",45,57,1,"Tarea_Fondo_Batch"
-"SRTF (Shortest Remaining Time First - Apropiativo)",0,1,1,"Tarea_Fondo_Batch"
-"SRTF (Shortest Remaining Time First - Apropiativo)",1,2,-2,"CS"
-"SRTF (Shortest Remaining Time First - Apropiativo)",2,5,2,"Urgente_Alarma_1"
-"SRTF (Shortest Remaining Time First - Apropiativo)",5,6,-2,"CS"
-"SRTF (Shortest Remaining Time First - Apropiativo)",6,9,3,"Urgente_Alarma_2"
-"SRTF (Shortest Remaining Time First - Apropiativo)",9,10,-2,"CS"
-"SRTF (Shortest Remaining Time First - Apropiativo)",10,13,4,"Urgente_Alarma_3"
-"SRTF (Shortest Remaining Time First - Apropiativo)",13,14,-2,"CS"
-"SRTF (Shortest Remaining Time First - Apropiativo)",14,17,5,"Urgente_Alarma_4"
-"SRTF (Shortest Remaining Time First - Apropiativo)",17,18,-2,"CS"
-"SRTF (Shortest Remaining Time First - Apropiativo)",18,22,6,"Urgente_Alarma_5"
-"SRTF (Shortest Remaining Time First - Apropiativo)",22,23,-2,"CS"
-"SRTF (Shortest Remaining Time First - Apropiativo)",23,27,7,"Urgente_Alarma_6"
-"SRTF (Shortest Remaining Time First - Apropiativo)",27,28,-2,"CS"
-"SRTF (Shortest Remaining Time First - Apropiativo)",28,52,1,"Tarea_Fondo_Batch"
-"Prioridad Apropiativa Estricta (Sin Aging)",0,1,1,"Tarea_Fondo_Batch"
-"Prioridad Apropiativa Estricta (Sin Aging)",1,2,-2,"CS"
-"Prioridad Apropiativa Estricta (Sin Aging)",2,5,2,"Urgente_Alarma_1"
-"Prioridad Apropiativa Estricta (Sin Aging)",5,6,-2,"CS"
-"Prioridad Apropiativa Estricta (Sin Aging)",6,9,3,"Urgente_Alarma_2"
-"Prioridad Apropiativa Estricta (Sin Aging)",9,10,-2,"CS"
-"Prioridad Apropiativa Estricta (Sin Aging)",10,13,4,"Urgente_Alarma_3"
-"Prioridad Apropiativa Estricta (Sin Aging)",13,14,-2,"CS"
-"Prioridad Apropiativa Estricta (Sin Aging)",14,17,5,"Urgente_Alarma_4"
-"Prioridad Apropiativa Estricta (Sin Aging)",17,18,-2,"CS"
-"Prioridad Apropiativa Estricta (Sin Aging)",18,22,6,"Urgente_Alarma_5"
-"Prioridad Apropiativa Estricta (Sin Aging)",22,23,-2,"CS"
-"Prioridad Apropiativa Estricta (Sin Aging)",23,27,7,"Urgente_Alarma_6"
-"Prioridad Apropiativa Estricta (Sin Aging)",27,28,-2,"CS"
-"Prioridad Apropiativa Estricta (Sin Aging)",28,52,1,"Tarea_Fondo_Batch"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",0,1,1,"Tarea_Fondo_Batch"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",1,2,-2,"CS"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",2,5,2,"Urgente_Alarma_1"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",5,6,-2,"CS"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",6,9,3,"Urgente_Alarma_2"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",9,10,-2,"CS"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",10,13,4,"Urgente_Alarma_3"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",13,14,-2,"CS"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",14,17,5,"Urgente_Alarma_4"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",17,18,-2,"CS"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",18,22,6,"Urgente_Alarma_5"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",22,23,-2,"CS"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",23,47,1,"Tarea_Fondo_Batch"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",47,48,-2,"CS"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",48,52,7,"Urgente_Alarma_6"
+Algoritmo,Inicio,Fin,PID,Etiqueta,OS_PID
+"FCFS (First-Come, First-Served)",0,25,1,"Tarea_Fondo_Batch",15414
+"FCFS (First-Come, First-Served)",25,26,-2,"CS",15415
+"FCFS (First-Come, First-Served)",26,29,2,"Urgente_Alarma_1",15415
+"FCFS (First-Come, First-Served)",29,30,-2,"CS",15416
+"FCFS (First-Come, First-Served)",30,33,3,"Urgente_Alarma_2",15416
+"FCFS (First-Come, First-Served)",33,34,-2,"CS",15417
+"FCFS (First-Come, First-Served)",34,37,4,"Urgente_Alarma_3",15417
+"FCFS (First-Come, First-Served)",37,38,-2,"CS",15418
+"FCFS (First-Come, First-Served)",38,41,5,"Urgente_Alarma_4",15418
+"FCFS (First-Come, First-Served)",41,42,-2,"CS",15419
+"FCFS (First-Come, First-Served)",42,46,6,"Urgente_Alarma_5",15419
+"FCFS (First-Come, First-Served)",46,47,-2,"CS",15420
+"FCFS (First-Come, First-Served)",47,51,7,"Urgente_Alarma_6",15420
+"Round Robin (RR, q=4)",0,4,1,"Tarea_Fondo_Batch",15421
+"Round Robin (RR, q=4)",4,5,-2,"CS",15422
+"Round Robin (RR, q=4)",5,8,2,"Urgente_Alarma_1",15422
+"Round Robin (RR, q=4)",8,9,-2,"CS",15423
+"Round Robin (RR, q=4)",9,12,3,"Urgente_Alarma_2",15423
+"Round Robin (RR, q=4)",12,13,-2,"CS",15421
+"Round Robin (RR, q=4)",13,17,1,"Tarea_Fondo_Batch",15421
+"Round Robin (RR, q=4)",17,18,-2,"CS",15424
+"Round Robin (RR, q=4)",18,21,4,"Urgente_Alarma_3",15424
+"Round Robin (RR, q=4)",21,22,-2,"CS",15425
+"Round Robin (RR, q=4)",22,25,5,"Urgente_Alarma_4",15425
+"Round Robin (RR, q=4)",25,26,-2,"CS",15426
+"Round Robin (RR, q=4)",26,30,6,"Urgente_Alarma_5",15426
+"Round Robin (RR, q=4)",30,31,-2,"CS",15427
+"Round Robin (RR, q=4)",31,35,7,"Urgente_Alarma_6",15427
+"Round Robin (RR, q=4)",35,36,-2,"CS",15421
+"Round Robin (RR, q=4)",36,53,1,"Tarea_Fondo_Batch",15421
+"SRTF (Shortest Remaining Time First - Apropiativo)",0,1,1,"Tarea_Fondo_Batch",15428
+"SRTF (Shortest Remaining Time First - Apropiativo)",1,2,-2,"CS",15429
+"SRTF (Shortest Remaining Time First - Apropiativo)",2,5,2,"Urgente_Alarma_1",15429
+"SRTF (Shortest Remaining Time First - Apropiativo)",5,6,-2,"CS",15430
+"SRTF (Shortest Remaining Time First - Apropiativo)",6,9,3,"Urgente_Alarma_2",15430
+"SRTF (Shortest Remaining Time First - Apropiativo)",9,10,-2,"CS",15431
+"SRTF (Shortest Remaining Time First - Apropiativo)",10,13,4,"Urgente_Alarma_3",15431
+"SRTF (Shortest Remaining Time First - Apropiativo)",13,14,-2,"CS",15432
+"SRTF (Shortest Remaining Time First - Apropiativo)",14,17,5,"Urgente_Alarma_4",15432
+"SRTF (Shortest Remaining Time First - Apropiativo)",17,18,-2,"CS",15433
+"SRTF (Shortest Remaining Time First - Apropiativo)",18,22,6,"Urgente_Alarma_5",15433
+"SRTF (Shortest Remaining Time First - Apropiativo)",22,23,-2,"CS",15434
+"SRTF (Shortest Remaining Time First - Apropiativo)",23,27,7,"Urgente_Alarma_6",15434
+"SRTF (Shortest Remaining Time First - Apropiativo)",27,28,-2,"CS",15428
+"SRTF (Shortest Remaining Time First - Apropiativo)",28,52,1,"Tarea_Fondo_Batch",15428
+"Prioridad Apropiativa Estricta (Sin Aging)",0,1,1,"Tarea_Fondo_Batch",15435
+"Prioridad Apropiativa Estricta (Sin Aging)",1,2,-2,"CS",15436
+"Prioridad Apropiativa Estricta (Sin Aging)",2,5,2,"Urgente_Alarma_1",15436
+"Prioridad Apropiativa Estricta (Sin Aging)",5,6,-2,"CS",15437
+"Prioridad Apropiativa Estricta (Sin Aging)",6,9,3,"Urgente_Alarma_2",15437
+"Prioridad Apropiativa Estricta (Sin Aging)",9,10,-2,"CS",15438
+"Prioridad Apropiativa Estricta (Sin Aging)",10,13,4,"Urgente_Alarma_3",15438
+"Prioridad Apropiativa Estricta (Sin Aging)",13,14,-2,"CS",15439
+"Prioridad Apropiativa Estricta (Sin Aging)",14,17,5,"Urgente_Alarma_4",15439
+"Prioridad Apropiativa Estricta (Sin Aging)",17,18,-2,"CS",15440
+"Prioridad Apropiativa Estricta (Sin Aging)",18,22,6,"Urgente_Alarma_5",15440
+"Prioridad Apropiativa Estricta (Sin Aging)",22,23,-2,"CS",15441
+"Prioridad Apropiativa Estricta (Sin Aging)",23,27,7,"Urgente_Alarma_6",15441
+"Prioridad Apropiativa Estricta (Sin Aging)",27,28,-2,"CS",15435
+"Prioridad Apropiativa Estricta (Sin Aging)",28,52,1,"Tarea_Fondo_Batch",15435
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",0,1,1,"Tarea_Fondo_Batch",15442
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",1,2,-2,"CS",15443
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",2,5,2,"Urgente_Alarma_1",15443
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",5,6,-2,"CS",15444
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",6,9,3,"Urgente_Alarma_2",15444
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",9,10,-2,"CS",15445
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",10,13,4,"Urgente_Alarma_3",15445
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",13,14,-2,"CS",15446
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",14,17,5,"Urgente_Alarma_4",15446
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",17,18,-2,"CS",15447
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",18,22,6,"Urgente_Alarma_5",15447
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",22,23,-2,"CS",15442
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",23,47,1,"Tarea_Fondo_Batch",15442
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",47,48,-2,"CS",15448
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",48,52,7,"Urgente_Alarma_6",15448
+
+--- REGISTRO DE LLAMADAS AL SISTEMA POSIX ---
+Algoritmo,Tick,PID_Logico,OS_PID_Linux,Syscall,Estado_ProcFS,Detalle
+"FCFS (First-Come, First-Served)",0,1,15414,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15414 y suspendido con SIGSTOP en READY"
+"FCFS (First-Come, First-Served)",0,1,15414,"kill(OS_PID, SIGCONT)","R","Despacho directo de proceso en kernel Linux"
+"FCFS (First-Come, First-Served)",1,2,15415,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15415 y suspendido con SIGSTOP en READY"
+"FCFS (First-Come, First-Served)",4,3,15416,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15416 y suspendido con SIGSTOP en READY"
+"FCFS (First-Come, First-Served)",7,4,15417,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15417 y suspendido con SIGSTOP en READY"
+"FCFS (First-Come, First-Served)",10,5,15418,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15418 y suspendido con SIGSTOP en READY"
+"FCFS (First-Come, First-Served)",13,6,15419,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15419 y suspendido con SIGSTOP en READY"
+"FCFS (First-Come, First-Served)",17,7,15420,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15420 y suspendido con SIGSTOP en READY"
+"FCFS (First-Come, First-Served)",25,1,15414,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=111.540612"
+"FCFS (First-Come, First-Served)",25,2,15415,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15415"
+"FCFS (First-Come, First-Served)",26,2,15415,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
+"FCFS (First-Come, First-Served)",29,2,15415,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=9.380371"
+"FCFS (First-Come, First-Served)",29,3,15416,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15416"
+"FCFS (First-Come, First-Served)",30,3,15416,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
+"FCFS (First-Come, First-Served)",33,3,15416,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=9.403601"
+"FCFS (First-Come, First-Served)",33,4,15417,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15417"
+"FCFS (First-Come, First-Served)",34,4,15417,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
+"FCFS (First-Come, First-Served)",37,4,15417,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=14.127449"
+"FCFS (First-Come, First-Served)",37,5,15418,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15418"
+"FCFS (First-Come, First-Served)",38,5,15418,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
+"FCFS (First-Come, First-Served)",41,5,15418,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=9.408084"
+"FCFS (First-Come, First-Served)",41,6,15419,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15419"
+"FCFS (First-Come, First-Served)",42,6,15419,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
+"FCFS (First-Come, First-Served)",46,6,15419,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=18.660647"
+"FCFS (First-Come, First-Served)",46,7,15420,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15420"
+"FCFS (First-Come, First-Served)",47,7,15420,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
+"FCFS (First-Come, First-Served)",51,7,15420,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=20.820091"
+"Round Robin (RR, q=4)",0,1,15421,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15421 y suspendido con SIGSTOP en READY"
+"Round Robin (RR, q=4)",0,1,15421,"kill(OS_PID, SIGCONT)","R","Despacho directo de proceso en kernel Linux"
+"Round Robin (RR, q=4)",1,2,15422,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15422 y suspendido con SIGSTOP en READY"
+"Round Robin (RR, q=4)",4,3,15423,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15423 y suspendido con SIGSTOP en READY"
+"Round Robin (RR, q=4)",4,1,15421,"kill(OS_PID, SIGSTOP) + waitpid(WUNTRACED)","T","Preempcion de CPU por expiracion de quantum / prioridad envejecida"
+"Round Robin (RR, q=4)",4,2,15422,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15422"
+"Round Robin (RR, q=4)",5,2,15422,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
+"Round Robin (RR, q=4)",7,4,15424,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15424 y suspendido con SIGSTOP en READY"
+"Round Robin (RR, q=4)",8,2,15422,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=9.669455"
+"Round Robin (RR, q=4)",8,3,15423,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15423"
+"Round Robin (RR, q=4)",9,3,15423,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
+"Round Robin (RR, q=4)",10,5,15425,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15425 y suspendido con SIGSTOP en READY"
+"Round Robin (RR, q=4)",12,3,15423,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=9.656993"
+"Round Robin (RR, q=4)",12,1,15421,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15421"
+"Round Robin (RR, q=4)",13,1,15421,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
+"Round Robin (RR, q=4)",13,6,15426,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15426 y suspendido con SIGSTOP en READY"
+"Round Robin (RR, q=4)",17,7,15427,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15427 y suspendido con SIGSTOP en READY"
+"Round Robin (RR, q=4)",17,1,15421,"kill(OS_PID, SIGSTOP) + waitpid(WUNTRACED)","T","Preempcion de CPU por expiracion de quantum / prioridad envejecida"
+"Round Robin (RR, q=4)",17,4,15424,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15424"
+"Round Robin (RR, q=4)",18,4,15424,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
+"Round Robin (RR, q=4)",21,4,15424,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=9.379996"
+"Round Robin (RR, q=4)",21,5,15425,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15425"
+"Round Robin (RR, q=4)",22,5,15425,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
+"Round Robin (RR, q=4)",25,5,15425,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=9.551000"
+"Round Robin (RR, q=4)",25,6,15426,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15426"
+"Round Robin (RR, q=4)",26,6,15426,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
+"Round Robin (RR, q=4)",30,6,15426,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=18.137258"
+"Round Robin (RR, q=4)",30,7,15427,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15427"
+"Round Robin (RR, q=4)",31,7,15427,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
+"Round Robin (RR, q=4)",35,7,15427,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=15.917871"
+"Round Robin (RR, q=4)",35,1,15421,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15421"
+"Round Robin (RR, q=4)",36,1,15421,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
+"Round Robin (RR, q=4)",53,1,15421,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=98.472560"
+"SRTF (Shortest Remaining Time First - Apropiativo)",0,1,15428,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15428 y suspendido con SIGSTOP en READY"
+"SRTF (Shortest Remaining Time First - Apropiativo)",0,1,15428,"kill(OS_PID, SIGCONT)","R","Despacho directo de proceso en kernel Linux"
+"SRTF (Shortest Remaining Time First - Apropiativo)",1,2,15429,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15429 y suspendido con SIGSTOP en READY"
+"SRTF (Shortest Remaining Time First - Apropiativo)",1,1,15428,"kill(OS_PID, SIGSTOP) + waitpid(WUNTRACED)","T","Desalojo apropiativo de CPU por llegada de P2 (OS_PID=15429)"
+"SRTF (Shortest Remaining Time First - Apropiativo)",1,2,15429,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15429"
+"SRTF (Shortest Remaining Time First - Apropiativo)",2,2,15429,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
+"SRTF (Shortest Remaining Time First - Apropiativo)",4,3,15430,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15430 y suspendido con SIGSTOP en READY"
+"SRTF (Shortest Remaining Time First - Apropiativo)",5,2,15429,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=10.030182"
+"SRTF (Shortest Remaining Time First - Apropiativo)",5,3,15430,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15430"
+"SRTF (Shortest Remaining Time First - Apropiativo)",6,3,15430,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
+"SRTF (Shortest Remaining Time First - Apropiativo)",7,4,15431,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15431 y suspendido con SIGSTOP en READY"
+"SRTF (Shortest Remaining Time First - Apropiativo)",9,3,15430,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=9.846164"
+"SRTF (Shortest Remaining Time First - Apropiativo)",9,4,15431,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15431"
+"SRTF (Shortest Remaining Time First - Apropiativo)",10,4,15431,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
+"SRTF (Shortest Remaining Time First - Apropiativo)",10,5,15432,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15432 y suspendido con SIGSTOP en READY"
+"SRTF (Shortest Remaining Time First - Apropiativo)",13,4,15431,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=12.339927"
+"SRTF (Shortest Remaining Time First - Apropiativo)",13,6,15433,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15433 y suspendido con SIGSTOP en READY"
+"SRTF (Shortest Remaining Time First - Apropiativo)",13,5,15432,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15432"
+"SRTF (Shortest Remaining Time First - Apropiativo)",14,5,15432,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
+"SRTF (Shortest Remaining Time First - Apropiativo)",17,5,15432,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=12.513514"
+"SRTF (Shortest Remaining Time First - Apropiativo)",17,7,15434,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15434 y suspendido con SIGSTOP en READY"
+"SRTF (Shortest Remaining Time First - Apropiativo)",17,6,15433,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15433"
+"SRTF (Shortest Remaining Time First - Apropiativo)",18,6,15433,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
+"SRTF (Shortest Remaining Time First - Apropiativo)",22,6,15433,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=17.213592"
+"SRTF (Shortest Remaining Time First - Apropiativo)",22,7,15434,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15434"
+"SRTF (Shortest Remaining Time First - Apropiativo)",23,7,15434,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
+"SRTF (Shortest Remaining Time First - Apropiativo)",27,7,15434,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=15.631756"
+"SRTF (Shortest Remaining Time First - Apropiativo)",27,1,15428,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15428"
+"SRTF (Shortest Remaining Time First - Apropiativo)",28,1,15428,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
+"SRTF (Shortest Remaining Time First - Apropiativo)",52,1,15428,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=84.036961"
+"Prioridad Apropiativa Estricta (Sin Aging)",0,1,15435,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15435 y suspendido con SIGSTOP en READY"
+"Prioridad Apropiativa Estricta (Sin Aging)",0,1,15435,"kill(OS_PID, SIGCONT)","R","Despacho directo de proceso en kernel Linux"
+"Prioridad Apropiativa Estricta (Sin Aging)",1,2,15436,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15436 y suspendido con SIGSTOP en READY"
+"Prioridad Apropiativa Estricta (Sin Aging)",1,1,15435,"kill(OS_PID, SIGSTOP) + waitpid(WUNTRACED)","T","Desalojo apropiativo de CPU por llegada de P2 (OS_PID=15436)"
+"Prioridad Apropiativa Estricta (Sin Aging)",1,2,15436,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15436"
+"Prioridad Apropiativa Estricta (Sin Aging)",2,2,15436,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
+"Prioridad Apropiativa Estricta (Sin Aging)",4,3,15437,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15437 y suspendido con SIGSTOP en READY"
+"Prioridad Apropiativa Estricta (Sin Aging)",5,2,15436,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=15.104476"
+"Prioridad Apropiativa Estricta (Sin Aging)",5,3,15437,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15437"
+"Prioridad Apropiativa Estricta (Sin Aging)",6,3,15437,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
+"Prioridad Apropiativa Estricta (Sin Aging)",7,4,15438,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15438 y suspendido con SIGSTOP en READY"
+"Prioridad Apropiativa Estricta (Sin Aging)",9,3,15437,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=9.705800"
+"Prioridad Apropiativa Estricta (Sin Aging)",9,4,15438,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15438"
+"Prioridad Apropiativa Estricta (Sin Aging)",10,4,15438,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
+"Prioridad Apropiativa Estricta (Sin Aging)",10,5,15439,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15439 y suspendido con SIGSTOP en READY"
+"Prioridad Apropiativa Estricta (Sin Aging)",13,4,15438,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=12.306283"
+"Prioridad Apropiativa Estricta (Sin Aging)",13,6,15440,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15440 y suspendido con SIGSTOP en READY"
+"Prioridad Apropiativa Estricta (Sin Aging)",13,5,15439,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15439"
+"Prioridad Apropiativa Estricta (Sin Aging)",14,5,15439,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
+"Prioridad Apropiativa Estricta (Sin Aging)",17,5,15439,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=9.480628"
+"Prioridad Apropiativa Estricta (Sin Aging)",17,7,15441,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15441 y suspendido con SIGSTOP en READY"
+"Prioridad Apropiativa Estricta (Sin Aging)",17,6,15440,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15440"
+"Prioridad Apropiativa Estricta (Sin Aging)",18,6,15440,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
+"Prioridad Apropiativa Estricta (Sin Aging)",22,6,15440,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=15.666245"
+"Prioridad Apropiativa Estricta (Sin Aging)",22,7,15441,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15441"
+"Prioridad Apropiativa Estricta (Sin Aging)",23,7,15441,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
+"Prioridad Apropiativa Estricta (Sin Aging)",27,7,15441,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=12.478065"
+"Prioridad Apropiativa Estricta (Sin Aging)",27,1,15435,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15435"
+"Prioridad Apropiativa Estricta (Sin Aging)",28,1,15435,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
+"Prioridad Apropiativa Estricta (Sin Aging)",52,1,15435,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=107.946171"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",0,1,15442,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15442 y suspendido con SIGSTOP en READY"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",0,1,15442,"kill(OS_PID, SIGCONT)","R","Despacho directo de proceso en kernel Linux"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",1,2,15443,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15443 y suspendido con SIGSTOP en READY"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",1,1,15442,"kill(OS_PID, SIGSTOP) + waitpid(WUNTRACED)","T","Desalojo apropiativo de CPU por llegada de P2 (OS_PID=15443)"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",1,2,15443,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15443"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",2,2,15443,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",4,3,15444,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15444 y suspendido con SIGSTOP en READY"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",5,2,15443,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=9.844052"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",5,1,15442,"setpriority(PRIO_PROCESS, OS_PID, nice)","T","Aging promovio prioridad a 4 (nice=12)"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",5,3,15444,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15444"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",6,3,15444,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",7,4,15445,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15445 y suspendido con SIGSTOP en READY"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",9,3,15444,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=11.973953"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",9,4,15445,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15445"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",10,4,15445,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",10,5,15446,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15446 y suspendido con SIGSTOP en READY"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",10,1,15442,"setpriority(PRIO_PROCESS, OS_PID, nice)","T","Aging promovio prioridad a 3 (nice=8)"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",13,4,15445,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=17.326794"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",13,6,15447,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15447 y suspendido con SIGSTOP en READY"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",13,5,15446,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15446"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",14,5,15446,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",15,1,15442,"setpriority(PRIO_PROCESS, OS_PID, nice)","T","Aging promovio prioridad a 2 (nice=4)"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",17,5,15446,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=11.788533"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",17,7,15448,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15448 y suspendido con SIGSTOP en READY"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",17,6,15447,"setpriority(PRIO_PROCESS, OS_PID, nice)","T","Aging promovio prioridad a 1 (nice=0)"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",17,6,15447,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15447"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",18,6,15447,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",20,1,15442,"setpriority(PRIO_PROCESS, OS_PID, nice)","T","Aging promovio prioridad a 1 (nice=0)"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",21,7,15448,"setpriority(PRIO_PROCESS, OS_PID, nice)","T","Aging promovio prioridad a 1 (nice=0)"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",22,6,15447,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=12.543920"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",22,1,15442,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15442"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",23,1,15442,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",47,1,15442,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=99.635281"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",47,7,15448,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15448"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",48,7,15448,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",52,7,15448,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=16.697212"

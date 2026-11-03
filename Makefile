@@ -1,6 +1,6 @@
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra -O2 -Iinclude
-CXXFLAGS_DEBUG = -std=c++17 -Wall -Wextra -g -Iinclude
+CXXFLAGS = -std=c++17 -Wall -Wextra -O2 -pthread -Iinclude
+CXXFLAGS_DEBUG = -std=c++17 -Wall -Wextra -g -pthread -Iinclude
 
 SRC_DIR = src
 INC_DIR = include
@@ -20,12 +20,12 @@ SRCS = $(SRC_DIR)/Process.cpp \
 
 OBJS = $(SRCS:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
 
-.PHONY: all clean test debug run pdf plots
+.PHONY: all clean test debug run pdf plots web
 
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	@echo "Enlazando binario $(TARGET)..."
+	@echo "Enlazando binario POSIX $(TARGET)..."
 	$(CXX) $(CXXFLAGS) -o $@ $(OBJS)
 	@echo "Compilación exitosa: $(TARGET)"
 
@@ -41,20 +41,24 @@ debug: clean all
 
 clean:
 	@echo "Limpiando archivos objeto y binarios..."
-	rm -rf $(BUILD_DIR) $(TARGET) docs/*.csv
+	rm -rf $(BUILD_DIR) $(TARGET)
 
 test: all
-	@echo "Ejecutando suite automatizada de pruebas sobre los 3 escenarios..."
+	@echo "Ejecutando suite automatizada con llamadas al sistema POSIX reales sobre los 3 escenarios..."
 	./$(TARGET) --scenario scenarios/escenario1_convoy.csv --algo all --export docs/resultados_escenario1.csv
 	./$(TARGET) --scenario scenarios/escenario2_io_bursts.csv --algo all --export docs/resultados_escenario2.csv
 	./$(TARGET) --scenario scenarios/escenario3_starvation.csv --algo all --export docs/resultados_escenario3.csv
-	@echo "Todas las pruebas completadas. Resultados guardados en docs/."
+	@echo "Todas las pruebas POSIX completadas. Resultados y auditoría guardados en docs/."
 
 plots:
-	@echo "Generando visualizaciones gráficas y diagramas de Gantt..."
+	@echo "Generando visualizaciones gráficas y diagramas de Gantt desde métricas POSIX reales..."
 	@mkdir -p docs/graficas
 	python3 scripts/plot_metrics.py
 	@echo "Gráficas generadas exitosamente en docs/graficas/."
+
+web: all
+	@echo "Iniciando servidor interactivo conectado al binario POSIX ./simulador en http://localhost:8080 ..."
+	python3 scripts/live_server.py
 
 pdf:
 	@echo "Compilando informe técnico en PDF..."

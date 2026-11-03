@@ -42,7 +42,8 @@ void SchedulerPriority::on_tick(int /*current_time*/) {
         p->time_in_current_state++;
         if (p->time_in_current_state >= aging_threshold) {
             if (p->dynamic_priority > 1) {
-                p->dynamic_priority--; // Promoción de prioridad (número menor = más urgente)
+                // Promoción de prioridad y llamada real a setpriority(PRIO_PROCESS, os_pid, nice) en el kernel
+                p->update_posix_priority(p->dynamic_priority - 1);
             }
             p->time_in_current_state = 0;
         }

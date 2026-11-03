@@ -211,11 +211,12 @@ def parse_csv_gantt(csv_path):
                         end = int(row[2])
                         pid = int(row[3])
                         label = row[4].strip()
+                        os_pid = int(row[5]) if len(row) >= 6 else 0
                         if algo not in gantt_by_algo:
                             gantt_by_algo[algo] = []
-                        gantt_by_algo[algo].append((start, end, pid, label))
+                        gantt_by_algo[algo].append((start, end, pid, label, os_pid))
                         if pid > 0 and pid not in pid_labels:
-                            pid_labels[pid] = label
+                            pid_labels[pid] = f"{label} (OS_PID:{os_pid})" if os_pid > 0 else label
                     except ValueError:
                         pass
 
@@ -484,103 +485,59 @@ def plot_escenario3_starvation_vs_aging():
 
 
 # -----------------------------------------------------------------------------
-# 4. Curva de Sensibilidad del Quantum: Simulación Dinámica desde CSV de Escenario
+# 4. Curva de Sensibilidad del Quantum: Ejecución Real del Binario POSIX C++
 # -----------------------------------------------------------------------------
-def simulate_rr_from_scenario(scenario_procs, q, cs_penalty=1):
+def run_real_posix_rr_for_quantum(q, cs_penalty=1):
     """
-    Simulador determinista de Round Robin ejecutado directamente sobre la lista de procesos
-    cargada dinámicamente desde el CSV del escenario.
+    Ejecuta directamente el binario compilado ./simulador con llamadas al sistema POSIX reales
+    para cada valor de quantum q in [1..15] y extrae las métricas reales del CSV generado.
     """
-    import copy
-    procs = []
-    for p in scenario_procs:
-        procs.append({
-            'pid': p['pid'],
-            'name': p['name'],
-            'arr': p['arrival'],
-            'rem': p['total_cpu'],
-            'total': p['total_cpu'],
-            'wait': 0,
-            'term': -1
-        })
+    import subprocess
+    import tempfile
 
-    ready = []
-    current_time = 0
-    state = 'IDLE'
-    current_proc = None
-    next_pending = None
-    cs_rem = 0
-    total_cs_time = 0
-    total_cs_count = 0
-    last_running_pid = -1
-    quantum_used = 0
+    sim_bin = os.path.join(PROJECT_DIR, "simulador")
+    scenario_path = os.path.join(SCENARIOS_DIR, "escenario1_convoy.csv")
 
-    while any(p['term'] == -1 for p in procs):
-        # Arribos
-        for p in procs:
-            if p['arr'] == current_time and p['term'] == -1 and p != current_proc and p != next_pending and p not in ready:
-                ready.append(p)
+    with tempfile.NamedTemporaryFile(mode="w+", suffix=".csv", delete=False) as tmp:
+        tmp_csv = tmp.name
 
-        # Preempción por expiración de quantum
-        if state == 'RUNNING':
-            if quantum_used >= q and len(ready) > 0:
-                ready.append(current_proc)
-                current_proc = None
-                state = 'IDLE'
-                quantum_used = 0
+    try:
+        subprocess.run(
+            [sim_bin, "--scenario", scenario_path, "--algo", "rr",
+             "--quantum", str(q), "--cs-cost", str(cs_penalty),
+             "--tick-ms", "1", "--export", tmp_csv],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            check=True
+        )
+        summary = parse_csv_summary(tmp_csv)
+        if summary and len(summary) > 0:
+            row = summary[0]
+            return (
+                q,
+                row["TiempoTotal"],
+                row["Total_Cambios_Contexto"],
+                row["Promedio_Espera"],
+                row["CPU_Overhead_Pct"]
+            )
+    finally:
+        if os.path.exists(tmp_csv):
+            os.remove(tmp_csv)
+        tmp_json = tmp_csv[:-4] + ".json"
+        if os.path.exists(tmp_json):
+            os.remove(tmp_json)
 
-        # Despacho
-        if state == 'IDLE' and len(ready) > 0:
-            next_p = ready.pop(0)
-            quantum_used = 0
-            needs_cs = (last_running_pid != -1 and last_running_pid != next_p['pid'])
-            if needs_cs and cs_penalty > 0:
-                state = 'CONTEXT_SWITCHING'
-                cs_rem = cs_penalty
-                next_pending = next_p
-                total_cs_count += 1
-            else:
-                current_proc = next_p
-                state = 'RUNNING'
-            last_running_pid = next_p['pid']
-
-        for p in ready:
-            p['wait'] += 1
-
-        if state == 'CONTEXT_SWITCHING':
-            total_cs_time += 1
-            cs_rem -= 1
-            if cs_rem <= 0:
-                current_proc = next_pending
-                next_pending = None
-                state = 'RUNNING'
-        elif state == 'RUNNING' and current_proc:
-            current_proc['rem'] -= 1
-            quantum_used += 1
-            if current_proc['rem'] == 0:
-                current_proc['term'] = current_time + 1
-                current_proc = None
-                state = 'IDLE'
-                quantum_used = 0
-
-        current_time += 1
-
-    avg_wait = sum(p['wait'] for p in procs) / len(procs)
-    overhead = (total_cs_time / current_time) * 100
-    return q, current_time, total_cs_count, avg_wait, overhead
+    raise RuntimeError(f"No se pudo ejecutar ./simulador para q={q}")
 
 
 def plot_round_robin_sensibilidad_quantum():
-    scenario_path = os.path.join(SCENARIOS_DIR, "escenario1_convoy.csv")
-    scenario_procs = load_scenario_processes(scenario_path)
-
     quantums = list(range(1, 16))
     w_prom = []
     cs_overheads = []
     cs_counts = []
 
     for q in quantums:
-        _, _, cs, w, ov = simulate_rr_from_scenario(scenario_procs, q)
+        _, _, cs, w, ov = run_real_posix_rr_for_quantum(q)
         w_prom.append(w)
         cs_overheads.append(ov)
         cs_counts.append(cs)
