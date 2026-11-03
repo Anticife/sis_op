@@ -1,211 +1,236 @@
 Algoritmo,PID,Nombre,Llegada,PrioridadBase,PrioridadDinamica,TotalCPU,TotalIO,Inicio,Fin,Retorno,Espera,Respuesta,CambiosContexto,OS_PID,Nice,RealCPU_ms,KernelCS,Syscalls
-"FCFS (First-Come, First-Served)",1,"Analitica_Batch",0,3,3,35,0,0,35,35,0,0,0,15677,8,119.649,8,158
-"FCFS (First-Come, First-Served)",2,"API_Login",1,2,2,2,0,36,38,37,34,35,1,15678,4,9.431,2,26
-"FCFS (First-Come, First-Served)",3,"API_Payment",2,1,1,3,0,39,42,40,36,37,1,15679,0,14.020,3,30
-"FCFS (First-Come, First-Served)",4,"API_Profile",3,2,2,2,0,43,45,42,39,40,1,15680,4,6.037,3,26
-"FCFS (First-Come, First-Served)",5,"API_Catalog",4,2,2,2,0,46,48,44,41,42,1,15681,4,6.297,2,26
-"Round Robin (RR, q=4)",1,"Analitica_Batch",0,3,3,35,0,0,49,49,13,0,1,15682,8,136.241,11,167
-"Round Robin (RR, q=4)",2,"API_Login",1,2,2,2,0,5,7,6,3,4,1,15683,4,12.575,2,26
-"Round Robin (RR, q=4)",3,"API_Payment",2,1,1,3,0,8,11,9,5,6,1,15684,0,14.085,2,30
-"Round Robin (RR, q=4)",4,"API_Profile",3,2,2,2,0,12,14,11,8,9,1,15685,4,6.380,3,26
-"Round Robin (RR, q=4)",5,"API_Catalog",4,2,2,2,0,15,17,13,10,11,1,15686,4,6.343,2,26
-"SRTF (Shortest Remaining Time First - Apropiativo)",1,"Analitica_Batch",0,3,3,35,0,0,49,49,13,0,1,15687,8,125.701,7,167
-"SRTF (Shortest Remaining Time First - Apropiativo)",2,"API_Login",1,2,2,2,0,2,4,3,0,1,1,15688,4,11.932,4,26
-"SRTF (Shortest Remaining Time First - Apropiativo)",3,"API_Payment",2,1,1,3,0,11,14,12,8,9,1,15689,0,9.634,2,30
-"SRTF (Shortest Remaining Time First - Apropiativo)",4,"API_Profile",3,2,2,2,0,5,7,4,1,2,1,15690,4,6.318,2,26
-"SRTF (Shortest Remaining Time First - Apropiativo)",5,"API_Catalog",4,2,2,2,0,8,10,6,3,4,1,15691,4,6.388,2,26
-"Prioridad Apropiativa Estricta (Sin Aging)",1,"Analitica_Batch",0,3,3,35,0,0,50,50,14,0,1,15692,8,117.958,6,167
-"Prioridad Apropiativa Estricta (Sin Aging)",2,"API_Login",1,2,2,2,0,7,9,8,4,6,2,15693,4,9.165,4,35
-"Prioridad Apropiativa Estricta (Sin Aging)",3,"API_Payment",2,1,1,3,0,3,6,4,0,1,1,15694,0,10.869,4,30
-"Prioridad Apropiativa Estricta (Sin Aging)",4,"API_Profile",3,2,2,2,0,10,12,9,6,7,1,15695,4,6.282,3,26
-"Prioridad Apropiativa Estricta (Sin Aging)",5,"API_Catalog",4,2,2,2,0,13,15,11,8,9,1,15696,4,6.503,4,26
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",1,"Analitica_Batch",0,3,1,35,0,0,47,47,11,0,1,15697,0,136.482,6,167
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",2,"API_Login",1,2,1,2,0,7,9,8,4,6,2,15698,0,12.589,4,35
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",3,"API_Payment",2,1,1,3,0,3,6,4,0,1,1,15699,0,18.556,5,30
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",4,"API_Profile",3,2,1,2,0,10,12,9,6,7,1,15700,0,6.443,3,26
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",5,"API_Catalog",4,2,1,2,0,48,50,46,43,44,1,15701,0,9.631,2,26
+"FCFS (First-Come, First-Served)",1,"Analitica_Batch",0,3,3,35,0,0,35,35,0,0,0,85152,8,122.695,8,569
+"FCFS (First-Come, First-Served)",2,"API_Login",1,2,2,2,0,36,38,37,34,35,1,85153,4,9.104,7,338
+"FCFS (First-Come, First-Served)",3,"API_Payment",2,1,1,3,0,39,42,40,36,37,1,85154,0,15.645,8,345
+"FCFS (First-Come, First-Served)",4,"API_Profile",3,2,2,2,0,43,45,42,39,40,1,85155,4,9.174,7,338
+"FCFS (First-Come, First-Served)",5,"API_Catalog",4,2,2,2,0,46,48,44,41,42,1,85156,4,6.652,11,338
+"Round Robin (RR, q=4)",1,"Analitica_Batch",0,3,3,35,0,0,49,49,13,0,1,85159,8,133.586,11,590
+"Round Robin (RR, q=4)",2,"API_Login",1,2,2,2,0,5,7,6,3,4,1,85160,4,5.990,8,344
+"Round Robin (RR, q=4)",3,"API_Payment",2,1,1,3,0,8,11,9,5,6,1,85161,0,13.818,8,351
+"Round Robin (RR, q=4)",4,"API_Profile",3,2,2,2,0,12,14,11,8,9,1,85162,4,10.594,7,344
+"Round Robin (RR, q=4)",5,"API_Catalog",4,2,2,2,0,15,17,13,10,11,1,85163,4,10.128,7,344
+"SRTF (Shortest Remaining Time First - Apropiativo)",1,"Analitica_Batch",0,3,3,35,0,0,49,49,13,0,1,85164,8,138.452,10,590
+"SRTF (Shortest Remaining Time First - Apropiativo)",2,"API_Login",1,2,2,2,0,2,4,3,0,1,1,85165,4,6.019,8,344
+"SRTF (Shortest Remaining Time First - Apropiativo)",3,"API_Payment",2,1,1,3,0,11,14,12,8,9,1,85166,0,10.050,8,351
+"SRTF (Shortest Remaining Time First - Apropiativo)",4,"API_Profile",3,2,2,2,0,5,7,4,1,2,1,85167,4,6.955,7,344
+"SRTF (Shortest Remaining Time First - Apropiativo)",5,"API_Catalog",4,2,2,2,0,8,10,6,3,4,1,85168,4,5.785,7,344
+"Prioridad Apropiativa Estricta (Sin Aging)",1,"Analitica_Batch",0,3,3,35,0,0,50,50,14,0,1,85169,8,141.728,14,596
+"Prioridad Apropiativa Estricta (Sin Aging)",2,"API_Login",1,2,2,2,0,7,9,8,4,6,2,85170,4,10.243,8,365
+"Prioridad Apropiativa Estricta (Sin Aging)",3,"API_Payment",2,1,1,3,0,3,6,4,0,1,1,85171,0,9.184,8,357
+"Prioridad Apropiativa Estricta (Sin Aging)",4,"API_Profile",3,2,2,2,0,10,12,9,6,7,1,85172,4,7.335,7,344
+"Prioridad Apropiativa Estricta (Sin Aging)",5,"API_Catalog",4,2,2,2,0,13,15,11,8,9,1,85173,4,9.224,8,350
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",1,"Analitica_Batch",0,3,1,35,0,0,47,47,11,0,1,85176,0,118.469,12,596
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",2,"API_Login",1,2,1,2,0,7,9,8,4,6,2,85177,0,7.176,8,365
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",3,"API_Payment",2,1,1,3,0,3,6,4,0,1,1,85178,0,12.454,8,357
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",4,"API_Profile",3,2,1,2,0,10,12,9,6,7,1,85179,0,7.020,7,350
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",5,"API_Catalog",4,2,1,2,0,48,50,46,43,44,1,85180,0,6.851,7,350
 
 --- RESUMEN GLOBAL DE METRICAS ---
 Algoritmo,TiempoTotal,CPU_Utilizacion_Pct,CPU_Overhead_Pct,Throughput,Promedio_Retorno,Promedio_Espera,Promedio_Respuesta,Total_Cambios_Contexto,Indice_Jain,Total_Real_CPU_ms,Total_Kernel_CS,Total_POSIX_Syscalls
-"FCFS (First-Come, First-Served)",48,91.667,8.333,0.104,39.600,30.000,30.800,4,0.295,155.434,18,266
-"Round Robin (RR, q=4)",49,89.796,10.204,0.102,17.600,7.800,6.000,5,0.747,175.624,20,275
-"SRTF (Shortest Remaining Time First - Apropiativo)",49,89.796,10.204,0.102,14.800,5.000,3.200,5,0.881,159.972,17,275
-"Prioridad Apropiativa Estricta (Sin Aging)",50,88.000,12.000,0.100,16.400,6.400,4.600,6,0.739,150.776,21,284
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",50,88.000,12.000,0.100,22.800,12.800,11.600,6,0.657,183.702,20,284
+"FCFS (First-Come, First-Served)",48,91.667,8.333,0.104,39.600,30.000,30.800,4,0.295,163.270,41,1928
+"Round Robin (RR, q=4)",49,89.796,10.204,0.102,17.600,7.800,6.000,5,0.747,174.116,41,1973
+"SRTF (Shortest Remaining Time First - Apropiativo)",49,89.796,10.204,0.102,14.800,5.000,3.200,5,0.881,167.261,40,1973
+"Prioridad Apropiativa Estricta (Sin Aging)",50,88.000,12.000,0.100,16.400,6.400,4.600,6,0.739,177.715,45,2012
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",50,88.000,12.000,0.100,22.800,12.800,11.600,6,0.657,151.970,42,2018
 
 --- DIAGRAMA DE GANTT ---
 Algoritmo,Inicio,Fin,PID,Etiqueta,OS_PID
-"FCFS (First-Come, First-Served)",0,35,1,"Analitica_Batch",15677
-"FCFS (First-Come, First-Served)",35,36,-2,"CS",15678
-"FCFS (First-Come, First-Served)",36,38,2,"API_Login",15678
-"FCFS (First-Come, First-Served)",38,39,-2,"CS",15679
-"FCFS (First-Come, First-Served)",39,42,3,"API_Payment",15679
-"FCFS (First-Come, First-Served)",42,43,-2,"CS",15680
-"FCFS (First-Come, First-Served)",43,45,4,"API_Profile",15680
-"FCFS (First-Come, First-Served)",45,46,-2,"CS",15681
-"FCFS (First-Come, First-Served)",46,48,5,"API_Catalog",15681
-"Round Robin (RR, q=4)",0,4,1,"Analitica_Batch",15682
-"Round Robin (RR, q=4)",4,5,-2,"CS",15683
-"Round Robin (RR, q=4)",5,7,2,"API_Login",15683
-"Round Robin (RR, q=4)",7,8,-2,"CS",15684
-"Round Robin (RR, q=4)",8,11,3,"API_Payment",15684
-"Round Robin (RR, q=4)",11,12,-2,"CS",15685
-"Round Robin (RR, q=4)",12,14,4,"API_Profile",15685
-"Round Robin (RR, q=4)",14,15,-2,"CS",15686
-"Round Robin (RR, q=4)",15,17,5,"API_Catalog",15686
-"Round Robin (RR, q=4)",17,18,-2,"CS",15682
-"Round Robin (RR, q=4)",18,49,1,"Analitica_Batch",15682
-"SRTF (Shortest Remaining Time First - Apropiativo)",0,1,1,"Analitica_Batch",15687
-"SRTF (Shortest Remaining Time First - Apropiativo)",1,2,-2,"CS",15688
-"SRTF (Shortest Remaining Time First - Apropiativo)",2,4,2,"API_Login",15688
-"SRTF (Shortest Remaining Time First - Apropiativo)",4,5,-2,"CS",15690
-"SRTF (Shortest Remaining Time First - Apropiativo)",5,7,4,"API_Profile",15690
-"SRTF (Shortest Remaining Time First - Apropiativo)",7,8,-2,"CS",15691
-"SRTF (Shortest Remaining Time First - Apropiativo)",8,10,5,"API_Catalog",15691
-"SRTF (Shortest Remaining Time First - Apropiativo)",10,11,-2,"CS",15689
-"SRTF (Shortest Remaining Time First - Apropiativo)",11,14,3,"API_Payment",15689
-"SRTF (Shortest Remaining Time First - Apropiativo)",14,15,-2,"CS",15687
-"SRTF (Shortest Remaining Time First - Apropiativo)",15,49,1,"Analitica_Batch",15687
-"Prioridad Apropiativa Estricta (Sin Aging)",0,1,1,"Analitica_Batch",15692
-"Prioridad Apropiativa Estricta (Sin Aging)",1,3,-2,"CS",15693
-"Prioridad Apropiativa Estricta (Sin Aging)",3,6,3,"API_Payment",15694
-"Prioridad Apropiativa Estricta (Sin Aging)",6,7,-2,"CS",15693
-"Prioridad Apropiativa Estricta (Sin Aging)",7,9,2,"API_Login",15693
-"Prioridad Apropiativa Estricta (Sin Aging)",9,10,-2,"CS",15695
-"Prioridad Apropiativa Estricta (Sin Aging)",10,12,4,"API_Profile",15695
-"Prioridad Apropiativa Estricta (Sin Aging)",12,13,-2,"CS",15696
-"Prioridad Apropiativa Estricta (Sin Aging)",13,15,5,"API_Catalog",15696
-"Prioridad Apropiativa Estricta (Sin Aging)",15,16,-2,"CS",15692
-"Prioridad Apropiativa Estricta (Sin Aging)",16,50,1,"Analitica_Batch",15692
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",0,1,1,"Analitica_Batch",15697
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",1,3,-2,"CS",15698
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",3,6,3,"API_Payment",15699
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",6,7,-2,"CS",15698
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",7,9,2,"API_Login",15698
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",9,10,-2,"CS",15700
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",10,12,4,"API_Profile",15700
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",12,13,-2,"CS",15697
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",13,47,1,"Analitica_Batch",15697
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",47,48,-2,"CS",15701
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",48,50,5,"API_Catalog",15701
+"FCFS (First-Come, First-Served)",0,35,1,"Analitica_Batch",85152
+"FCFS (First-Come, First-Served)",35,36,-2,"CS",85153
+"FCFS (First-Come, First-Served)",36,38,2,"API_Login",85153
+"FCFS (First-Come, First-Served)",38,39,-2,"CS",85154
+"FCFS (First-Come, First-Served)",39,42,3,"API_Payment",85154
+"FCFS (First-Come, First-Served)",42,43,-2,"CS",85155
+"FCFS (First-Come, First-Served)",43,45,4,"API_Profile",85155
+"FCFS (First-Come, First-Served)",45,46,-2,"CS",85156
+"FCFS (First-Come, First-Served)",46,48,5,"API_Catalog",85156
+"Round Robin (RR, q=4)",0,4,1,"Analitica_Batch",85159
+"Round Robin (RR, q=4)",4,5,-2,"CS",85160
+"Round Robin (RR, q=4)",5,7,2,"API_Login",85160
+"Round Robin (RR, q=4)",7,8,-2,"CS",85161
+"Round Robin (RR, q=4)",8,11,3,"API_Payment",85161
+"Round Robin (RR, q=4)",11,12,-2,"CS",85162
+"Round Robin (RR, q=4)",12,14,4,"API_Profile",85162
+"Round Robin (RR, q=4)",14,15,-2,"CS",85163
+"Round Robin (RR, q=4)",15,17,5,"API_Catalog",85163
+"Round Robin (RR, q=4)",17,18,-2,"CS",85159
+"Round Robin (RR, q=4)",18,49,1,"Analitica_Batch",85159
+"SRTF (Shortest Remaining Time First - Apropiativo)",0,1,1,"Analitica_Batch",85164
+"SRTF (Shortest Remaining Time First - Apropiativo)",1,2,-2,"CS",85165
+"SRTF (Shortest Remaining Time First - Apropiativo)",2,4,2,"API_Login",85165
+"SRTF (Shortest Remaining Time First - Apropiativo)",4,5,-2,"CS",85167
+"SRTF (Shortest Remaining Time First - Apropiativo)",5,7,4,"API_Profile",85167
+"SRTF (Shortest Remaining Time First - Apropiativo)",7,8,-2,"CS",85168
+"SRTF (Shortest Remaining Time First - Apropiativo)",8,10,5,"API_Catalog",85168
+"SRTF (Shortest Remaining Time First - Apropiativo)",10,11,-2,"CS",85166
+"SRTF (Shortest Remaining Time First - Apropiativo)",11,14,3,"API_Payment",85166
+"SRTF (Shortest Remaining Time First - Apropiativo)",14,15,-2,"CS",85164
+"SRTF (Shortest Remaining Time First - Apropiativo)",15,49,1,"Analitica_Batch",85164
+"Prioridad Apropiativa Estricta (Sin Aging)",0,1,1,"Analitica_Batch",85169
+"Prioridad Apropiativa Estricta (Sin Aging)",1,3,-2,"CS",85170
+"Prioridad Apropiativa Estricta (Sin Aging)",3,6,3,"API_Payment",85171
+"Prioridad Apropiativa Estricta (Sin Aging)",6,7,-2,"CS",85170
+"Prioridad Apropiativa Estricta (Sin Aging)",7,9,2,"API_Login",85170
+"Prioridad Apropiativa Estricta (Sin Aging)",9,10,-2,"CS",85172
+"Prioridad Apropiativa Estricta (Sin Aging)",10,12,4,"API_Profile",85172
+"Prioridad Apropiativa Estricta (Sin Aging)",12,13,-2,"CS",85173
+"Prioridad Apropiativa Estricta (Sin Aging)",13,15,5,"API_Catalog",85173
+"Prioridad Apropiativa Estricta (Sin Aging)",15,16,-2,"CS",85169
+"Prioridad Apropiativa Estricta (Sin Aging)",16,50,1,"Analitica_Batch",85169
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",0,1,1,"Analitica_Batch",85176
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",1,3,-2,"CS",85177
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",3,6,3,"API_Payment",85178
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",6,7,-2,"CS",85177
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",7,9,2,"API_Login",85177
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",9,10,-2,"CS",85179
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",10,12,4,"API_Profile",85179
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",12,13,-2,"CS",85176
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",13,47,1,"Analitica_Batch",85176
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",47,48,-2,"CS",85180
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",48,50,5,"API_Catalog",85180
 
 --- REGISTRO DE LLAMADAS AL SISTEMA POSIX ---
 Algoritmo,Tick,PID_Logico,OS_PID_Linux,Syscall,Estado_ProcFS,Detalle
-"FCFS (First-Come, First-Served)",0,1,15677,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15677 y suspendido con SIGSTOP en READY"
-"FCFS (First-Come, First-Served)",0,1,15677,"kill(OS_PID, SIGCONT)","R","Despacho directo de proceso en kernel Linux"
-"FCFS (First-Come, First-Served)",1,2,15678,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15678 y suspendido con SIGSTOP en READY"
-"FCFS (First-Come, First-Served)",2,3,15679,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15679 y suspendido con SIGSTOP en READY"
-"FCFS (First-Come, First-Served)",3,4,15680,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15680 y suspendido con SIGSTOP en READY"
-"FCFS (First-Come, First-Served)",4,5,15681,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15681 y suspendido con SIGSTOP en READY"
-"FCFS (First-Come, First-Served)",35,1,15677,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=119.648716"
-"FCFS (First-Come, First-Served)",35,2,15678,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15678"
-"FCFS (First-Come, First-Served)",36,2,15678,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
-"FCFS (First-Come, First-Served)",38,2,15678,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=9.430625"
-"FCFS (First-Come, First-Served)",38,3,15679,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15679"
-"FCFS (First-Come, First-Served)",39,3,15679,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
-"FCFS (First-Come, First-Served)",42,3,15679,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=14.019543"
-"FCFS (First-Come, First-Served)",42,4,15680,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15680"
-"FCFS (First-Come, First-Served)",43,4,15680,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
-"FCFS (First-Come, First-Served)",45,4,15680,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=6.037433"
-"FCFS (First-Come, First-Served)",45,5,15681,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15681"
-"FCFS (First-Come, First-Served)",46,5,15681,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
-"FCFS (First-Come, First-Served)",48,5,15681,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=6.297466"
-"Round Robin (RR, q=4)",0,1,15682,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15682 y suspendido con SIGSTOP en READY"
-"Round Robin (RR, q=4)",0,1,15682,"kill(OS_PID, SIGCONT)","R","Despacho directo de proceso en kernel Linux"
-"Round Robin (RR, q=4)",1,2,15683,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15683 y suspendido con SIGSTOP en READY"
-"Round Robin (RR, q=4)",2,3,15684,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15684 y suspendido con SIGSTOP en READY"
-"Round Robin (RR, q=4)",3,4,15685,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15685 y suspendido con SIGSTOP en READY"
-"Round Robin (RR, q=4)",4,5,15686,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15686 y suspendido con SIGSTOP en READY"
-"Round Robin (RR, q=4)",4,1,15682,"kill(OS_PID, SIGSTOP) + waitpid(WUNTRACED)","T","Preempcion de CPU por expiracion de quantum / prioridad envejecida"
-"Round Robin (RR, q=4)",4,2,15683,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15683"
-"Round Robin (RR, q=4)",5,2,15683,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
-"Round Robin (RR, q=4)",7,2,15683,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=12.575218"
-"Round Robin (RR, q=4)",7,3,15684,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15684"
-"Round Robin (RR, q=4)",8,3,15684,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
-"Round Robin (RR, q=4)",11,3,15684,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=14.085320"
-"Round Robin (RR, q=4)",11,4,15685,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15685"
-"Round Robin (RR, q=4)",12,4,15685,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
-"Round Robin (RR, q=4)",14,4,15685,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=6.379753"
-"Round Robin (RR, q=4)",14,5,15686,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15686"
-"Round Robin (RR, q=4)",15,5,15686,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
-"Round Robin (RR, q=4)",17,5,15686,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=6.342797"
-"Round Robin (RR, q=4)",17,1,15682,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15682"
-"Round Robin (RR, q=4)",18,1,15682,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
-"Round Robin (RR, q=4)",49,1,15682,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=136.241227"
-"SRTF (Shortest Remaining Time First - Apropiativo)",0,1,15687,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15687 y suspendido con SIGSTOP en READY"
-"SRTF (Shortest Remaining Time First - Apropiativo)",0,1,15687,"kill(OS_PID, SIGCONT)","R","Despacho directo de proceso en kernel Linux"
-"SRTF (Shortest Remaining Time First - Apropiativo)",1,2,15688,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15688 y suspendido con SIGSTOP en READY"
-"SRTF (Shortest Remaining Time First - Apropiativo)",1,1,15687,"kill(OS_PID, SIGSTOP) + waitpid(WUNTRACED)","T","Desalojo apropiativo de CPU por llegada de P2 (OS_PID=15688)"
-"SRTF (Shortest Remaining Time First - Apropiativo)",1,2,15688,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15688"
-"SRTF (Shortest Remaining Time First - Apropiativo)",2,2,15688,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
-"SRTF (Shortest Remaining Time First - Apropiativo)",2,3,15689,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15689 y suspendido con SIGSTOP en READY"
-"SRTF (Shortest Remaining Time First - Apropiativo)",3,4,15690,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15690 y suspendido con SIGSTOP en READY"
-"SRTF (Shortest Remaining Time First - Apropiativo)",4,2,15688,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=11.931750"
-"SRTF (Shortest Remaining Time First - Apropiativo)",4,5,15691,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15691 y suspendido con SIGSTOP en READY"
-"SRTF (Shortest Remaining Time First - Apropiativo)",4,4,15690,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15690"
-"SRTF (Shortest Remaining Time First - Apropiativo)",5,4,15690,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
-"SRTF (Shortest Remaining Time First - Apropiativo)",7,4,15690,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=6.317610"
-"SRTF (Shortest Remaining Time First - Apropiativo)",7,5,15691,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15691"
-"SRTF (Shortest Remaining Time First - Apropiativo)",8,5,15691,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
-"SRTF (Shortest Remaining Time First - Apropiativo)",10,5,15691,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=6.387594"
-"SRTF (Shortest Remaining Time First - Apropiativo)",10,3,15689,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15689"
-"SRTF (Shortest Remaining Time First - Apropiativo)",11,3,15689,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
-"SRTF (Shortest Remaining Time First - Apropiativo)",14,3,15689,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=9.634000"
-"SRTF (Shortest Remaining Time First - Apropiativo)",14,1,15687,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15687"
-"SRTF (Shortest Remaining Time First - Apropiativo)",15,1,15687,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
-"SRTF (Shortest Remaining Time First - Apropiativo)",49,1,15687,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=125.700686"
-"Prioridad Apropiativa Estricta (Sin Aging)",0,1,15692,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15692 y suspendido con SIGSTOP en READY"
-"Prioridad Apropiativa Estricta (Sin Aging)",0,1,15692,"kill(OS_PID, SIGCONT)","R","Despacho directo de proceso en kernel Linux"
-"Prioridad Apropiativa Estricta (Sin Aging)",1,2,15693,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15693 y suspendido con SIGSTOP en READY"
-"Prioridad Apropiativa Estricta (Sin Aging)",1,1,15692,"kill(OS_PID, SIGSTOP) + waitpid(WUNTRACED)","T","Desalojo apropiativo de CPU por llegada de P2 (OS_PID=15693)"
-"Prioridad Apropiativa Estricta (Sin Aging)",1,2,15693,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15693"
-"Prioridad Apropiativa Estricta (Sin Aging)",2,2,15693,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
-"Prioridad Apropiativa Estricta (Sin Aging)",2,3,15694,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15694 y suspendido con SIGSTOP en READY"
-"Prioridad Apropiativa Estricta (Sin Aging)",2,2,15693,"kill(OS_PID, SIGSTOP) + waitpid(WUNTRACED)","T","Desalojo apropiativo de CPU por llegada de P3 (OS_PID=15694)"
-"Prioridad Apropiativa Estricta (Sin Aging)",2,3,15694,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15694"
-"Prioridad Apropiativa Estricta (Sin Aging)",3,3,15694,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
-"Prioridad Apropiativa Estricta (Sin Aging)",3,4,15695,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15695 y suspendido con SIGSTOP en READY"
-"Prioridad Apropiativa Estricta (Sin Aging)",4,5,15696,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15696 y suspendido con SIGSTOP en READY"
-"Prioridad Apropiativa Estricta (Sin Aging)",6,3,15694,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=10.868686"
-"Prioridad Apropiativa Estricta (Sin Aging)",6,2,15693,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15693"
-"Prioridad Apropiativa Estricta (Sin Aging)",7,2,15693,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
-"Prioridad Apropiativa Estricta (Sin Aging)",9,2,15693,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=9.164736"
-"Prioridad Apropiativa Estricta (Sin Aging)",9,4,15695,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15695"
-"Prioridad Apropiativa Estricta (Sin Aging)",10,4,15695,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
-"Prioridad Apropiativa Estricta (Sin Aging)",12,4,15695,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=6.282123"
-"Prioridad Apropiativa Estricta (Sin Aging)",12,5,15696,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15696"
-"Prioridad Apropiativa Estricta (Sin Aging)",13,5,15696,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
-"Prioridad Apropiativa Estricta (Sin Aging)",15,5,15696,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=6.503000"
-"Prioridad Apropiativa Estricta (Sin Aging)",15,1,15692,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15692"
-"Prioridad Apropiativa Estricta (Sin Aging)",16,1,15692,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
-"Prioridad Apropiativa Estricta (Sin Aging)",50,1,15692,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=117.957889"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",0,1,15697,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15697 y suspendido con SIGSTOP en READY"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",0,1,15697,"kill(OS_PID, SIGCONT)","R","Despacho directo de proceso en kernel Linux"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",1,2,15698,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15698 y suspendido con SIGSTOP en READY"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",1,1,15697,"kill(OS_PID, SIGSTOP) + waitpid(WUNTRACED)","T","Desalojo apropiativo de CPU por llegada de P2 (OS_PID=15698)"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",1,2,15698,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15698"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",2,2,15698,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",2,3,15699,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15699 y suspendido con SIGSTOP en READY"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",2,2,15698,"kill(OS_PID, SIGSTOP) + waitpid(WUNTRACED)","T","Desalojo apropiativo de CPU por llegada de P3 (OS_PID=15699)"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",2,3,15699,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15699"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",3,3,15699,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",3,4,15700,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15700 y suspendido con SIGSTOP en READY"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",4,5,15701,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso real creado en Linux con OS_PID=15701 y suspendido con SIGSTOP en READY"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",5,1,15697,"setpriority(PRIO_PROCESS, OS_PID, nice)","T","Aging promovio prioridad a 2 (nice=4)"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",6,3,15699,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=18.556417"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",6,2,15698,"setpriority(PRIO_PROCESS, OS_PID, nice)","T","Aging promovio prioridad a 1 (nice=0)"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",6,2,15698,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15698"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",7,2,15698,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",7,4,15700,"setpriority(PRIO_PROCESS, OS_PID, nice)","T","Aging promovio prioridad a 1 (nice=0)"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",8,5,15701,"setpriority(PRIO_PROCESS, OS_PID, nice)","T","Aging promovio prioridad a 1 (nice=0)"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",9,2,15698,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=12.589035"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",9,4,15700,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15700"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",10,4,15700,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",10,1,15697,"setpriority(PRIO_PROCESS, OS_PID, nice)","T","Aging promovio prioridad a 1 (nice=0)"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",12,4,15700,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=6.443018"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",12,1,15697,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15697"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",13,1,15697,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",47,1,15697,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=136.482255"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",47,5,15701,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=15701"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",48,5,15701,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU"
-"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",50,5,15701,"wait4(OS_PID, &status, 0, &rusage)","Z","Proceso terminado (_exit(0)) y recolectado; CPU_ms=9.631135"
+"FCFS (First-Come, First-Served)",0,1,85152,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso activo en planificador con OS_PID=85152 (SIGSTOP en READY)"
+"FCFS (First-Come, First-Served)",0,1,85152,"kill(OS_PID, SIGCONT)","R","Despacho directo de proceso en kernel Linux (Estado R+)"
+"FCFS (First-Come, First-Served)",1,2,85153,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso activo en planificador con OS_PID=85153 (SIGSTOP en READY)"
+"FCFS (First-Come, First-Served)",2,3,85154,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso activo en planificador con OS_PID=85154 (SIGSTOP en READY)"
+"FCFS (First-Come, First-Served)",3,4,85155,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso activo en planificador con OS_PID=85155 (SIGSTOP en READY)"
+"FCFS (First-Come, First-Served)",4,5,85156,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso activo en planificador con OS_PID=85156 (SIGSTOP en READY)"
+"FCFS (First-Come, First-Served)",35,1,85152,"_exit(0) [ZOMBIE <defunct>]","Z","Proceso terminado (_exit(0)) en estado Z+ <defunct> visible en ps"
+"FCFS (First-Come, First-Served)",35,2,85153,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=85153"
+"FCFS (First-Come, First-Served)",36,2,85153,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU (Estado R+)"
+"FCFS (First-Come, First-Served)",38,2,85153,"_exit(0) [ZOMBIE <defunct>]","Z","Proceso terminado (_exit(0)) en estado Z+ <defunct> visible en ps"
+"FCFS (First-Come, First-Served)",38,3,85154,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=85154"
+"FCFS (First-Come, First-Served)",39,3,85154,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU (Estado R+)"
+"FCFS (First-Come, First-Served)",42,3,85154,"_exit(0) [ZOMBIE <defunct>]","Z","Proceso terminado (_exit(0)) en estado Z+ <defunct> visible en ps"
+"FCFS (First-Come, First-Served)",42,4,85155,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=85155"
+"FCFS (First-Come, First-Served)",43,4,85155,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU (Estado R+)"
+"FCFS (First-Come, First-Served)",45,4,85155,"_exit(0) [ZOMBIE <defunct>]","Z","Proceso terminado (_exit(0)) en estado Z+ <defunct> visible en ps"
+"FCFS (First-Come, First-Served)",45,5,85156,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=85156"
+"FCFS (First-Come, First-Served)",46,5,85156,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU (Estado R+)"
+"FCFS (First-Come, First-Served)",48,5,85156,"_exit(0) [ZOMBIE <defunct>]","Z","Proceso terminado (_exit(0)) en estado Z+ <defunct> visible en ps"
+"FCFS (First-Come, First-Served)",48,1,85152,"wait4(OS_PID, &status, 0, &rusage)","Z","Zombie recolectado del kernel; CPU_ms=122.695136"
+"FCFS (First-Come, First-Served)",48,2,85153,"wait4(OS_PID, &status, 0, &rusage)","Z","Zombie recolectado del kernel; CPU_ms=9.103586"
+"FCFS (First-Come, First-Served)",48,3,85154,"wait4(OS_PID, &status, 0, &rusage)","Z","Zombie recolectado del kernel; CPU_ms=15.645263"
+"FCFS (First-Come, First-Served)",48,4,85155,"wait4(OS_PID, &status, 0, &rusage)","Z","Zombie recolectado del kernel; CPU_ms=9.174370"
+"FCFS (First-Come, First-Served)",48,5,85156,"wait4(OS_PID, &status, 0, &rusage)","Z","Zombie recolectado del kernel; CPU_ms=6.652000"
+"Round Robin (RR, q=4)",0,1,85159,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso activo en planificador con OS_PID=85159 (SIGSTOP en READY)"
+"Round Robin (RR, q=4)",0,1,85159,"kill(OS_PID, SIGCONT)","R","Despacho directo de proceso en kernel Linux (Estado R+)"
+"Round Robin (RR, q=4)",1,2,85160,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso activo en planificador con OS_PID=85160 (SIGSTOP en READY)"
+"Round Robin (RR, q=4)",2,3,85161,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso activo en planificador con OS_PID=85161 (SIGSTOP en READY)"
+"Round Robin (RR, q=4)",3,4,85162,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso activo en planificador con OS_PID=85162 (SIGSTOP en READY)"
+"Round Robin (RR, q=4)",4,5,85163,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso activo en planificador con OS_PID=85163 (SIGSTOP en READY)"
+"Round Robin (RR, q=4)",4,1,85159,"kill(OS_PID, SIGSTOP) + waitpid(WUNTRACED)","T","Preempcion de CPU por expiracion de quantum / prioridad envejecida"
+"Round Robin (RR, q=4)",4,2,85160,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=85160"
+"Round Robin (RR, q=4)",5,2,85160,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU (Estado R+)"
+"Round Robin (RR, q=4)",7,2,85160,"_exit(0) [ZOMBIE <defunct>]","Z","Proceso terminado (_exit(0)) en estado Z+ <defunct> visible en ps"
+"Round Robin (RR, q=4)",7,3,85161,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=85161"
+"Round Robin (RR, q=4)",8,3,85161,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU (Estado R+)"
+"Round Robin (RR, q=4)",11,3,85161,"_exit(0) [ZOMBIE <defunct>]","Z","Proceso terminado (_exit(0)) en estado Z+ <defunct> visible en ps"
+"Round Robin (RR, q=4)",11,4,85162,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=85162"
+"Round Robin (RR, q=4)",12,4,85162,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU (Estado R+)"
+"Round Robin (RR, q=4)",14,4,85162,"_exit(0) [ZOMBIE <defunct>]","Z","Proceso terminado (_exit(0)) en estado Z+ <defunct> visible en ps"
+"Round Robin (RR, q=4)",14,5,85163,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=85163"
+"Round Robin (RR, q=4)",15,5,85163,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU (Estado R+)"
+"Round Robin (RR, q=4)",17,5,85163,"_exit(0) [ZOMBIE <defunct>]","Z","Proceso terminado (_exit(0)) en estado Z+ <defunct> visible en ps"
+"Round Robin (RR, q=4)",17,1,85159,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=85159"
+"Round Robin (RR, q=4)",18,1,85159,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU (Estado R+)"
+"Round Robin (RR, q=4)",49,1,85159,"_exit(0) [ZOMBIE <defunct>]","Z","Proceso terminado (_exit(0)) en estado Z+ <defunct> visible en ps"
+"Round Robin (RR, q=4)",49,1,85159,"wait4(OS_PID, &status, 0, &rusage)","Z","Zombie recolectado del kernel; CPU_ms=133.585860"
+"Round Robin (RR, q=4)",49,2,85160,"wait4(OS_PID, &status, 0, &rusage)","Z","Zombie recolectado del kernel; CPU_ms=5.990000"
+"Round Robin (RR, q=4)",49,3,85161,"wait4(OS_PID, &status, 0, &rusage)","Z","Zombie recolectado del kernel; CPU_ms=13.817970"
+"Round Robin (RR, q=4)",49,4,85162,"wait4(OS_PID, &status, 0, &rusage)","Z","Zombie recolectado del kernel; CPU_ms=10.594207"
+"Round Robin (RR, q=4)",49,5,85163,"wait4(OS_PID, &status, 0, &rusage)","Z","Zombie recolectado del kernel; CPU_ms=10.127799"
+"SRTF (Shortest Remaining Time First - Apropiativo)",0,1,85164,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso activo en planificador con OS_PID=85164 (SIGSTOP en READY)"
+"SRTF (Shortest Remaining Time First - Apropiativo)",0,1,85164,"kill(OS_PID, SIGCONT)","R","Despacho directo de proceso en kernel Linux (Estado R+)"
+"SRTF (Shortest Remaining Time First - Apropiativo)",1,2,85165,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso activo en planificador con OS_PID=85165 (SIGSTOP en READY)"
+"SRTF (Shortest Remaining Time First - Apropiativo)",1,1,85164,"kill(OS_PID, SIGSTOP) + waitpid(WUNTRACED)","T","Desalojo apropiativo de CPU por llegada de P2 (OS_PID=85165)"
+"SRTF (Shortest Remaining Time First - Apropiativo)",1,2,85165,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=85165"
+"SRTF (Shortest Remaining Time First - Apropiativo)",2,2,85165,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU (Estado R+)"
+"SRTF (Shortest Remaining Time First - Apropiativo)",2,3,85166,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso activo en planificador con OS_PID=85166 (SIGSTOP en READY)"
+"SRTF (Shortest Remaining Time First - Apropiativo)",3,4,85167,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso activo en planificador con OS_PID=85167 (SIGSTOP en READY)"
+"SRTF (Shortest Remaining Time First - Apropiativo)",4,2,85165,"_exit(0) [ZOMBIE <defunct>]","Z","Proceso terminado (_exit(0)) en estado Z+ <defunct> visible en ps"
+"SRTF (Shortest Remaining Time First - Apropiativo)",4,5,85168,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso activo en planificador con OS_PID=85168 (SIGSTOP en READY)"
+"SRTF (Shortest Remaining Time First - Apropiativo)",4,4,85167,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=85167"
+"SRTF (Shortest Remaining Time First - Apropiativo)",5,4,85167,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU (Estado R+)"
+"SRTF (Shortest Remaining Time First - Apropiativo)",7,4,85167,"_exit(0) [ZOMBIE <defunct>]","Z","Proceso terminado (_exit(0)) en estado Z+ <defunct> visible en ps"
+"SRTF (Shortest Remaining Time First - Apropiativo)",7,5,85168,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=85168"
+"SRTF (Shortest Remaining Time First - Apropiativo)",8,5,85168,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU (Estado R+)"
+"SRTF (Shortest Remaining Time First - Apropiativo)",10,5,85168,"_exit(0) [ZOMBIE <defunct>]","Z","Proceso terminado (_exit(0)) en estado Z+ <defunct> visible en ps"
+"SRTF (Shortest Remaining Time First - Apropiativo)",10,3,85166,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=85166"
+"SRTF (Shortest Remaining Time First - Apropiativo)",11,3,85166,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU (Estado R+)"
+"SRTF (Shortest Remaining Time First - Apropiativo)",14,3,85166,"_exit(0) [ZOMBIE <defunct>]","Z","Proceso terminado (_exit(0)) en estado Z+ <defunct> visible en ps"
+"SRTF (Shortest Remaining Time First - Apropiativo)",14,1,85164,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=85164"
+"SRTF (Shortest Remaining Time First - Apropiativo)",15,1,85164,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU (Estado R+)"
+"SRTF (Shortest Remaining Time First - Apropiativo)",49,1,85164,"_exit(0) [ZOMBIE <defunct>]","Z","Proceso terminado (_exit(0)) en estado Z+ <defunct> visible en ps"
+"SRTF (Shortest Remaining Time First - Apropiativo)",49,1,85164,"wait4(OS_PID, &status, 0, &rusage)","Z","Zombie recolectado del kernel; CPU_ms=138.451654"
+"SRTF (Shortest Remaining Time First - Apropiativo)",49,2,85165,"wait4(OS_PID, &status, 0, &rusage)","Z","Zombie recolectado del kernel; CPU_ms=6.019000"
+"SRTF (Shortest Remaining Time First - Apropiativo)",49,3,85166,"wait4(OS_PID, &status, 0, &rusage)","Z","Zombie recolectado del kernel; CPU_ms=10.050000"
+"SRTF (Shortest Remaining Time First - Apropiativo)",49,4,85167,"wait4(OS_PID, &status, 0, &rusage)","Z","Zombie recolectado del kernel; CPU_ms=6.955000"
+"SRTF (Shortest Remaining Time First - Apropiativo)",49,5,85168,"wait4(OS_PID, &status, 0, &rusage)","Z","Zombie recolectado del kernel; CPU_ms=5.785000"
+"Prioridad Apropiativa Estricta (Sin Aging)",0,1,85169,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso activo en planificador con OS_PID=85169 (SIGSTOP en READY)"
+"Prioridad Apropiativa Estricta (Sin Aging)",0,1,85169,"kill(OS_PID, SIGCONT)","R","Despacho directo de proceso en kernel Linux (Estado R+)"
+"Prioridad Apropiativa Estricta (Sin Aging)",1,2,85170,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso activo en planificador con OS_PID=85170 (SIGSTOP en READY)"
+"Prioridad Apropiativa Estricta (Sin Aging)",1,1,85169,"kill(OS_PID, SIGSTOP) + waitpid(WUNTRACED)","T","Desalojo apropiativo de CPU por llegada de P2 (OS_PID=85170)"
+"Prioridad Apropiativa Estricta (Sin Aging)",1,2,85170,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=85170"
+"Prioridad Apropiativa Estricta (Sin Aging)",2,2,85170,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU (Estado R+)"
+"Prioridad Apropiativa Estricta (Sin Aging)",2,3,85171,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso activo en planificador con OS_PID=85171 (SIGSTOP en READY)"
+"Prioridad Apropiativa Estricta (Sin Aging)",2,2,85170,"kill(OS_PID, SIGSTOP) + waitpid(WUNTRACED)","T","Desalojo apropiativo de CPU por llegada de P3 (OS_PID=85171)"
+"Prioridad Apropiativa Estricta (Sin Aging)",2,3,85171,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=85171"
+"Prioridad Apropiativa Estricta (Sin Aging)",3,3,85171,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU (Estado R+)"
+"Prioridad Apropiativa Estricta (Sin Aging)",3,4,85172,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso activo en planificador con OS_PID=85172 (SIGSTOP en READY)"
+"Prioridad Apropiativa Estricta (Sin Aging)",4,5,85173,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso activo en planificador con OS_PID=85173 (SIGSTOP en READY)"
+"Prioridad Apropiativa Estricta (Sin Aging)",6,3,85171,"_exit(0) [ZOMBIE <defunct>]","Z","Proceso terminado (_exit(0)) en estado Z+ <defunct> visible en ps"
+"Prioridad Apropiativa Estricta (Sin Aging)",6,2,85170,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=85170"
+"Prioridad Apropiativa Estricta (Sin Aging)",7,2,85170,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU (Estado R+)"
+"Prioridad Apropiativa Estricta (Sin Aging)",9,2,85170,"_exit(0) [ZOMBIE <defunct>]","Z","Proceso terminado (_exit(0)) en estado Z+ <defunct> visible en ps"
+"Prioridad Apropiativa Estricta (Sin Aging)",9,4,85172,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=85172"
+"Prioridad Apropiativa Estricta (Sin Aging)",10,4,85172,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU (Estado R+)"
+"Prioridad Apropiativa Estricta (Sin Aging)",12,4,85172,"_exit(0) [ZOMBIE <defunct>]","Z","Proceso terminado (_exit(0)) en estado Z+ <defunct> visible en ps"
+"Prioridad Apropiativa Estricta (Sin Aging)",12,5,85173,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=85173"
+"Prioridad Apropiativa Estricta (Sin Aging)",13,5,85173,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU (Estado R+)"
+"Prioridad Apropiativa Estricta (Sin Aging)",15,5,85173,"_exit(0) [ZOMBIE <defunct>]","Z","Proceso terminado (_exit(0)) en estado Z+ <defunct> visible en ps"
+"Prioridad Apropiativa Estricta (Sin Aging)",15,1,85169,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=85169"
+"Prioridad Apropiativa Estricta (Sin Aging)",16,1,85169,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU (Estado R+)"
+"Prioridad Apropiativa Estricta (Sin Aging)",50,1,85169,"_exit(0) [ZOMBIE <defunct>]","Z","Proceso terminado (_exit(0)) en estado Z+ <defunct> visible en ps"
+"Prioridad Apropiativa Estricta (Sin Aging)",50,1,85169,"wait4(OS_PID, &status, 0, &rusage)","Z","Zombie recolectado del kernel; CPU_ms=141.728117"
+"Prioridad Apropiativa Estricta (Sin Aging)",50,2,85170,"wait4(OS_PID, &status, 0, &rusage)","Z","Zombie recolectado del kernel; CPU_ms=10.242983"
+"Prioridad Apropiativa Estricta (Sin Aging)",50,3,85171,"wait4(OS_PID, &status, 0, &rusage)","Z","Zombie recolectado del kernel; CPU_ms=9.184000"
+"Prioridad Apropiativa Estricta (Sin Aging)",50,4,85172,"wait4(OS_PID, &status, 0, &rusage)","Z","Zombie recolectado del kernel; CPU_ms=7.335000"
+"Prioridad Apropiativa Estricta (Sin Aging)",50,5,85173,"wait4(OS_PID, &status, 0, &rusage)","Z","Zombie recolectado del kernel; CPU_ms=9.224429"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",0,1,85176,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso activo en planificador con OS_PID=85176 (SIGSTOP en READY)"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",0,1,85176,"kill(OS_PID, SIGCONT)","R","Despacho directo de proceso en kernel Linux (Estado R+)"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",1,2,85177,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso activo en planificador con OS_PID=85177 (SIGSTOP en READY)"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",1,1,85176,"kill(OS_PID, SIGSTOP) + waitpid(WUNTRACED)","T","Desalojo apropiativo de CPU por llegada de P2 (OS_PID=85177)"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",1,2,85177,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=85177"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",2,2,85177,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU (Estado R+)"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",2,3,85178,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso activo en planificador con OS_PID=85178 (SIGSTOP en READY)"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",2,2,85177,"kill(OS_PID, SIGSTOP) + waitpid(WUNTRACED)","T","Desalojo apropiativo de CPU por llegada de P3 (OS_PID=85178)"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",2,3,85178,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=85178"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",3,3,85178,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU (Estado R+)"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",3,4,85179,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso activo en planificador con OS_PID=85179 (SIGSTOP en READY)"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",4,5,85180,"fork() + mmap() + pipe() + sched_setaffinity()","T","Proceso activo en planificador con OS_PID=85180 (SIGSTOP en READY)"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",5,1,85176,"setpriority(PRIO_PROCESS, OS_PID, nice)","T","Aging promovio prioridad a 2 (nice=4)"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",6,3,85178,"_exit(0) [ZOMBIE <defunct>]","Z","Proceso terminado (_exit(0)) en estado Z+ <defunct> visible en ps"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",6,2,85177,"setpriority(PRIO_PROCESS, OS_PID, nice)","T","Aging promovio prioridad a 1 (nice=0)"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",6,2,85177,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=85177"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",7,2,85177,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU (Estado R+)"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",7,4,85179,"setpriority(PRIO_PROCESS, OS_PID, nice)","T","Aging promovio prioridad a 1 (nice=0)"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",8,5,85180,"setpriority(PRIO_PROCESS, OS_PID, nice)","T","Aging promovio prioridad a 1 (nice=0)"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",9,2,85177,"_exit(0) [ZOMBIE <defunct>]","Z","Proceso terminado (_exit(0)) en estado Z+ <defunct> visible en ps"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",9,4,85179,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=85179"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",10,4,85179,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU (Estado R+)"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",10,1,85176,"setpriority(PRIO_PROCESS, OS_PID, nice)","T","Aging promovio prioridad a 1 (nice=0)"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",12,4,85179,"_exit(0) [ZOMBIE <defunct>]","Z","Proceso terminado (_exit(0)) en estado Z+ <defunct> visible en ps"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",12,1,85176,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=85176"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",13,1,85176,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU (Estado R+)"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",47,1,85176,"_exit(0) [ZOMBIE <defunct>]","Z","Proceso terminado (_exit(0)) en estado Z+ <defunct> visible en ps"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",47,5,85180,"clock_nanosleep() [Context Switch]","T","Conmutacion de contexto en kernel hacia OS_PID=85180"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",48,5,85180,"kill(OS_PID, SIGCONT)","R","Fin de cambio de contexto; proceso reanudado en CPU (Estado R+)"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",50,5,85180,"_exit(0) [ZOMBIE <defunct>]","Z","Proceso terminado (_exit(0)) en estado Z+ <defunct> visible en ps"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",50,1,85176,"wait4(OS_PID, &status, 0, &rusage)","Z","Zombie recolectado del kernel; CPU_ms=118.468723"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",50,2,85177,"wait4(OS_PID, &status, 0, &rusage)","Z","Zombie recolectado del kernel; CPU_ms=7.176000"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",50,3,85178,"wait4(OS_PID, &status, 0, &rusage)","Z","Zombie recolectado del kernel; CPU_ms=12.454451"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",50,4,85179,"wait4(OS_PID, &status, 0, &rusage)","Z","Zombie recolectado del kernel; CPU_ms=7.020000"
+"Prioridad Apropiativa con Envejecimiento (Aging, th=5)",50,5,85180,"wait4(OS_PID, &status, 0, &rusage)","Z","Zombie recolectado del kernel; CPU_ms=6.851000"

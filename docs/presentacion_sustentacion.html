@@ -493,6 +493,198 @@
             min-width: 14px;
         }
 
+        /* Contenedor Inferior: Inspección de Código y Trazabilidad */
+        .bottom-container {
+            max-width: 1500px;
+            margin: 16px auto 30px auto;
+            padding: 0 16px;
+        }
+
+        .code-nav-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #cbd5e1;
+            padding: 7px 14px;
+            border-radius: 6px;
+            font-size: 12.5px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tab-btn:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .code-subtabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .subtab-btn {
+            background: white;
+            border: 1px solid #cbd5e1;
+            padding: 5px 11px;
+            border-radius: 4px;
+            font-size: 11.5px;
+            font-weight: 600;
+            cursor: pointer;
+            color: #334155;
+            transition: all 0.15s ease;
+        }
+
+        .subtab-btn:hover {
+            background: #f8fafc;
+            border-color: #94a3b8;
+        }
+
+        .subtab-btn.active {
+            background: #0f172a;
+            color: #38bdf8;
+            border-color: #0f172a;
+        }
+
+        .code-viewer-container {
+            background: #090d16;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .code-viewer-header {
+            background: #0f172a;
+            padding: 8px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #1e293b;
+            font-size: 12px;
+            color: #94a3b8;
+            font-family: monospace;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .code-pre {
+            font-family: "JetBrains Mono", "Fira Code", "Courier New", monospace;
+            font-size: 12px;
+            line-height: 1.5;
+            color: #e2e8f0;
+            padding: 14px;
+            overflow-x: auto;
+            max-height: 440px;
+            overflow-y: auto;
+            white-space: pre;
+            margin: 0;
+        }
+
+        /* Syntax colors */
+        .c-kw { color: #f472b6; font-weight: 600; }     /* keyword */
+        .c-type { color: #38bdf8; }                      /* type */
+        .c-func { color: #60a5fa; font-weight: 600; }   /* function */
+        .c-comm { color: #94a3b8; font-style: italic; } /* comment */
+        .c-sys { color: #4ade80; font-weight: 700; }    /* syscall */
+        .c-str { color: #fde047; }                      /* string */
+        .c-num { color: #fb923c; }                      /* number */
+
+        /* Flujo de Funciones */
+        .flow-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+            gap: 12px;
+            margin-top: 6px;
+        }
+
+        .flow-card {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            position: relative;
+        }
+
+        .flow-card-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--text-main);
+        }
+
+        .flow-badge-step {
+            background: var(--primary);
+            color: white;
+            font-size: 10.5px;
+            padding: 2px 7px;
+            border-radius: 999px;
+            font-weight: 800;
+        }
+
+        .flow-fn-pill {
+            font-family: monospace;
+            font-size: 11px;
+            padding: 3px 7px;
+            border-radius: 4px;
+            background: #e0f2fe;
+            color: #0369a1;
+            border: 1px solid #bae6fd;
+            display: inline-block;
+            word-break: break-all;
+        }
+
+        .flow-syscall-pill {
+            font-family: monospace;
+            font-size: 11px;
+            padding: 3px 7px;
+            border-radius: 4px;
+            background: #dcfce7;
+            color: #15803d;
+            border: 1px solid #bbf7d0;
+            display: inline-block;
+            font-weight: 700;
+            word-break: break-all;
+        }
+
+        .flow-card-desc {
+            font-size: 11.5px;
+            color: #475569;
+            line-height: 1.45;
+        }
+
+        /* Tabla de Auditoría de Llamadas en Vivo */
+        .live-trace-table-wrap {
+            max-height: 380px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+
         /* Media Queries para Responsive y Split Screen */
         @media (max-width: 960px) {
             .main-container {
@@ -532,6 +724,7 @@
                 <span id="kernelStatusText">SERVIDOR EN REPOSO</span>
             </div>
             <div class="status-pill" id="parentPidPill">PID Demonio: -</div>
+            <button class="btn-header btn-secondary" onclick="scrollToCodeInspector()">💻 Ver Código y Llamadas C++</button>
             <button class="btn-header btn-secondary" onclick="clearServer()" title="Borrar archivos de uploads/ y reiniciar">🗑️ Limpiar Servidor</button>
             <button class="btn-header btn-danger" onclick="stopServerJobs()">⏹ Detener</button>
         </div>
@@ -698,10 +891,483 @@ También puedes observar en vivo desde tu terminal WSL con: make monitor</div>
 
     </div>
 
+    <!-- Contenedor Inferior: 3. Inspección de Código C++ y Trazabilidad de Funciones -->
+    <div class="bottom-container" id="codeInspectorSection">
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <span class="card-title">3. Inspección de Código C++ y Trazabilidad de Funciones del Sistema</span>
+                    <span style="font-size: 11.5px; color: var(--text-muted); display: block; margin-top: 2px;">
+                        Visualiza el código fuente real de cada algoritmo y cómo el demonio ejecuta llamadas del sistema (fork, kill, setpriority, wait4) para cada proceso.
+                    </span>
+                </div>
+            </div>
+
+            <!-- Pestañas Principales -->
+            <div class="code-nav-tabs">
+                <button class="tab-btn active" id="tabBtnCode" onclick="switchMainInspectorTab('code')">
+                    💻 Código C++ de los Algoritmos
+                </button>
+                <button class="tab-btn" id="tabBtnFlow" onclick="switchMainInspectorTab('flow')">
+                    🔄 Mapa del Ciclo de Vida & Llamadas
+                </button>
+                <button class="tab-btn" id="tabBtnLiveTrace" onclick="switchMainInspectorTab('trace')">
+                    📡 Auditor de Llamadas en Vivo (Syscalls)
+                </button>
+            </div>
+
+            <!-- Panel 1: Código C++ de los Algoritmos -->
+            <div id="inspectorPanelCode">
+                <div class="code-subtabs">
+                    <button class="subtab-btn active" id="subtabBtn_rr" onclick="selectAlgoCode('rr')">Round Robin (SchedulerRR.cpp)</button>
+                    <button class="subtab-btn" id="subtabBtn_priority_aging" onclick="selectAlgoCode('priority_aging')">Prioridad con Aging (SchedulerPriority.cpp)</button>
+                    <button class="subtab-btn" id="subtabBtn_priority_strict" onclick="selectAlgoCode('priority_strict')">Prioridad Estricta (SchedulerPriority.cpp)</button>
+                    <button class="subtab-btn" id="subtabBtn_srtf" onclick="selectAlgoCode('srtf')">SRTF (SchedulerSRTF.cpp)</button>
+                    <button class="subtab-btn" id="subtabBtn_fcfs" onclick="selectAlgoCode('fcfs')">FCFS (SchedulerFCFS.cpp)</button>
+                    <button class="subtab-btn" id="subtabBtn_posix" onclick="selectAlgoCode('posix')">Procesos & Syscalls (Process.cpp)</button>
+                </div>
+
+                <div class="code-viewer-container">
+                    <div class="code-viewer-header">
+                        <span id="codeFilePathLabel">src/SchedulerRR.cpp</span>
+                        <span id="codeFuncHighlightBadge" style="color: #38bdf8;">Funciones: get_next_process(), is_quantum_expired(), should_preempt()</span>
+                    </div>
+                    <pre class="code-pre" id="codeDisplayEl"></pre>
+                </div>
+            </div>
+
+            <!-- Panel 2: Mapa del Ciclo de Vida y Llamadas de Funciones -->
+            <div id="inspectorPanelFlow" style="display: none;">
+                <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">
+                    Este diagrama muestra cómo cada componente de la aplicación invoca funciones C++ y llamadas al sistema de Linux para administrar el ciclo de vida de los archivos:
+                </div>
+                <div class="flow-grid">
+                    <!-- Paso 1 -->
+                    <div class="flow-card">
+                        <div class="flow-card-header">
+                            <span class="flow-badge-step">Paso 1</span>
+                            <span>Creación del Proceso Hijo</span>
+                        </div>
+                        <div><span class="flow-fn-pill">Process::spawn_posix_process()</span></div>
+                        <div><span class="flow-syscall-pill">fork() + prctl() + pipe() + sched_setaffinity()</span></div>
+                        <div class="flow-card-desc">
+                            El demonio crea una tubería IPC bidireccional y clona el proceso con <code>fork()</code>. El hijo fija su nombre a <i>simulador</i>, restringe su ejecución al Core 0 y se pausa inmediatamente con <code>raise(SIGSTOP)</code> en estado <b>T+ (READY)</b>.
+                        </div>
+                    </div>
+
+                    <!-- Paso 2 -->
+                    <div class="flow-card">
+                        <div class="flow-card-header">
+                            <span class="flow-badge-step">Paso 2</span>
+                            <span>Selección del Planificador</span>
+                        </div>
+                        <div><span class="flow-fn-pill">Scheduler::get_next_process()</span></div>
+                        <div><span class="flow-syscall-pill">(Lógica en espacio de usuario C++)</span></div>
+                        <div class="flow-card-desc">
+                            En cada tick, el planificador activo extrae al candidato ideal según su política: <b>FIFO/Quantum</b> (RR), <b>min(dinamic_priority)</b> (Prioridad/Aging), o <b>min(rem_burst)</b> (SRTF).
+                        </div>
+                    </div>
+
+                    <!-- Paso 3 -->
+                    <div class="flow-card">
+                        <div class="flow-card-header">
+                            <span class="flow-badge-step">Paso 3</span>
+                            <span>Despacho a CPU (Ejecución)</span>
+                        </div>
+                        <div><span class="flow-fn-pill">CPU::dispatch(process)</span></div>
+                        <div><span class="flow-syscall-pill">kill(os_pid, SIGCONT) + clock_nanosleep()</span></div>
+                        <div class="flow-card-desc">
+                            El núcleo envía la señal <code>SIGCONT</code> al hijo para reanudar su hilo en el Core 0. El proceso pasa de estado <b>T+ a R+ (Running)</b>, comenzando el procesamiento y cálculo de hash SHA-256.
+                        </div>
+                    </div>
+
+                    <!-- Paso 4 -->
+                    <div class="flow-card">
+                        <div class="flow-card-header">
+                            <span class="flow-badge-step">Paso 4</span>
+                            <span>Desalojo Apropiativo (Preemption)</span>
+                        </div>
+                        <div><span class="flow-fn-pill">Scheduler::should_preempt() + CPU::preempt()</span></div>
+                        <div><span class="flow-syscall-pill">kill(os_pid, SIGSTOP) + waitpid(WUNTRACED)</span></div>
+                        <div class="flow-card-desc">
+                            Si expira el quantum (RR) o arriba un proceso con menor duración (SRTF) o mayor urgencia (Prioridad), el núcleo pausa al proceso en ejecución enviándole <code>SIGSTOP</code> y lo regresa a la cola de listos.
+                        </div>
+                    </div>
+
+                    <!-- Paso 5 -->
+                    <div class="flow-card">
+                        <div class="flow-card-header">
+                            <span class="flow-badge-step">Paso 5</span>
+                            <span>Bloqueo por E/S (Transferencia)</span>
+                        </div>
+                        <div><span class="flow-fn-pill">IOQueue::enqueue() / IOQueue::tick()</span></div>
+                        <div><span class="flow-syscall-pill">read(pipe_io) [Bloqueante] ➔ write(pipe_io)</span></div>
+                        <div class="flow-card-desc">
+                            Cuando el proceso entra en ráfaga de E/S, ejecuta una lectura bloqueante sobre la tubería POSIX. El kernel suspende el proceso en estado <b>S+ (Sleep)</b> con <code>wchan=pipe_read</code> hasta que se escriben los datos.
+                        </div>
+                    </div>
+
+                    <!-- Paso 6 -->
+                    <div class="flow-card">
+                        <div class="flow-card-header">
+                            <span class="flow-badge-step">Paso 6</span>
+                            <span>Promoción por Aging</span>
+                        </div>
+                        <div><span class="flow-fn-pill">SchedulerPriority::on_tick() ➔ update_posix_priority()</span></div>
+                        <div><span class="flow-syscall-pill">setpriority(PRIO_PROCESS, os_pid, nice)</span></div>
+                        <div class="flow-card-desc">
+                            Si un proceso pesado acumula más ticks en espera que el umbral de aging, se reduce su valor <b>nice</b> en Linux, ganando prioridad real de ejecución y evitando la inanición.
+                        </div>
+                    </div>
+
+                    <!-- Paso 7 -->
+                    <div class="flow-card">
+                        <div class="flow-card-header">
+                            <span class="flow-badge-step">Paso 7</span>
+                            <span>Terminación & Estado Zombie</span>
+                        </div>
+                        <div><span class="flow-fn-pill">Process::enter_zombie_posix_state()</span></div>
+                        <div><span class="flow-syscall-pill">_exit(0) ➔ Estado Z+ &lt;defunct&gt;</span></div>
+                        <div class="flow-card-desc">
+                            El proceso completa todos sus cómputos y ráfagas y llama a <code>_exit(0)</code>. Permanece en la tabla de procesos del kernel como <b>Z+ (&lt;defunct&gt;)</b> demostrando la existencia del estado zombie en Linux.
+                        </div>
+                    </div>
+
+                    <!-- Paso 8 -->
+                    <div class="flow-card">
+                        <div class="flow-card-header">
+                            <span class="flow-badge-step">Paso 8</span>
+                            <span>Cosecha Limpia (Reaping)</span>
+                        </div>
+                        <div><span class="flow-fn-pill">Process::reap_posix_process()</span></div>
+                        <div><span class="flow-syscall-pill">wait4(os_pid, &status, WNOHANG, &rusage)</span></div>
+                        <div class="flow-card-desc">
+                            El proceso padre recolecta las métricas de CPU y código de salida del hijo mediante <code>wait4()</code>, liberando la estructura del proceso y eliminándolo limpiamente del sistema.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel 3: Auditor de Llamadas en Vivo (Syscalls) -->
+            <div id="inspectorPanelTrace" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px;">
+                    <div style="font-size: 12px; color: var(--text-muted);">
+                        Registro de auditoría en vivo capturado desde el núcleo C++ por cada tick:
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <label style="font-size: 11.5px; font-weight: 600;">Filtrar por Proceso:</label>
+                        <select class="form-select" id="tracePidFilter" style="padding: 4px 8px; font-size: 11.5px;" onchange="renderLiveSyscallTrace()">
+                            <option value="all">Todos los Procesos</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="live-trace-table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 75px;">Tick (s)</th>
+                                <th style="width: 140px;">Proceso / PID</th>
+                                <th style="width: 250px;">Función C++ / Syscall Ejecutada</th>
+                                <th style="width: 110px;">Estado Kernel</th>
+                                <th>Detalle Operativo en el Sistema Operativo</th>
+                            </tr>
+                        </thead>
+                        <tbody id="traceTableBody">
+                            <tr>
+                                <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                                    El servidor está en espera. Al subir y procesar archivos, verás aquí el registro cronológico en vivo de cada llamada al sistema.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
     <script>
         const COLORS = ["#2563eb", "#059669", "#d97706", "#7c3aed", "#db2777", "#0891b2", "#ea580c"];
         let stagedFiles = [];
         let uploadedMeta = {};
+        let latestSyscalls = [];
+
+        // Base de Código C++ de cada Algoritmo y Arquitectura POSIX
+        const ALGO_CODES = {
+            'rr': {
+                file: 'src/SchedulerRR.cpp',
+                highlight: 'Funciones C++: get_next_process(), is_quantum_expired(), should_preempt(), on_tick()',
+                code: `// src/SchedulerRR.cpp - Round Robin con Quantum Equitativo
+#include "SchedulerRR.hpp"
+
+// 1. Encola proceso en READY al llegar o ser desalojado de CPU
+void SchedulerRR::add_process(std::shared_ptr<Process> p) {
+    p->state = ProcessState::READY;
+    ready_queue.push_back(p);
+}
+
+// 2. Extrae el primer proceso de la cola FIFO y reinicia el contador de quantum
+std::shared_ptr<Process> SchedulerRR::get_next_process() {
+    if (ready_queue.empty()) return nullptr;
+    auto p = ready_queue.front();
+    ready_queue.pop_front();
+    quantum_ticks_used = 0; // Reinicia rebanada de tiempo
+    return p;
+}
+
+// 3. Evalúa si el proceso consumió la rebanada de tiempo permitida (ticks >= quantum)
+bool SchedulerRR::is_quantum_expired() const {
+    return quantum_ticks_used >= quantum;
+}
+
+// 4. DESALOJO APROPIATIVO: Si el quantum expiró y hay otros procesos esperando
+bool SchedulerRR::should_preempt(const std::shared_ptr<Process>& current_running, 
+                                 const std::shared_ptr<Process>& candidate) const {
+    return is_quantum_expired() && !ready_queue.empty();
+}
+
+// 5. Ciclo de reloj: contabiliza el tiempo de CPU consumido por el proceso activo
+void SchedulerRR::on_tick(int current_time) {
+    quantum_ticks_used++;
+}`
+            },
+            'priority_aging': {
+                file: 'src/SchedulerPriority.cpp (con Aging activo)',
+                highlight: 'Funciones C++: get_next_process(), should_preempt(), on_tick() ➔ setpriority()',
+                code: `// src/SchedulerPriority.cpp - Prioridad Dinámica con Prevención de Inanición (Aging)
+#include "SchedulerPriority.hpp"
+#include <algorithm>
+
+// 1. Extrae el proceso con menor dynamic_priority (1=Urgente, 5=Fondo)
+std::shared_ptr<Process> SchedulerPriority::get_next_process() {
+    if (ready_queue.empty()) return nullptr;
+
+    auto it = std::min_element(ready_queue.begin(), ready_queue.end(),
+        [](const std::shared_ptr<Process>& a, const std::shared_ptr<Process>& b) {
+            if (a->dynamic_priority != b->dynamic_priority) {
+                return a->dynamic_priority < b->dynamic_priority;
+            }
+            return a->arrival_time < b->arrival_time; // Desempate FIFO
+        });
+
+    auto best = *it;
+    ready_queue.erase(it);
+    return best;
+}
+
+// 2. EXPROPIACIÓN: Si un proceso recién llegado tiene prioridad estrictamente superior
+bool SchedulerPriority::should_preempt(const std::shared_ptr<Process>& current_running, 
+                                       const std::shared_ptr<Process>& candidate) const {
+    if (!current_running || !candidate) return false;
+    return candidate->dynamic_priority < current_running->dynamic_priority;
+}
+
+// 3. ENVEJECIMIENTO (AGING): Cada tick incrementa la espera en cola READY.
+// Al superar el umbral, reduce su nice y dynamic_priority para evitar starvation.
+void SchedulerPriority::on_tick(int current_time) {
+    if (!enable_aging) return;
+
+    for (auto& p : ready_queue) {
+        p->time_in_current_state++;
+        if (p->time_in_current_state >= aging_threshold) {
+            if (p->dynamic_priority > 1) {
+                // LLAMADA AL SISTEMA REAL: Modifica nice en Linux con setpriority()
+                p->update_posix_priority(p->dynamic_priority - 1);
+            }
+            p->time_in_current_state = 0;
+        }
+    }
+}`
+            },
+            'priority_strict': {
+                file: 'src/SchedulerPriority.cpp (Prioridad Estricta Estática)',
+                highlight: 'Funciones C++: get_next_process(), should_preempt() (Sin Aging)',
+                code: `// src/SchedulerPriority.cpp - Prioridad Estricta Basada en Peso (Sin Aging)
+#include "SchedulerPriority.hpp"
+#include <algorithm>
+
+// 1. Selecciona siempre el proceso de menor dynamic_priority (más prioritario)
+std::shared_ptr<Process> SchedulerPriority::get_next_process() {
+    if (ready_queue.empty()) return nullptr;
+
+    auto it = std::min_element(ready_queue.begin(), ready_queue.end(),
+        [](const std::shared_ptr<Process>& a, const std::shared_ptr<Process>& b) {
+            if (a->dynamic_priority != b->dynamic_priority) {
+                return a->dynamic_priority < b->dynamic_priority;
+            }
+            return a->arrival_time < b->arrival_time;
+        });
+
+    auto best = *it;
+    ready_queue.erase(it);
+    return best;
+}
+
+// 2. Desaloja a cualquier proceso en CPU si llega uno de prioridad mayor
+bool SchedulerPriority::should_preempt(const std::shared_ptr<Process>& current_running, 
+                                       const std::shared_ptr<Process>& candidate) const {
+    if (!current_running || !candidate) return false;
+    return candidate->dynamic_priority < current_running->dynamic_priority;
+}
+
+// 3. En prioridad estricta enable_aging = false: los procesos pesados sufrirán
+// inanición indefinida mientras existan archivos pequeños en el sistema.
+void SchedulerPriority::on_tick(int current_time) {
+    // Sin aging: las prioridades permanecen inmutables en Linux
+}`
+            },
+            'srtf': {
+                file: 'src/SchedulerSRTF.cpp',
+                highlight: 'Funciones C++: get_next_process(), should_preempt() [min_element por rem_burst]',
+                code: `// src/SchedulerSRTF.cpp - Shortest Remaining Time First (SRTF Apropiativo)
+#include "SchedulerSRTF.hpp"
+#include <algorithm>
+
+// 1. Extrae el proceso con la ráfaga de CPU restante más corta del lote
+std::shared_ptr<Process> SchedulerSRTF::get_next_process() {
+    if (ready_queue.empty()) return nullptr;
+
+    auto it = std::min_element(ready_queue.begin(), ready_queue.end(),
+        [](const std::shared_ptr<Process>& a, const std::shared_ptr<Process>& b) {
+            if (a->get_remaining_current_burst() != b->get_remaining_current_burst()) {
+                return a->get_remaining_current_burst() < b->get_remaining_current_burst();
+            }
+            return a->arrival_time < b->arrival_time; // Desempate FIFO
+        });
+
+    auto best = *it;
+    ready_queue.erase(it);
+    return best;
+}
+
+// 2. EXPROPIACIÓN INMEDIATA: Si el candidato recién llegado o desbloqueado de E/S
+// requiere menos tiempo de CPU que el restante del proceso en ejecución:
+bool SchedulerSRTF::should_preempt(const std::shared_ptr<Process>& current_running, 
+                                   const std::shared_ptr<Process>& candidate) const {
+    if (!current_running || !candidate) return false;
+    return candidate->get_remaining_current_burst() < current_running->get_remaining_current_burst();
+}`
+            },
+            'fcfs': {
+                file: 'src/SchedulerFCFS.cpp',
+                highlight: 'Funciones C++: add_process(), get_next_process(), should_preempt() = false',
+                code: `// src/SchedulerFCFS.cpp - First-Come, First-Served (Orden de Llegada FIFO)
+#include "SchedulerFCFS.hpp"
+
+// 1. Encola los procesos en el orden estricto en que fueron subidos
+void SchedulerFCFS::add_process(std::shared_ptr<Process> p) {
+    p->state = ProcessState::READY;
+    ready_queue.push_back(p);
+}
+
+// 2. Despacha al primer proceso de la cola
+std::shared_ptr<Process> SchedulerFCFS::get_next_process() {
+    if (ready_queue.empty()) return nullptr;
+    auto p = ready_queue.front();
+    ready_queue.pop_front();
+    return p;
+}
+
+// 3. NO APROPIATIVO: FCFS nunca interrumpe un proceso en ejecución.
+// Si un archivo pesado llega primero, genera el Efecto Convoy retrasando al resto.
+bool SchedulerFCFS::should_preempt(const std::shared_ptr<Process>& current_running, 
+                                   const std::shared_ptr<Process>& candidate) const {
+    return false; // Nunca desaloja por diseño
+}`
+            },
+            'posix': {
+                file: 'src/Process.cpp & src/CPU.cpp',
+                highlight: 'Syscalls Reales: fork(), prctl(), sched_setaffinity(), kill(SIGCONT/SIGSTOP), setpriority(), wait4()',
+                code: `// src/Process.cpp & src/CPU.cpp - Llamadas al Sistema POSIX Reales en Linux
+
+// 1. CREACIÓN Y AISLAMIENTO EN NÚCLEO 0 CON PRCTL Y SCHED_SETAFFINITY
+bool Process::spawn_posix_process() {
+    pipe(pipe_in);   // Tubería de control Padre -> Hijo
+    pipe(pipe_out);  // Tubería de telemetría Hijo -> Padre
+    
+    os_pid = fork();
+    if (os_pid == 0) { // CÓDIGO DEL PROCESO HIJO REAL EN LINUX
+        prctl(PR_SET_NAME, "simulador", 0, 0, 0); // Visible en ps -C simulador
+        
+        // Asignación de afinidad al Core 0 (competencia por 1 solo CPU)
+        cpu_set_t cpuset;
+        CPU_ZERO(&cpuset);
+        CPU_SET(0, &cpuset);
+        sched_setaffinity(0, sizeof(cpuset), &cpuset);
+        
+        // Pausa inicial inmediata para quedar en cola de listos (T+)
+        raise(SIGSTOP);
+        child_execution_loop(); // Calcula hash SHA-256 en ráfagas de CPU
+        _exit(0);
+    }
+    // CÓDIGO DEL PADRE: Espera a que el hijo se detenga en SIGSTOP
+    int status;
+    waitpid(os_pid, &status, WUNTRACED);
+    return true;
+}
+
+// 2. DESPACHO A CPU: Reanuda al hijo con señal SIGCONT (pasa a R+ en ps)
+void CPU::dispatch(std::shared_ptr<Process> p, bool needs_cs) {
+    current_process = p;
+    kill(p->os_pid, SIGCONT); // Syscall POSIX al kernel Linux
+}
+
+// 3. PREEMPCIÓN: Pausa al proceso con SIGSTOP (pasa a T+ en ps)
+std::shared_ptr<Process> CPU::preempt() {
+    auto p = current_process;
+    kill(p->os_pid, SIGSTOP);
+    int status;
+    waitpid(p->os_pid, &status, WUNTRACED);
+    current_process = nullptr;
+    return p;
+}
+
+// 4. ACTUALIZACIÓN DE NICE EN LINUX (AGING)
+void Process::update_posix_priority(int new_priority) {
+    dynamic_priority = new_priority;
+    nice_value = (dynamic_priority - 1) * 4;
+    setpriority(PRIO_PROCESS, os_pid, nice_value); // Syscall setpriority()
+}
+
+// 5. COSECHA DE PROCESO TERMINADO (WAIT4)
+void Process::reap_posix_process() {
+    struct rusage usage;
+    int status;
+    wait4(os_pid, &status, WNOHANG, &usage); // Limpia el zombie Z+
+}`
+            }
+        };
+
+        function scrollToCodeInspector() {
+            const el = document.getElementById('codeInspectorSection');
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function switchMainInspectorTab(tabKey) {
+            document.getElementById('tabBtnCode').classList.toggle('active', tabKey === 'code');
+            document.getElementById('tabBtnFlow').classList.toggle('active', tabKey === 'flow');
+            document.getElementById('tabBtnLiveTrace').classList.toggle('active', tabKey === 'trace');
+
+            document.getElementById('inspectorPanelCode').style.display = (tabKey === 'code') ? 'block' : 'none';
+            document.getElementById('inspectorPanelFlow').style.display = (tabKey === 'flow') ? 'block' : 'none';
+            document.getElementById('inspectorPanelTrace').style.display = (tabKey === 'trace') ? 'block' : 'none';
+        }
+
+        function selectAlgoCode(key) {
+            const keys = ['rr', 'priority_aging', 'priority_strict', 'srtf', 'fcfs', 'posix'];
+            keys.forEach(k => {
+                const btn = document.getElementById('subtabBtn_' + k);
+                if (btn) btn.classList.toggle('active', k === key);
+            });
+
+            const data = ALGO_CODES[key] || ALGO_CODES['rr'];
+            document.getElementById('codeFilePathLabel').textContent = data.file;
+            document.getElementById('codeFuncHighlightBadge').textContent = data.highlight;
+            document.getElementById('codeDisplayEl').textContent = data.code;
+        }
 
         // Drag & Drop
         const dropzone = document.getElementById('dropzoneEl');
@@ -842,6 +1508,7 @@ También puedes observar en vivo desde tu terminal WSL con: make monitor</div>
         function onAlgoChange() {
             updateAlgoExplanation();
             const algo = document.getElementById('algoSelect').value;
+            selectAlgoCode(algo); // Sincroniza el código en el visualizador interactivo
             // Actualizar prioridades inferidas para archivos en cola si cambian a/de política de prioridad
             stagedFiles.forEach(f => {
                 f.priority = inferPriorityFromSize(f.size, algo);
@@ -1068,14 +1735,94 @@ También puedes observar en vivo desde tu terminal WSL con: make monitor</div>
                         ganttEl.appendChild(div);
                     });
                 }
+
+                // Renderizar Trazabilidad de Llamadas en Vivo (Syscalls del Simulador)
+                if (Array.isArray(sim.syscalls)) {
+                    updateLiveTrace(sim.syscalls);
+                }
             } catch (e) {
                 // Error transitorio de red
             }
         }
 
+        function updateLiveTrace(syscalls) {
+            if (!syscalls) return;
+            latestSyscalls = syscalls;
+
+            // Actualizar opciones del filtro por proceso
+            const filterEl = document.getElementById('tracePidFilter');
+            const pids = new Set();
+            syscalls.forEach(sc => {
+                if (sc.pid > 0) pids.add(sc.pid);
+            });
+
+            const existingOpts = Array.from(filterEl.options).map(o => o.value);
+            pids.forEach(pid => {
+                if (!existingOpts.includes(String(pid))) {
+                    const opt = document.createElement('option');
+                    opt.value = String(pid);
+                    opt.textContent = `Proceso P${pid}`;
+                    filterEl.appendChild(opt);
+                }
+            });
+
+            renderLiveSyscallTrace();
+        }
+
+        function renderLiveSyscallTrace() {
+            const filterVal = document.getElementById('tracePidFilter').value;
+            const tbody = document.getElementById('traceTableBody');
+            if (!latestSyscalls || latestSyscalls.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                            El servidor está en espera. Al subir y procesar archivos, verás aquí el registro cronológico en vivo de cada llamada al sistema.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            const filtered = (filterVal === 'all')
+                ? latestSyscalls.slice().reverse()
+                : latestSyscalls.filter(s => String(s.pid) === filterVal).reverse();
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:18px; color:var(--text-muted);">No hay llamadas registradas para este proceso aún.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = '';
+            filtered.slice(0, 40).forEach(sc => {
+                const tr = document.createElement('tr');
+                
+                let stateBadge = `<span class="badge badge-done">${sc.proc_state || '-'}</span>`;
+                if (sc.proc_state === 'R') stateBadge = `<span class="badge badge-r">🟢 R+ CPU</span>`;
+                else if (sc.proc_state === 'S') stateBadge = `<span class="badge badge-s">🔵 S+ E/S</span>`;
+                else if (sc.proc_state === 'T') stateBadge = `<span class="badge badge-t">🟡 T+ Cola</span>`;
+                else if (sc.proc_state === 'Z') stateBadge = `<span class="badge badge-z">🧟 Z+ Zombie</span>`;
+
+                tr.innerHTML = `
+                    <td style="font-family: monospace; font-weight:700;">t=${sc.tick}s</td>
+                    <td>
+                        <b>P${sc.pid}</b> <span style="font-family: monospace; font-size:11px; color:#1e40af;">(PID ${sc.os_pid})</span>
+                    </td>
+                    <td>
+                        <span class="flow-syscall-pill">${sc.syscall}</span>
+                    </td>
+                    <td>${stateBadge}</td>
+                    <td style="font-size: 11.5px; color: #334155;">
+                        ${sc.detail}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
         // Iniciar con la cola vacía y polling cada 450ms
         window.addEventListener('DOMContentLoaded', () => {
             updateAlgoExplanation();
+            selectAlgoCode('rr');
             renderStagedList();
             setInterval(pollLiveStatus, 450);
             pollLiveStatus();

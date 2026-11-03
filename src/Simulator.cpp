@@ -289,7 +289,7 @@ void Simulator::write_live_state_json(int tick, bool finished) const {
     out << "  ],\n";
 
     out << "  \"syscalls\": [\n";
-    size_t start_sc = syscall_log.size() > 25 ? syscall_log.size() - 25 : 0;
+    size_t start_sc = syscall_log.size() > 100 ? syscall_log.size() - 100 : 0;
     for (size_t i = start_sc; i < syscall_log.size(); ++i) {
         const auto& sc = syscall_log[i];
         out << "    {\"tick\": " << sc.tick
