@@ -6,11 +6,27 @@
 #include <sys/mman.h>
 #include <sys/resource.h>
 #include <sys/time.h>
+#include <sys/prctl.h>
 #include <fcntl.h>
 #include <sched.h>
 #include <time.h>
 #include <cstring>
 #include <cstdio>
+
+static char* g_argv0_ptr = nullptr;
+static size_t g_argv_total_len = 0;
+
+void Process::init_argv_buffer(int argc, char** argv) {
+    if (argc > 0 && argv && argv[0]) {
+        g_argv0_ptr = argv[0];
+        char* end_ptr = argv[argc - 1] + std::strlen(argv[argc - 1]);
+        if (end_ptr > g_argv0_ptr) {
+            g_argv_total_len = static_cast<size_t>(end_ptr - g_argv0_ptr);
+        } else {
+            g_argv_total_len = std::strlen(argv[0]);
+        }
+    }
+}
 
 int Process::priority_to_nice(int priority) {
     // Mapea prioridad lógica (1 = máxima, 5+ = baja) al rango POSIX nice (0 a 19 para usuarios sin root)
@@ -23,6 +39,7 @@ int Process::priority_to_nice(int priority) {
 Process::Process(int pid, const std::string& name, int arrival_time, int priority, const std::vector<Burst>& bursts)
     : pid(pid),
       os_pid(-1),
+      posix_zombie(false),
       posix_reaped(false),
       name(name),
       arrival_time(arrival_time),
@@ -33,6 +50,7 @@ Process::Process(int pid, const std::string& name, int arrival_time, int priorit
       current_burst_index(0),
       state(ProcessState::NEW),
       linux_kernel_state('N'),
+      linux_wchan("-"),
       shm_ctrl(nullptr),
       first_run_time(-1),
       completion_time(-1),
@@ -147,8 +165,20 @@ bool Process::spawn_posix_process() {
 
     if (child == 0) {
         // ================= CONTEXTO DEL PROCESO HIJO REAL EN LINUX =================
+        // Si el proceso padre muere por cualquier señal (ej. SIGINT, SIGPIPE), terminar automáticamente al hijo
+        prctl(PR_SET_PDEATHSIG, SIGKILL);
+
         close(sync_pipe[0]);
         close(io_pipe_fd[1]); // El hijo solo lee de la tubería de E/S para bloquearse
+
+        // Fijar nombre de comando en el kernel a "simulador" para que 'ps -C simulador --forest' agrupe padre e hijos
+        prctl(PR_SET_NAME, "simulador", 0, 0, 0);
+
+        // Sobrescribir argv[0] para que en 'ps aux' y 'ps -o args --forest' se identifique el proceso hijo
+        if (g_argv0_ptr && g_argv_total_len > 0) {
+            std::memset(g_argv0_ptr, 0, g_argv_total_len);
+            std::snprintf(g_argv0_ptr, g_argv_total_len, "simulador:P%d_%s", pid, name.c_str());
+        }
 
         // Fijar afinidad a la CPU 0 mediante sched_setaffinity() para competencia real por un núcleo
         cpu_set_t cpuset;
@@ -301,39 +331,77 @@ bool Process::update_posix_priority(int new_dyn_priority) {
 }
 
 char Process::query_linux_proc_state() {
-    if (os_pid <= 0) return 'N';
+    if (os_pid <= 0 || posix_reaped) return linux_kernel_state;
 
     char path[64];
     std::snprintf(path, sizeof(path), "/proc/%d/stat", static_cast<int>(os_pid));
 
     // Llamadas al sistema POSIX open(), read(), close() sobre el pseudo-sistema de archivos /proc
     int fd = open(path, O_RDONLY);
-    if (fd < 0) return linux_kernel_state;
+    if (fd >= 0) {
+        char buf[256];
+        ssize_t n = read(fd, buf, sizeof(buf) - 1);
+        close(fd);
+        syscalls_executed += 3;
 
-    char buf[256];
-    ssize_t n = read(fd, buf, sizeof(buf) - 1);
-    close(fd);
-    syscalls_executed += 3;
-
-    if (n > 0) {
-        buf[n] = '\0';
-        // El estado del proceso en /proc/<pid>/stat está justo después del último paréntesis ')'
-        const char* rparen = std::strrchr(buf, ')');
-        if (rparen && rparen[1] == ' ' && rparen[2] != '\0') {
-            linux_kernel_state = rparen[2];
+        if (n > 0) {
+            buf[n] = '\0';
+            // El estado del proceso en /proc/<pid>/stat está justo después del último paréntesis ')'
+            const char* rparen = std::strrchr(buf, ')');
+            if (rparen && rparen[1] == ' ' && rparen[2] != '\0') {
+                linux_kernel_state = rparen[2];
+            }
         }
     }
+
+    // Leer también /proc/<os_pid>/wchan para conocer la función del kernel donde duerme/espera
+    char wpath[64];
+    std::snprintf(wpath, sizeof(wpath), "/proc/%d/wchan", static_cast<int>(os_pid));
+    int wfd = open(wpath, O_RDONLY);
+    if (wfd >= 0) {
+        char wbuf[64];
+        ssize_t wn = read(wfd, wbuf, sizeof(wbuf) - 1);
+        close(wfd);
+        syscalls_executed += 3;
+        if (wn > 0) {
+            wbuf[wn] = '\0';
+            // Limpiar saltos de línea
+            for (ssize_t i = 0; i < wn; ++i) {
+                if (wbuf[i] == '\n' || wbuf[i] == '\r') {
+                    wbuf[i] = '\0';
+                    break;
+                }
+            }
+            if (std::strcmp(wbuf, "0") == 0 || wbuf[0] == '\0') {
+                linux_wchan = "-";
+            } else {
+                linux_wchan = wbuf;
+            }
+        }
+    }
+
+    if (linux_kernel_state == 'R' || linux_kernel_state == 'Z') {
+        linux_wchan = "-";
+    } else if (linux_kernel_state == 'T' && linux_wchan == "-") {
+        linux_wchan = "do_signal_stop";
+    } else if (linux_kernel_state == 'S' && linux_wchan == "-") {
+        linux_wchan = "pipe_read";
+    }
+
     return linux_kernel_state;
 }
 
-bool Process::terminate_and_reap_posix() {
-    if (os_pid <= 0 || posix_reaped) return false;
+bool Process::enter_zombie_posix_state() {
+    if (os_pid <= 0 || posix_reaped || posix_zombie) return false;
 
     if (shm_ctrl) {
         shm_ctrl->mode.store(2, std::memory_order_release);
+        real_cpu_operations = shm_ctrl->cpu_ops.load(std::memory_order_relaxed);
+        real_user_cpu_ms = static_cast<double>(shm_ctrl->child_cpu_ns.load(std::memory_order_relaxed)) / 1000000.0;
     }
 
-    // Si estaba bloqueado en read() de E/S o detenido en SIGSTOP, despertarlo para que ejecute _exit(0)
+    // Desbloqueamos cualquier read() de E/S y enviamos SIGCONT para que el hijo ejecute _exit(0)
+    // SIN llamar aún a wait4(), dejando el proceso en estado ZOMBIE real ('Z' <defunct>) en ps
     if (io_pipe_fd[1] != -1) {
         char end_byte = 'X';
         if (write(io_pipe_fd[1], &end_byte, 1) < 0) {}
@@ -342,6 +410,27 @@ bool Process::terminate_and_reap_posix() {
     }
     kill(os_pid, SIGCONT);
     syscalls_executed++;
+
+    struct timespec req = {0, 1000000L}; // 1 ms
+    for (int tries = 0; tries < 25; ++tries) {
+        if (query_linux_proc_state() == 'Z') {
+            break;
+        }
+        clock_nanosleep(CLOCK_MONOTONIC, 0, &req, nullptr);
+    }
+
+    posix_zombie = true;
+    linux_kernel_state = 'Z';
+    linux_wchan = "-";
+    return true;
+}
+
+bool Process::terminate_and_reap_posix() {
+    if (os_pid <= 0 || posix_reaped) return false;
+
+    if (!posix_zombie) {
+        enter_zombie_posix_state();
+    }
 
     // Llamada al sistema wait4() para recolectar el proceso terminado y extraer struct rusage del kernel
     int status = 0;

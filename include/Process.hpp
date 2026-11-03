@@ -34,6 +34,7 @@ class Process {
 public:
     int pid;                // ID lógico del escenario
     pid_t os_pid;           // PID real en el kernel Linux retornado por fork()
+    bool posix_zombie;      // Indica si el proceso hijo ya ejecutó _exit(0) y está en estado Z (Zombie <defunct>)
     bool posix_reaped;      // Indica si wait4() ya recolectó el proceso hijo en el kernel
     std::string name;
     int arrival_time;
@@ -47,6 +48,7 @@ public:
 
     ProcessState state;
     char linux_kernel_state; // Estado real leído de /proc/<os_pid>/stat ('R', 'S', 'T', 'Z')
+    std::string linux_wchan; // Canal de espera en el kernel leído de /proc/<os_pid>/wchan
 
     // Descriptores y memoria compartida POSIX reales
     int io_pipe_fd[2];
@@ -101,11 +103,18 @@ public:
     // Actualiza la prioridad real en el kernel Linux usando setpriority(PRIO_PROCESS, os_pid, nice)
     bool update_posix_priority(int new_dyn_priority);
 
-    // Lee directamente /proc/<os_pid>/stat mediante open()/read()/close() para obtener el estado del kernel
+    // Lee directamente /proc/<os_pid>/stat y /proc/<os_pid>/wchan mediante open()/read()/close()
     char query_linux_proc_state();
 
-    // Finaliza el proceso hijo y recolecta métricas reales del kernel mediante wait4() y struct rusage
+    // Hace que el proceso hijo ejecute _exit(0) y quede en estado ZOMBIE real ('Z' <defunct>) en ps
+    // sin recolectarlo aún con wait4(), permitiendo observar el estado Z+ en consola/ps
+    bool enter_zombie_posix_state();
+
+    // Finaliza el proceso hijo (si no es zombie aún) y recolecta métricas reales del kernel mediante wait4() y struct rusage
     bool terminate_and_reap_posix();
+
+    // Inicializa el buffer argv[0] del proceso para renombrar los hijos en ps aux / ps --forest
+    static void init_argv_buffer(int argc, char** argv);
 
     // Limpia recursos POSIX (descriptores de pipe y región mmap)
     void cleanup_posix_resources();

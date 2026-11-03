@@ -364,8 +364,28 @@
         /* Núcleo CPU y Colas */
         .system-state-row {
             display: grid;
-            grid-template-columns: 280px 1fr 1fr;
-            gap: 14px;
+            grid-template-columns: 250px 1fr 1fr 1fr;
+            gap: 12px;
+        }
+        .ps-terminals-row {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 12px;
+        }
+        .ps-terminal-box {
+            background: #020617;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 11.5px;
+            color: #38bdf8;
+            white-space: pre;
+            overflow-x: auto;
+            min-height: 135px;
+            max-height: 170px;
+            overflow-y: auto;
+            line-height: 1.35;
         }
 
         .component-box {
@@ -850,8 +870,8 @@
                         <label class="control-label">Escenario de Prueba</label>
                         <select class="sim-select" id="simScenarioSelect" onchange="onScenarioChange()">
                             <option value="1">Escenario 1: Efecto Convoy (Batch vs APIs)</option>
-                            <option value="2">Escenario 2: E/S Concurrente (I/O Bursts)</option>
-                            <option value="3">Escenario 3: Inanición vs. Aging</option>
+                            <option value="2" selected>Escenario 2: Ciclo Completo en ps (R+, S+, T+, Z+)</option>
+                            <option value="3">Escenario 3: Inanición vs. Aging (setpriority)</option>
                         </select>
                     </div>
 
@@ -893,16 +913,16 @@
 
                     <div class="control-group">
                         <div class="sim-slider-row">
-                            <label class="control-label">Velocidad Simulación:</label>
-                            <span class="slider-val" id="valSpeed">300ms</span>
+                            <label class="control-label">Duración Tick POSIX:</label>
+                            <span class="slider-val" id="valSpeed">1000ms</span>
                         </div>
-                        <input type="range" class="sim-slider" id="sliderSpeed" min="50" max="1000" step="50" value="300" oninput="onSpeedChange()">
+                        <input type="range" class="sim-slider" id="sliderSpeed" min="200" max="1500" step="100" value="1000" oninput="onSpeedChange()">
                     </div>
 
                     <!-- Botones de Control de Ejecución -->
                     <div class="playback-buttons">
                         <button class="play-btn" id="btnPlayPause" onclick="togglePlayPause()">
-                            ▶ Iniciar
+                            ▶ Iniciar ./simulador
                         </button>
                         <button class="step-btn" onclick="stepTick()">
                             ⏭ Paso (+1)
@@ -910,14 +930,15 @@
                     </div>
 
                     <button class="reset-btn" onclick="resetSimulation()">
-                        🔄 Reiniciar Simulación
+                        ⏹ Detener / Reiniciar
                     </button>
 
-                    <button class="play-btn" style="background:#059669; margin-top:4px;" onclick="executeRealPosixBinary()">
-                        ⚡ Ejecutar Binario POSIX ./simulador
+                    <button class="play-btn" id="btnRealPosix" style="background:#059669; margin-top:4px;" onclick="executeRealPosixBinary()">
+                        ⚡ Lanzar ./simulador en Vivo (ps)
                     </button>
-                    <div id="posixServerStatus" style="font-size:11px; color:#94a3b8; line-height:1.4;">
-                        Modo: Traza POSIX Real C++17 (fork, kill SIGSTOP/SIGCONT, pipe, wait4, /proc). Ejecuta <code>make web</code> para lanzar nuevos procesos desde el navegador.
+                    <div id="posixServerStatus" style="font-size:11px; color:#38bdf8; line-height:1.4; background:#0f172a; padding:8px; border-radius:6px; border:1px solid #1e293b;">
+                        <b>Observa en tu terminal WSL en vivo:</b><br/>
+                        <code style="color:#a7f3d0; font-size:10px;">watch -n 0.5 "ps -C simulador -o pid,ppid,stat,ni,pcpu,wchan:18,etime,comm,args --forest"</code>
                     </div>
                 </div>
 
@@ -956,13 +977,31 @@
                         </div>
                     </div>
 
-                    <!-- Estado del Sistema: CPU, Cola Listos y Cola E/S -->
+                    <!-- Terminales ps Reales del Kernel Linux en Tiempo Real -->
+                    <div class="ps-terminals-row">
+                        <div class="component-box" style="min-height:auto; padding:10px 12px;">
+                            <div class="component-title" style="margin-bottom:6px;">
+                                <span>🖥️ Árbol de Procesos en Vivo: <code>ps -C simulador -o pid,ppid,stat,ni,pcpu,wchan:18,etime,comm,args --forest</code></span>
+                                <span class="component-badge" id="badgePsStatus" style="color:#10b981;">KERNEL LINUX</span>
+                            </div>
+                            <div class="ps-terminal-box" id="psForestEl">Esperando inicio de ./simulador (haz clic en "▶ Iniciar ./simulador" o ejecuta "./simulador --live" en tu terminal WSL)...</div>
+                        </div>
+                        <div class="component-box" style="min-height:auto; padding:10px 12px;">
+                            <div class="component-title" style="margin-bottom:6px;">
+                                <span>🔥 Top Procesos por CPU en Linux: <code>ps aux --sort=-%cpu | head -12</code></span>
+                                <span class="component-badge" id="badgeParentPid">PADRE PID: -</span>
+                            </div>
+                            <div class="ps-terminal-box" id="psTopEl" style="color:#cbd5e1;">Esperando telemetría de ps aux...</div>
+                        </div>
+                    </div>
+
+                    <!-- Estado del Sistema: CPU (R+), Cola Listos (T+), Cola E/S (S+) y Zombies (Z+) -->
                     <div class="system-state-row">
                         
                         <!-- CPU Core Box -->
                         <div class="component-box">
                             <div class="component-title">
-                                <span>⚡ Núcleo de CPU</span>
+                                <span>⚡ CPU (Estado R+)</span>
                                 <span class="component-badge" id="cpuBadgeState">IDLE</span>
                             </div>
                             <div class="cpu-core" id="cpuCoreEl">
@@ -972,25 +1011,36 @@
                             </div>
                         </div>
 
-                        <!-- Cola de Listos (Ready Queue) -->
+                        <!-- Cola de Listos (Ready Queue - SIGSTOP T+) -->
                         <div class="component-box">
                             <div class="component-title">
-                                <span>📋 Cola de Listos (READY)</span>
-                                <span class="component-badge" id="badgeReadyCount">0 en cola</span>
+                                <span>📋 Listos READY (STAT: T+)</span>
+                                <span class="component-badge" id="badgeReadyCount">0 en SIGSTOP</span>
                             </div>
                             <div class="process-queue-list" id="readyQueueEl">
                                 <span class="empty-queue">Cola vacía</span>
                             </div>
                         </div>
 
-                        <!-- Cola de E/S (Blocked Queue) -->
+                        <!-- Cola de E/S (Blocked Queue - pipe_read S+) -->
                         <div class="component-box">
                             <div class="component-title">
-                                <span>⏳ Cola de Bloqueados (E/S)</span>
-                                <span class="component-badge" id="badgeIOCount">0 en E/S</span>
+                                <span>⏳ Espera E/S (STAT: S+)</span>
+                                <span class="component-badge" id="badgeIOCount">0 en pipe_read</span>
                             </div>
                             <div class="process-queue-list" id="ioQueueEl">
-                                <span class="empty-queue">Sin procesos bloqueados</span>
+                                <span class="empty-queue">Sin procesos en pipe()</span>
+                            </div>
+                        </div>
+
+                        <!-- Procesos Zombie (Terminated before wait4 - Z+ <defunct>) -->
+                        <div class="component-box">
+                            <div class="component-title">
+                                <span>🧟 Zombies (STAT: Z+)</span>
+                                <span class="component-badge" id="badgeZombieCount" style="color:#f87171;">0 &lt;defunct&gt;</span>
+                            </div>
+                            <div class="process-queue-list" id="zombieQueueEl">
+                                <span class="empty-queue">Sin procesos zombie</span>
                             </div>
                         </div>
 
@@ -1120,8 +1170,9 @@
             tick: 0,
             isPlaying: false,
             timer: null,
-            speed: 300,
-            scenarioId: 1,
+            livePollTimer: null,
+            speed: 1000,
+            scenarioId: 2,
             algo: 'rr',
             quantum: 4,
             csPenalty: 1,
@@ -1510,9 +1561,9 @@
 
             // Cola de E/S
             const ioEl = document.getElementById('ioQueueEl');
-            document.getElementById('badgeIOCount').textContent = `${simState.ioQueue.length} en pipe()`;
+            document.getElementById('badgeIOCount').textContent = `${simState.ioQueue.length} en pipe_read`;
             if (simState.ioQueue.length === 0) {
-                ioEl.innerHTML = '<span class="empty-queue">Sin procesos bloqueados en pipe()</span>';
+                ioEl.innerHTML = '<span class="empty-queue">Sin procesos en pipe()</span>';
             } else {
                 ioEl.innerHTML = '';
                 simState.ioQueue.forEach(p => {
@@ -1522,9 +1573,30 @@
                     card.innerHTML = `
                         <div class="proc-card-pid" style="color:#f59e0b;">P${p.pid} <span style="font-size:10px;">(PID:${p.os_pid})</span></div>
                         <div style="font-weight:600; font-size:11px;">${p.name}</div>
-                        <div class="proc-card-burst">E/S Rest: <b>${p.remBurst}</b> | /proc: <b>${p.procState}</b></div>
+                        <div class="proc-card-burst">E/S Rest: <b>${p.remBurst}</b> | /proc: <b>${p.procState}+</b></div>
                     `;
                     ioEl.appendChild(card);
+                });
+            }
+
+            // Cola de Zombies (Z+ <defunct>)
+            const zombieEl = document.getElementById('zombieQueueEl');
+            const zombies = simState.processes.filter(p => p.state === 'TERMINATED' || p.procState === 'Z');
+            document.getElementById('badgeZombieCount').textContent = `${zombies.length} <defunct>`;
+            if (zombies.length === 0) {
+                zombieEl.innerHTML = '<span class="empty-queue">Sin procesos zombie</span>';
+            } else {
+                zombieEl.innerHTML = '';
+                zombies.forEach(p => {
+                    const card = document.createElement('div');
+                    card.className = 'proc-card';
+                    card.style.borderColor = '#ef4444';
+                    card.innerHTML = `
+                        <div class="proc-card-pid" style="color:#f87171;">P${p.pid} <span style="font-size:10px;">(PID:${p.os_pid})</span></div>
+                        <div style="font-weight:600; font-size:11px;">[simulador] &lt;defunct&gt;</div>
+                        <div class="proc-card-burst">STAT: <b>Z+</b> (_exit(0))</div>
+                    `;
+                    zombieEl.appendChild(card);
                 });
             }
 
@@ -1554,7 +1626,7 @@
                 } else {
                     block.style.background = PROCESS_COLORS[seg.pid] || '#2563eb';
                     block.textContent = `P${seg.pid}`;
-                    block.title = `Tick ${seg.t}: Proceso P${seg.pid}`;
+                    block.title = `Tick ${seg.t}: Proceso P${seg.pid} (OS_PID=${seg.os_pid || ''})`;
                 }
                 ganttTrack.appendChild(block);
 
@@ -1569,25 +1641,155 @@
         }
 
         // ====================================================================
+        // SINCRONIZACIÓN EN TIEMPO REAL CON EL PROCESO LINUX ./simulador Y ps
+        // ====================================================================
+        function applyLiveKernelState(live) {
+            if (!live) return;
+            simState.tick = live.tick || 0;
+            simState.cpuState = live.cpu_state || 'IDLE';
+            simState.busyTicks = live.busy_ticks || 0;
+            simState.csTicks = live.cs_ticks || 0;
+            simState.csCount = live.cs_count || 0;
+
+            if (live.parent_pid) {
+                document.getElementById('badgeParentPid').textContent = `PADRE PID: ${live.parent_pid}`;
+            }
+
+            if (Array.isArray(live.processes)) {
+                simState.processes = live.processes.map(lp => ({
+                    pid: lp.pid,
+                    os_pid: lp.os_pid,
+                    name: lp.name,
+                    arr: lp.arrival,
+                    basePri: lp.base_priority,
+                    dynPri: lp.dynamic_priority,
+                    nice: lp.nice,
+                    procState: lp.proc_state,
+                    wchan: lp.wchan,
+                    remBurst: lp.rem_burst,
+                    state: lp.logical_state === 'WAITING_IO' ? 'WAITING' : lp.logical_state,
+                    firstRun: lp.response >= 0 ? (lp.arrival + lp.response) : -1,
+                    completionTime: lp.turnaround > 0 ? (lp.arrival + lp.turnaround) : -1,
+                    waitTime: lp.wait_time
+                }));
+
+                simState.runningProc = simState.processes.find(p => p.state === 'RUNNING') || null;
+                simState.pendingProc = simState.processes.find(p => p.pid === live.running_pid) || null;
+                simState.readyQueue = simState.processes.filter(p => p.state === 'READY');
+                simState.ioQueue = simState.processes.filter(p => p.state === 'WAITING');
+            }
+
+            if (Array.isArray(live.gantt)) {
+                simState.gantt = live.gantt;
+            }
+
+            if (Array.isArray(live.syscalls) && live.syscalls.length > 0) {
+                const el = document.getElementById('kernelLogEl');
+                el.innerHTML = '';
+                live.syscalls.forEach(sc => {
+                    const entry = document.createElement('div');
+                    entry.className = 'log-entry';
+                    entry.innerHTML = `<span class="log-time">[t=${sc.tick}s | OS_PID=${sc.os_pid}]</span> <b>${sc.syscall}</b> -> ${sc.detail} <span style="color:#38bdf8;">[/proc=${sc.proc_state}+]</span>`;
+                    el.appendChild(entry);
+                });
+                el.scrollTop = el.scrollHeight;
+            }
+
+            updateUI();
+        }
+
+        async function pollLiveKernelState() {
+            try {
+                const resp = await fetch('/api/live');
+                if (!resp.ok) return;
+                const data = await resp.json();
+
+                if (data.ps_top) {
+                    document.getElementById('psTopEl').textContent = data.ps_top;
+                }
+
+                if (data.running_in_os && data.ps_forest) {
+                    document.getElementById('psForestEl').textContent = data.ps_forest;
+                    document.getElementById('badgePsStatus').textContent = 'EN EJECUCIÓN (ps --forest)';
+                    document.getElementById('badgePsStatus').style.color = '#10b981';
+                } else if (data.sim_state && data.sim_state.active === false) {
+                    document.getElementById('badgePsStatus').textContent = 'FINALIZADO (wait4 completado)';
+                    document.getElementById('badgePsStatus').style.color = '#38bdf8';
+                }
+
+                if (data.sim_state) {
+                    applyLiveKernelState(data.sim_state);
+                    const btn = document.getElementById('btnPlayPause');
+                    if (data.running_in_os) {
+                        simState.isPlaying = true;
+                        btn.innerHTML = '⏸ Corriendo en Linux...';
+                        btn.classList.add('paused');
+                    } else if (simState.isPlaying && !simState.timer) {
+                        simState.isPlaying = false;
+                        btn.innerHTML = '▶ Iniciar ./simulador';
+                        btn.classList.remove('paused');
+                    }
+                }
+            } catch (e) {
+                // Modo local sin live_server.py
+            }
+        }
+
+        // ====================================================================
         // EVENT HANDLERS Y CONTROLES
         // ====================================================================
-        function togglePlayPause() {
-            simState.isPlaying = !simState.isPlaying;
+        async function togglePlayPause() {
             const btn = document.getElementById('btnPlayPause');
+            if (!simState.isPlaying) {
+                // Intentar primero lanzar el binario real ./simulador en Linux vía live_server.py
+                try {
+                    const url = `/api/start?scenario=${simState.scenarioId}&algo=${simState.algo}&quantum=${simState.quantum}&cs=${simState.csPenalty}&aging=${simState.agingTh}&tick_ms=${simState.speed}`;
+                    const resp = await fetch(url);
+                    if (resp.ok) {
+                        const info = await resp.json();
+                        simState.isPlaying = true;
+                        btn.innerHTML = '⏸ Corriendo en Linux...';
+                        btn.classList.add('paused');
+                        logKernel(`⚡ Proceso padre ./simulador iniciado en el kernel Linux (PID=${info.pid}, tick=${simState.speed}ms). Ejecuta 'ps -C simulador --forest' en tu terminal.`, 'dispatch');
+                        return;
+                    }
+                } catch (err) {
+                    // Fallback al motor local si se abrió el archivo HTML directamente sin make web
+                }
+            } else if (!simState.timer) {
+                // Si está corriendo el proceso real en Linux, detenerlo con /api/stop
+                try {
+                    await fetch('/api/stop');
+                    simState.isPlaying = false;
+                    btn.innerHTML = '▶ Iniciar ./simulador';
+                    btn.classList.remove('paused');
+                    return;
+                } catch (err) {}
+            }
+
+            simState.isPlaying = !simState.isPlaying;
             if (simState.isPlaying) {
                 btn.innerHTML = '⏸ Pausar';
                 btn.classList.add('paused');
                 simState.timer = setInterval(stepTick, simState.speed);
             } else {
-                btn.innerHTML = '▶ Iniciar';
+                btn.innerHTML = '▶ Iniciar ./simulador';
                 btn.classList.remove('paused');
                 clearInterval(simState.timer);
                 simState.timer = null;
             }
         }
 
-        function resetSimulation() {
-            if (simState.isPlaying) togglePlayPause();
+        async function resetSimulation() {
+            try { await fetch('/api/stop'); } catch (e) {}
+            if (simState.timer) {
+                clearInterval(simState.timer);
+                simState.timer = null;
+            }
+            simState.isPlaying = false;
+            const btn = document.getElementById('btnPlayPause');
+            btn.innerHTML = '▶ Iniciar ./simulador';
+            btn.classList.remove('paused');
             initSimulation();
         }
 
@@ -1619,73 +1821,24 @@
         function onSpeedChange() {
             simState.speed = parseInt(document.getElementById('sliderSpeed').value);
             document.getElementById('valSpeed').textContent = `${simState.speed}ms`;
-            if (simState.isPlaying) {
+            if (simState.isPlaying && simState.timer) {
                 clearInterval(simState.timer);
                 simState.timer = setInterval(stepTick, simState.speed);
             }
         }
 
         async function executeRealPosixBinary() {
-            const btn = document.getElementById('btnRealPosix');
-            const origText = btn.innerHTML;
-            btn.innerHTML = '⏳ Ejecutando ./simulador en Linux...';
-            btn.disabled = true;
-
-            try {
-                const url = `/api/run?scenario=${simState.scenarioId}&algo=${simState.algo}&quantum=${simState.quantum}&cs=${simState.csPenalty}&aging=${simState.agingTh}`;
-                const resp = await fetch(url);
-                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-                const data = await resp.json();
-
-                resetSimulation();
-                if (data.processes && Array.isArray(data.processes)) {
-                    data.processes.forEach(realP => {
-                        const localP = simState.processes.find(lp => lp.pid === realP.pid);
-                        if (localP && realP.os_pid > 0) {
-                            localP.os_pid = realP.os_pid;
-                            localP.nice = realP.nice_value;
-                        }
-                    });
-                }
-                logEvent(`<span class="log-aging">⚡ BINARIO POSIX ./simulador EJECUTADO EN VIVO (${data.algorithm})</span>`);
-                if (data.syscalls && Array.isArray(data.syscalls)) {
-                    data.syscalls.slice(0, 12).forEach(sc => {
-                        logEvent(`[KERNEL] [T=${sc.tick}] PID=${sc.pid} (OS_PID=${sc.os_pid}) ${sc.syscall} -> ${sc.detail} [/proc=${sc.proc_state}]`);
-                    });
-                }
-                updateUI();
-            } catch (err) {
-                // Fallback a los archivos JSON generados por make test si no está corriendo make web
-                try {
-                    const fallbackResp = await fetch(`resultados_escenario${simState.scenarioId}.json`);
-                    if (fallbackResp.ok) {
-                        const fallbackList = await fallbackResp.json();
-                        const runData = Array.isArray(fallbackList) ? fallbackList[0] : fallbackList;
-                        if (runData && runData.processes) {
-                            runData.processes.forEach(realP => {
-                                const localP = simState.processes.find(lp => lp.pid === realP.pid);
-                                if (localP && realP.os_pid > 0) {
-                                    localP.os_pid = realP.os_pid;
-                                    localP.nice = realP.nice_value;
-                                }
-                            });
-                            logEvent(`<span class="log-aging">⚡ TRAZA POSIX CARGADA DESDE resultados_escenario${simState.scenarioId}.json (Para ejecución en vivo usa: make web)</span>`);
-                        }
-                    } else {
-                        logEvent(`<span class="log-cs">⚠️ Servidor live_server.py no detectado. Ejecuta 'make web' en la terminal para invocar ./simulador desde el navegador.</span>`);
-                    }
-                } catch (e2) {
-                    logEvent(`<span class="log-cs">⚠️ Ejecuta 'make web' en WSL para conectar el navegador con el binario ./simulador en vivo.</span>`);
-                }
-            } finally {
-                btn.innerHTML = origText;
-                btn.disabled = false;
+            if (simState.isPlaying) {
+                await resetSimulation();
             }
+            await togglePlayPause();
         }
 
-        // Inicialización
+        // Inicialización y polling en tiempo real de /api/live (cada 450 ms)
         window.addEventListener('DOMContentLoaded', () => {
             initSimulation();
+            simState.livePollTimer = setInterval(pollLiveKernelState, 450);
+            pollLiveKernelState();
         });
     </script>
 </body>

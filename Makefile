@@ -1,6 +1,6 @@
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra -O2 -pthread -Iinclude
-CXXFLAGS_DEBUG = -std=c++17 -Wall -Wextra -g -pthread -Iinclude
+CXXFLAGS = -std=c++17 -Wall -Wextra -O2 -MMD -MP -pthread -Iinclude
+CXXFLAGS_DEBUG = -std=c++17 -Wall -Wextra -g -MMD -MP -pthread -Iinclude
 
 SRC_DIR = src
 INC_DIR = include
@@ -19,10 +19,13 @@ SRCS = $(SRC_DIR)/Process.cpp \
        $(SRC_DIR)/main.cpp
 
 OBJS = $(SRCS:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
+DEPS = $(OBJS:.o=.d)
 
-.PHONY: all clean test debug run pdf plots web
+.PHONY: all clean test debug run pdf plots web live
 
 all: $(TARGET)
+
+-include $(DEPS)
 
 $(TARGET): $(OBJS)
 	@echo "Enlazando binario POSIX $(TARGET)..."
@@ -59,6 +62,10 @@ plots:
 web: all
 	@echo "Iniciando servidor interactivo conectado al binario POSIX ./simulador en http://localhost:8080 ..."
 	python3 scripts/live_server.py
+
+live: all
+	@echo "Ejecutando ./simulador en modo TIEMPO REAL (1 seg/tick) para observar procesos en 'ps --forest'..."
+	./$(TARGET) --live --scenario scenarios/escenario2_io_bursts.csv --algo rr --tick-ms 1000
 
 pdf:
 	@echo "Compilando informe técnico en PDF..."
