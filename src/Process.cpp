@@ -174,10 +174,10 @@ bool Process::spawn_posix_process() {
         // Fijar nombre de comando en el kernel a "simulador" para que 'ps -C simulador --forest' agrupe padre e hijos
         prctl(PR_SET_NAME, "simulador", 0, 0, 0);
 
-        // Sobrescribir argv[0] para que en 'ps aux' y 'ps -o args --forest' se identifique el proceso hijo
+        // Sobrescribir argv[0] para que en 'ps -C simulador -o args' se identifique el proceso, su prioridad y el archivo
         if (g_argv0_ptr && g_argv_total_len > 0) {
             std::memset(g_argv0_ptr, 0, g_argv_total_len);
-            std::snprintf(g_argv0_ptr, g_argv_total_len, "simulador:P%d_%s", pid, name.c_str());
+            std::snprintf(g_argv0_ptr, g_argv_total_len, "simulador:P%d_Pri%d_%s", pid, dynamic_priority, name.c_str());
         }
 
         // Fijar afinidad a la CPU 0 mediante sched_setaffinity() para competencia real por un núcleo

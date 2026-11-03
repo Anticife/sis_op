@@ -342,7 +342,7 @@ SimulationResults Simulator::run() {
         }
         std::cout << "Observe los procesos en tiempo real desde otra terminal con:\n"
                   << "  \033[1;37mwatch -n 0.5 \"ps -C simulador -o pid,ppid,stat,ni,pcpu,wchan:18,etime,comm,args --forest\"\033[0m\n"
-                  << "  \033[1;37mwatch -n 1 \"ps aux --sort=-%cpu | head -15\"\033[0m\n";
+                  << "  O ejecuta: \033[1;32mmake monitor\033[0m\n";
         std::cout << "\033[1;33m========================================================================================================\033[0m\n" << std::flush;
     }
 

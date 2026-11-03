@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Servidor de Archivos POSIX - Gestión y Planificación de Procesos en Linux</title>
+    <title>Servidor de Archivos POSIX - Procesos y Planificación en Linux</title>
     <style>
         :root {
-            --bg-body: #f1f5f9;
+            --bg-body: #f8fafc;
             --bg-card: #ffffff;
             --border: #e2e8f0;
             --text-main: #0f172a;
@@ -15,7 +15,6 @@
             --primary-hover: #1d4ed8;
             --success: #10b981;
             --warning: #f59e0b;
-            --info: #0ea5e9;
             --danger: #ef4444;
         }
 
@@ -30,16 +29,19 @@
             background-color: var(--bg-body);
             color: var(--text-main);
             line-height: 1.5;
+            min-height: 100vh;
         }
 
-        /* Barra Superior de la Aplicación Web */
+        /* Barra Superior */
         header {
             background: #0f172a;
             color: #f8fafc;
-            padding: 14px 28px;
+            padding: 12px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
             border-bottom: 1px solid #1e293b;
         }
 
@@ -58,64 +60,83 @@
             align-items: center;
             justify-content: center;
             font-weight: 800;
-            font-size: 18px;
+            font-size: 17px;
+            color: white;
+            flex-shrink: 0;
         }
 
         .brand-title {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 700;
         }
 
         .brand-sub {
-            font-size: 12px;
+            font-size: 11.5px;
             color: #94a3b8;
         }
 
         .server-indicators {
             display: flex;
             align-items: center;
-            gap: 14px;
-            font-size: 13px;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-size: 12.5px;
         }
 
         .status-pill {
             background: #1e293b;
             border: 1px solid #334155;
-            padding: 6px 12px;
+            padding: 5px 12px;
             border-radius: 999px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 7px;
             font-family: monospace;
+            color: #e2e8f0;
         }
 
         .dot {
-            width: 9px;
-            height: 9px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             background: #94a3b8;
+            flex-shrink: 0;
         }
         .dot.online {
             background: #10b981;
             box-shadow: 0 0 8px #10b981;
         }
 
-        /* Contenedor Principal */
+        .btn-header {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: opacity 0.15s;
+        }
+        .btn-header:hover { opacity: 0.9; }
+        .btn-danger { background: #ef4444; color: white; }
+        .btn-secondary { background: #334155; color: #f8fafc; border: 1px solid #475569; }
+
+        /* Contenedor Principal Responsive */
         .main-container {
-            max-width: 1440px;
-            margin: 20px auto;
-            padding: 0 20px;
+            max-width: 1500px;
+            margin: 16px auto;
+            padding: 0 16px;
             display: grid;
-            grid-template-columns: 390px 1fr;
-            gap: 20px;
+            grid-template-columns: minmax(310px, 370px) 1fr;
+            gap: 16px;
             align-items: start;
         }
 
+        /* Tarjetas */
         .card {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 10px;
-            padding: 18px 20px;
+            padding: 16px 18px;
             box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
         }
 
@@ -123,22 +144,24 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 14px;
-            padding-bottom: 10px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
             border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 6px;
         }
 
         .card-title {
-            font-size: 15px;
+            font-size: 14.5px;
             font-weight: 700;
             color: var(--text-main);
         }
 
-        /* Zona Drag & Drop de Subida de Archivos */
+        /* Zona de Subida Drag & Drop */
         .dropzone {
             border: 2px dashed #94a3b8;
-            border-radius: 10px;
-            padding: 22px 16px;
+            border-radius: 8px;
+            padding: 24px 14px;
             text-align: center;
             background: #f8fafc;
             cursor: pointer;
@@ -152,60 +175,21 @@
 
         .dropzone-title {
             font-weight: 600;
-            font-size: 14px;
+            font-size: 13.5px;
             color: var(--text-main);
             margin-top: 6px;
         }
 
         .dropzone-sub {
-            font-size: 12px;
+            font-size: 11.5px;
             color: var(--text-muted);
-            margin-top: 4px;
+            margin-top: 3px;
         }
 
-        /* Botones rápidos para cargar lotes de archivos reales */
-        .preset-group {
-            margin-top: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .preset-label {
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: var(--text-muted);
-        }
-
-        .preset-btns {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 6px;
-        }
-
-        .btn-outline {
-            background: #f8fafc;
-            border: 1px solid #cbd5e1;
-            color: #334155;
-            padding: 7px 10px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            text-align: left;
-            transition: all 0.15s;
-        }
-
-        .btn-outline:hover {
-            background: #e2e8f0;
-            border-color: #94a3b8;
-        }
-
-        /* Lista de Archivos en Cola para Subir */
+        /* Lista de Archivos Seleccionados */
         .staged-list {
-            margin-top: 14px;
-            max-height: 210px;
+            margin-top: 12px;
+            max-height: 220px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
@@ -220,14 +204,15 @@
             border: 1px solid var(--border);
             border-radius: 6px;
             padding: 8px 10px;
-            font-size: 12.5px;
+            font-size: 12px;
+            gap: 6px;
         }
 
         .staged-info {
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            margin-right: 8px;
+            flex: 1;
         }
 
         .staged-name {
@@ -246,14 +231,16 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            flex-shrink: 0;
         }
 
         .prio-select {
             padding: 3px 6px;
-            font-size: 11.5px;
+            font-size: 11px;
             border: 1px solid #cbd5e1;
             border-radius: 4px;
             background: white;
+            font-weight: 600;
         }
 
         .remove-btn {
@@ -262,14 +249,14 @@
             color: #ef4444;
             cursor: pointer;
             font-weight: 700;
-            font-size: 14px;
+            font-size: 15px;
             padding: 0 4px;
         }
 
-        /* Formulario de Parámetros del Planificador del Servidor */
+        /* Controles de Configuración */
         .form-section {
-            margin-top: 16px;
-            padding-top: 14px;
+            margin-top: 14px;
+            padding-top: 12px;
             border-top: 1px solid var(--border);
             display: flex;
             flex-direction: column;
@@ -283,16 +270,16 @@
         }
 
         .form-row label {
-            font-size: 12px;
+            font-size: 11.5px;
             font-weight: 600;
             color: #334155;
         }
 
         .form-select, .form-input {
-            padding: 8px 10px;
+            padding: 7px 10px;
             border: 1px solid #cbd5e1;
             border-radius: 6px;
-            font-size: 13px;
+            font-size: 12.5px;
             background: white;
         }
 
@@ -307,90 +294,85 @@
             background: var(--primary);
             color: white;
             border: none;
-            padding: 11px 16px;
-            border-radius: 8px;
+            padding: 10px 14px;
+            border-radius: 6px;
             font-weight: 700;
-            font-size: 14px;
+            font-size: 13.5px;
             cursor: pointer;
             width: 100%;
             transition: background 0.15s;
         }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-primary:disabled { background: #94a3b8; cursor: not-allowed; }
 
-        .btn-primary:hover {
-            background: var(--primary-hover);
-        }
-
-        .btn-primary:disabled {
-            background: #94a3b8;
-            cursor: not-allowed;
-        }
-
-        .btn-danger {
-            background: #ef4444;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 12px;
-            cursor: pointer;
-        }
-
-        /* Columna Derecha: Tabla de Archivos Procesándose y Monitor ps */
+        /* Columna Derecha */
         .right-column {
             display: flex;
             flex-direction: column;
-            gap: 18px;
+            gap: 16px;
+            min-width: 0;
         }
 
+        /* Barra de Estadísticas */
         .stats-bar {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 12px;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 10px;
         }
 
         .stat-box {
             background: white;
             border: 1px solid var(--border);
             border-radius: 8px;
-            padding: 12px 14px;
+            padding: 10px 12px;
         }
 
         .stat-label {
-            font-size: 11px;
+            font-size: 10.5px;
             font-weight: 600;
             text-transform: uppercase;
             color: var(--text-muted);
         }
 
         .stat-value {
-            font-size: 19px;
+            font-size: 17px;
             font-weight: 800;
             color: var(--text-main);
             margin-top: 2px;
             font-family: monospace;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        /* Tabla de Archivos en el Servidor */
+        /* Tabla de Archivos */
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 13px;
+            font-size: 12.5px;
+            min-width: 650px;
         }
 
         th {
             text-align: left;
-            padding: 10px 12px;
+            padding: 8px 10px;
             background: #f8fafc;
             border-bottom: 1px solid var(--border);
-            font-size: 11.5px;
+            font-size: 11px;
             text-transform: uppercase;
             color: var(--text-muted);
             font-weight: 700;
+            white-space: nowrap;
         }
 
         td {
-            padding: 11px 12px;
+            padding: 10px;
             border-bottom: 1px solid var(--border);
             vertical-align: middle;
         }
@@ -402,12 +384,13 @@
         .badge {
             display: inline-flex;
             align-items: center;
-            gap: 5px;
-            padding: 3px 9px;
+            gap: 4px;
+            padding: 3px 8px;
             border-radius: 999px;
-            font-size: 11.5px;
+            font-size: 11px;
             font-weight: 700;
             font-family: monospace;
+            white-space: nowrap;
         }
 
         .badge-r { background: #d1fae5; color: #065f46; border: 1px solid #34d399; }
@@ -419,10 +402,10 @@
         .progress-wrap {
             width: 100%;
             background: #e2e8f0;
-            height: 8px;
+            height: 7px;
             border-radius: 999px;
             overflow: hidden;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
         }
 
         .progress-fill {
@@ -434,18 +417,12 @@
         .progress-fill.io { background: #0ea5e9; }
         .progress-fill.done { background: #475569; }
 
-        /* Consola ps en vivo */
-        .terminal-grid {
-            display: grid;
-            grid-template-columns: 1.25fr 1fr;
-            gap: 14px;
-        }
-
+        /* Consola ps -C simulador */
         .terminal-card {
             background: #0f172a;
             color: #e2e8f0;
             border-radius: 10px;
-            padding: 14px 16px;
+            padding: 12px 16px;
             border: 1px solid #1e293b;
         }
 
@@ -453,12 +430,14 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 12px;
+            font-size: 11.5px;
             color: #94a3b8;
-            padding-bottom: 8px;
-            margin-bottom: 8px;
+            padding-bottom: 6px;
+            margin-bottom: 6px;
             border-bottom: 1px solid #1e293b;
             font-family: monospace;
+            flex-wrap: wrap;
+            gap: 6px;
         }
 
         .terminal-pre {
@@ -468,14 +447,14 @@
             color: #38bdf8;
             white-space: pre;
             overflow-x: auto;
-            min-height: 155px;
-            max-height: 220px;
+            min-height: 140px;
+            max-height: 250px;
             overflow-y: auto;
         }
 
         .gantt-mini {
             display: flex;
-            height: 28px;
+            height: 26px;
             border-radius: 6px;
             overflow: hidden;
             border: 1px solid var(--border);
@@ -486,23 +465,44 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 10px;
+            font-size: 9.5px;
             font-weight: 700;
             color: white;
             border-right: 1px solid rgba(255,255,255,0.25);
-            min-width: 18px;
+            min-width: 14px;
+        }
+
+        /* Media Queries para Responsive y Split Screen */
+        @media (max-width: 960px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .server-indicators {
+                width: 100%;
+                justify-content: space-between;
+            }
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- Barra Superior -->
+    <!-- Encabezado Superior -->
     <header>
         <div class="brand">
             <div class="brand-icon">FS</div>
             <div>
-                <div class="brand-title">Servidor de Procesamiento de Archivos POSIX</div>
-                <div class="brand-sub">Cada archivo subido instancia un proceso real en Linux (fork, SIGCONT/SIGSTOP, pipe E/S, setpriority, wait4)</div>
+                <div class="brand-title">Servidor POSIX de Subida y Procesamiento de Archivos</div>
+                <div class="brand-sub">Cada archivo subido instancia un proceso real en Linux (fork, SIGCONT/SIGSTOP, pipe, setpriority, wait4)</div>
             </div>
         </div>
         <div class="server-indicators">
@@ -510,60 +510,47 @@
                 <span class="dot" id="kernelDot"></span>
                 <span id="kernelStatusText">SERVIDOR EN REPOSO</span>
             </div>
-            <div class="status-pill" id="parentPidPill">
-                PID Demonio: -
-            </div>
-            <button class="btn-danger" onclick="stopServerJobs()">⏹ Detener Procesos</button>
+            <div class="status-pill" id="parentPidPill">PID Demonio: -</div>
+            <button class="btn-header btn-secondary" onclick="clearServer()" title="Borrar archivos de uploads/ y reiniciar">🗑️ Limpiar Servidor</button>
+            <button class="btn-header btn-danger" onclick="stopServerJobs()">⏹ Detener</button>
         </div>
     </header>
 
-    <!-- Layout Principal -->
+    <!-- Contenido Principal -->
     <div class="main-container">
 
-        <!-- Columna Izquierda: Subida Real de Archivos y Configuración de Cola -->
+        <!-- Columna Izquierda: Carga de Archivos Reales -->
         <div class="card">
             <div class="card-header">
                 <span class="card-title">1. Subir Archivos al Servidor</span>
-                <span style="font-size: 12px; color: var(--text-muted);" id="stagedCountBadge">0 archivos en cola</span>
+                <span style="font-size: 11.5px; color: var(--text-muted);" id="stagedCountBadge">0 archivos en cola</span>
             </div>
 
-            <!-- Input de Archivos Reales -->
+            <!-- Input Oculto y Dropzone -->
             <input type="file" id="realFileInput" multiple style="display: none;" onchange="handleFileSelect(event)">
             <div class="dropzone" id="dropzoneEl" onclick="document.getElementById('realFileInput').click()">
                 <div style="font-size: 26px;">📁</div>
-                <div class="dropzone-title">Haz clic para elegir archivos de tu PC o arrástralos aquí</div>
-                <div class="dropzone-sub">Se guardarán físicamente en <code>/mnt/d/sis_op/uploads/</code> y cada archivo lanzará un proceso hijo real en Linux</div>
+                <div class="dropzone-title">Selecciona o arrastra archivos reales de tu PC</div>
+                <div class="dropzone-sub">El servidor inicia vacío. Al subir archivos se guardarán físicamente en <code>uploads/</code></div>
             </div>
 
-            <!-- Lotes de Archivos para Prueba Inmediata -->
-            <div class="preset-group">
-                <span class="preset-label">O cargar lote de archivos de caso real en disco:</span>
-                <div class="preset-btns">
-                    <button class="btn-outline" onclick="loadPresetBatch('mixed_io')">
-                        📦 Lote Servidor Web (5 archivos con lectura E/S de disco y CPU: R+, S+, T+, Z+)
-                    </button>
-                    <button class="btn-outline" onclick="loadPresetBatch('convoy')">
-                        🐘 Caso Efecto Convoy (1 Backup Pesado de 45MB + 4 Documentos Urgentes)
-                    </button>
-                    <button class="btn-outline" onclick="loadPresetBatch('starvation')">
-                        🔥 Caso Inanición vs. Aging (1 Log Batch Prioridad 5 + 6 Alertas Prioridad 1)
-                    </button>
+            <!-- Lista de Archivos Seleccionados con Prioridad Automática -->
+            <div class="staged-list" id="stagedListEl">
+                <div style="font-size: 12px; color: #94a3b8; text-align: center; padding: 14px;">
+                    Ningún archivo seleccionado aún.
                 </div>
             </div>
 
-            <!-- Cola de archivos listos para subir -->
-            <div class="staged-list" id="stagedListEl"></div>
-
-            <!-- Parámetros del Planificador del Servidor -->
+            <!-- Configuración del Planificador -->
             <div class="form-section">
                 <div class="form-row">
-                    <label>Política de Planificación de CPU del Servidor</label>
-                    <select class="form-select" id="algoSelect">
+                    <label>Política de Planificación del Servidor</label>
+                    <select class="form-select" id="algoSelect" onchange="onAlgoChange()">
                         <option value="rr" selected>Round Robin (Quantum Equitativo)</option>
+                        <option value="priority_aging">Prioridad con Aging (setpriority dinámico)</option>
+                        <option value="priority_strict">Prioridad Estricta (Basada en Peso)</option>
+                        <option value="srtf">SRTF (Menor Duración Primero)</option>
                         <option value="fcfs">FCFS (Orden de Llegada - FIFO)</option>
-                        <option value="srtf">SRTF (Archivo Más Corto Primero - Expropiativo)</option>
-                        <option value="priority_strict">Prioridad Estricta (Sin Envejecimiento)</option>
-                        <option value="priority_aging">Prioridad con Aging (setpriority nice dinámico)</option>
                     </select>
                 </div>
 
@@ -580,7 +567,7 @@
 
                 <div class="grid-2">
                     <div class="form-row">
-                        <label>Costo Cambio Contexto</label>
+                        <label>Costo Context Switch</label>
                         <input type="number" class="form-input" id="inputCS" value="1" min="0" max="5">
                     </div>
                     <div class="form-row">
@@ -590,30 +577,30 @@
                 </div>
 
                 <button class="btn-primary" id="btnUploadStart" onclick="uploadAndProcessFiles()">
-                    ☁️ Subir Archivos y Ejecutar Procesos en Linux
+                    ☁️ Subir Archivos y Procesar en Linux
                 </button>
             </div>
         </div>
 
-        <!-- Columna Derecha: Archivos Procesándose y Salida ps en Vivo -->
+        <!-- Columna Derecha: Procesos en el Kernel y Consola ps -->
         <div class="right-column">
 
-            <!-- Resumen de Estado del Servidor -->
+            <!-- Métricas Resumen -->
             <div class="stats-bar">
                 <div class="stat-box">
-                    <div class="stat-label">Reloj del Planificador</div>
+                    <div class="stat-label">Reloj Planificador</div>
                     <div class="stat-value" id="statTick">0 s</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-label">Proceso en CPU (R+)</div>
-                    <div class="stat-value" id="statRunning" style="color: #059669; font-size: 15px;">IDLE</div>
+                    <div class="stat-label">En CPU (R+)</div>
+                    <div class="stat-value" id="statRunning" style="color: #059669; font-size: 14.5px;">IDLE</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-label">Utilización CPU</div>
+                    <div class="stat-label">Uso de CPU</div>
                     <div class="stat-value" id="statUtil">0.0%</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-label">Cambios de Contexto</div>
+                    <div class="stat-label">Cambios Contexto</div>
                     <div class="stat-value" id="statCS">0</div>
                 </div>
                 <div class="stat-box">
@@ -622,66 +609,60 @@
                 </div>
             </div>
 
-            <!-- Tabla de Archivos en /mnt/d/sis_op/uploads/ y sus Procesos Linux -->
+            <!-- Tabla de Archivos y Procesos -->
             <div class="card">
                 <div class="card-header">
-                    <span class="card-title">2. Archivos en el Servidor (<code>/mnt/d/sis_op/uploads/</code>) y Procesos Hijos en el Kernel</span>
-                    <span style="font-size: 12px; color: var(--text-muted);" id="activeAlgoLabel">Esperando subida de archivos...</span>
+                    <span class="card-title">2. Archivos en Disco (<code>uploads/</code>) y Procesos en Kernel</span>
+                    <span style="font-size: 11.5px; color: var(--text-muted);" id="activeAlgoLabel">Servidor en espera de archivos...</span>
                 </div>
 
-                <div style="overflow-x: auto;">
+                <div class="table-wrap">
                     <table>
                         <thead>
                             <tr>
                                 <th>ID</th>
                                 <th>Archivo en Disco</th>
-                                <th>Tamaño</th>
+                                <th>Peso Real</th>
                                 <th>PID Linux</th>
                                 <th>Prioridad / Nice</th>
-                                <th>Estado en Kernel (<code>ps</code>)</th>
-                                <th style="width: 190px;">Progreso Real</th>
+                                <th>Estado (<code>ps</code>)</th>
+                                <th style="width: 170px;">Progreso</th>
                                 <th>SHA-256</th>
                                 <th>Espera / Retorno</th>
                             </tr>
                         </thead>
                         <tbody id="filesTableBody">
                             <tr>
-                                <td colspan="9" style="text-align: center; color: var(--text-muted); padding: 24px;">
-                                    No hay archivos procesándose. Selecciona archivos a la izquierda y haz clic en <b>"Subir Archivos y Ejecutar Procesos en Linux"</b>.
+                                <td colspan="9" style="text-align: center; color: var(--text-muted); padding: 26px;">
+                                    El servidor está vacío. Selecciona archivos a la izquierda para instanciar los procesos hijos en Linux.
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
 
-                <!-- Línea de Tiempo de Asignación de CPU (Gantt en Vivo) -->
+                <!-- Gantt Miniatura -->
                 <div style="margin-top: 14px;">
-                    <div style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px; display: flex; justify-content: space-between;">
-                        <span>SECUENCIA DE ASIGNACIÓN DE CPU POR ARCHIVO (GANTT EN VIVO)</span>
+                    <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px; display: flex; justify-content: space-between;">
+                        <span>LÍNEA DE TIEMPO DE CPU POR PROCESO (GANTT)</span>
                         <span id="ganttTicksLabel">0 ticks</span>
                     </div>
                     <div class="gantt-mini" id="ganttBarEl"></div>
                 </div>
             </div>
 
-            <!-- Terminales ps en Vivo del Sistema Operativo -->
-            <div class="terminal-grid">
-                <div class="terminal-card">
-                    <div class="terminal-header">
-                        <span>$ ps -C simulador -o pid,ppid,stat,ni,pcpu,wchan:18,etime,comm,args --forest</span>
-                        <span style="color: #10b981;">● Consola Linux en Vivo</span>
-                    </div>
-                    <div class="terminal-pre" id="psForestBox">Esperando que subas archivos para instanciar los procesos hijos con fork()...
-(También puedes abrir tu terminal WSL y ejecutar: make monitor)</div>
+            <!-- Consola Única Exclusiva de ps -C simulador -->
+            <div class="terminal-card">
+                <div class="terminal-header">
+                    <span>$ ps -C simulador -o pid,ppid,stat,ni,pcpu,wchan:18,etime,comm,args --forest</span>
+                    <span style="color: #10b981;">● Monitoreo Exclusivo de Instancia</span>
                 </div>
+                <div class="terminal-pre" id="psForestBox">El servidor se encuentra vacío. Cuando subas archivos reales, aquí verás el árbol de procesos:
+  \_ simulador (PADRE)
+      \_ simulador:P1_Pri1_archivo1.pdf (HIJO R+/S+/T+/Z+)
+      \_ simulador:P2_Pri2_archivo2.dat (HIJO R+/S+/T+/Z+)
 
-                <div class="terminal-card">
-                    <div class="terminal-header">
-                        <span>$ ps aux --sort=-%cpu | head -12</span>
-                        <span style="color: #38bdf8;">Top CPU del Sistema</span>
-                    </div>
-                    <div class="terminal-pre" id="psTopBox" style="color: #cbd5e1;">Cargando ps aux...</div>
-                </div>
+También puedes observar en vivo desde tu terminal WSL con: make monitor</div>
             </div>
 
         </div>
@@ -693,7 +674,7 @@
         let stagedFiles = [];
         let uploadedMeta = {};
 
-        // Configurar Drag & Drop
+        // Drag & Drop
         const dropzone = document.getElementById('dropzoneEl');
         dropzone.addEventListener('dragover', (e) => {
             e.preventDefault();
@@ -720,57 +701,34 @@
             return (bytes / (1024 * 1024)).toFixed(2) + " MB";
         }
 
+        // Calcula automáticamente la prioridad según el tamaño en bytes
+        function inferPriorityFromSize(bytes) {
+            const kb = Math.max(1, Math.floor(bytes / 1024));
+            if (kb < 100) return 1;        // < 100 KB -> Pri 1 (nice 0)
+            if (kb < 1024) return 2;       // 100 KB - 1 MB -> Pri 2 (nice 4)
+            if (kb < 5120) return 3;       // 1 MB - 5 MB -> Pri 3 (nice 8)
+            if (kb < 20480) return 4;      // 5 MB - 20 MB -> Pri 4 (nice 12)
+            return 5;                      // > 20 MB -> Pri 5 (nice 16)
+        }
+
         function addRealFilesToStage(fileList) {
             Array.from(fileList).forEach((file) => {
                 const reader = new FileReader();
                 reader.onload = (ev) => {
                     const base64 = ev.target.result.split(',')[1] || "";
+                    const autoPrio = inferPriorityFromSize(file.size || 1024);
                     stagedFiles.push({
                         name: file.name,
-                        size: file.size || 32768,
-                        priority: 2,
+                        size: file.size || 1024,
+                        priority: autoPrio,
                         arrival: stagedFiles.length,
-                        content_b64: base64,
-                        bursts: null
+                        content_b64: base64
                     });
                     renderStagedList();
                 };
-                // Leer hasta 256 KB reales del archivo para escribir en uploads/ y calcular SHA-256
                 const slice = file.slice(0, 262144);
                 reader.readAsDataURL(slice);
             });
-        }
-
-        function loadPresetBatch(type) {
-            stagedFiles = [];
-            if (type === 'mixed_io') {
-                stagedFiles = [
-                    { name: "busqueda_index.json",  size: 180 * 1024,  priority: 1, arrival: 0, content_b64: "", bursts: "C3,I6,C2" },
-                    { name: "reporte_bd_anual.sql", size: 2400 * 1024, priority: 3, arrival: 1, content_b64: "", bursts: "C6,I4,C5" },
-                    { name: "subida_video_hd.mp4",  size: 1450 * 1024, priority: 2, arrival: 2, content_b64: "", bursts: "C2,I8,C3" },
-                    { name: "llave_oauth_jwt.pem",  size: 24 * 1024,   priority: 1, arrival: 4, content_b64: "", bursts: "C2,I3,C1" },
-                    { name: "cache_miniaturas.tar", size: 680 * 1024,  priority: 2, arrival: 6, content_b64: "", bursts: "C4,I2,C2" }
-                ];
-            } else if (type === 'convoy') {
-                stagedFiles = [
-                    { name: "backup_servidor_completo.bin", size: 45 * 1024 * 1024, priority: 3, arrival: 0, content_b64: "", bursts: "C28" },
-                    { name: "login_usuario.json",           size: 12 * 1024,        priority: 2, arrival: 1, content_b64: "", bursts: "C2" },
-                    { name: "pago_tarjeta.xml",             size: 18 * 1024,        priority: 1, arrival: 2, content_b64: "", bursts: "C3" },
-                    { name: "foto_perfil.png",              size: 45 * 1024,        priority: 2, arrival: 3, content_b64: "", bursts: "C2" },
-                    { name: "catalogo_productos.csv",       size: 60 * 1024,        priority: 2, arrival: 4, content_b64: "", bursts: "C2" }
-                ];
-            } else if (type === 'starvation') {
-                stagedFiles = [
-                    { name: "auditoria_historica_batch.log", size: 28 * 1024 * 1024, priority: 5, arrival: 0,  content_b64: "", bursts: "C20" },
-                    { name: "alerta_urgente_01.json",        size: 16 * 1024,        priority: 1, arrival: 1,  content_b64: "", bursts: "C3" },
-                    { name: "alerta_urgente_02.json",        size: 16 * 1024,        priority: 1, arrival: 4,  content_b64: "", bursts: "C3" },
-                    { name: "alerta_urgente_03.json",        size: 16 * 1024,        priority: 1, arrival: 7,  content_b64: "", bursts: "C3" },
-                    { name: "alerta_urgente_04.json",        size: 16 * 1024,        priority: 1, arrival: 10, content_b64: "", bursts: "C3" },
-                    { name: "alerta_urgente_05.json",        size: 24 * 1024,        priority: 2, arrival: 13, content_b64: "", bursts: "C4" }
-                ];
-                document.getElementById('algoSelect').value = 'priority_aging';
-            }
-            renderStagedList();
         }
 
         function renderStagedList() {
@@ -778,7 +736,7 @@
             document.getElementById('stagedCountBadge').textContent = `${stagedFiles.length} archivos en cola`;
 
             if (stagedFiles.length === 0) {
-                listEl.innerHTML = '<div style="font-size:12px; color:#94a3b8; text-align:center; padding:8px;">Ningún archivo seleccionado todavía.</div>';
+                listEl.innerHTML = '<div style="font-size:12px; color:#94a3b8; text-align:center; padding:14px;">Ningún archivo seleccionado aún.</div>';
                 return;
             }
 
@@ -789,14 +747,15 @@
                 item.innerHTML = `
                     <div class="staged-info">
                         <span class="staged-name">${idx + 1}. ${f.name}</span>
-                        <span class="staged-meta">Tamaño: ${formatBytes(f.size)} | Llegada: t=${f.arrival}s</span>
+                        <span class="staged-meta">Peso: <b>${formatBytes(f.size)}</b> | Llegada: t=${f.arrival}s</span>
                     </div>
                     <div class="staged-controls">
-                        <select class="prio-select" onchange="stagedFiles[${idx}].priority = parseInt(this.value)">
-                            <option value="1" ${f.priority === 1 ? 'selected' : ''}>Pri 1 (Alta)</option>
-                            <option value="2" ${f.priority === 2 ? 'selected' : ''}>Pri 2 (Media)</option>
-                            <option value="3" ${f.priority === 3 ? 'selected' : ''}>Pri 3 (Baja)</option>
-                            <option value="5" ${f.priority === 5 ? 'selected' : ''}>Pri 5 (Fondo)</option>
+                        <select class="prio-select" title="Prioridad calculada según peso (modificable)" onchange="stagedFiles[${idx}].priority = parseInt(this.value)">
+                            <option value="1" ${f.priority === 1 ? 'selected' : ''}>Pri 1 (NI:0)</option>
+                            <option value="2" ${f.priority === 2 ? 'selected' : ''}>Pri 2 (NI:4)</option>
+                            <option value="3" ${f.priority === 3 ? 'selected' : ''}>Pri 3 (NI:8)</option>
+                            <option value="4" ${f.priority === 4 ? 'selected' : ''}>Pri 4 (NI:12)</option>
+                            <option value="5" ${f.priority === 5 ? 'selected' : ''}>Pri 5 (NI:16)</option>
                         </select>
                         <button class="remove-btn" onclick="stagedFiles.splice(${idx}, 1); renderStagedList();">×</button>
                     </div>
@@ -805,15 +764,23 @@
             });
         }
 
+        function onAlgoChange() {
+            const algo = document.getElementById('algoSelect').value;
+            // Si el usuario cambia a políticas de prioridad, reevaluar prioridades inferidas
+            if (stagedFiles.length > 0) {
+                renderStagedList();
+            }
+        }
+
         async function uploadAndProcessFiles() {
             if (stagedFiles.length === 0) {
-                alert("Primero selecciona uno o más archivos de tu PC (o elige uno de los lotes de archivos).");
+                alert("Primero selecciona o arrastra al menos un archivo desde tu equipo.");
                 return;
             }
 
             const btn = document.getElementById('btnUploadStart');
             btn.disabled = true;
-            btn.textContent = "⏳ Subiendo a uploads/ y creando procesos con fork()...";
+            btn.textContent = "⏳ Subiendo y creando procesos POSIX...";
 
             const payload = {
                 files: stagedFiles,
@@ -836,10 +803,10 @@
                 }
                 pollLiveStatus();
             } catch (err) {
-                alert("Error conectando con live_server.py. Asegúrate de tener corriendo 'make web' en tu terminal WSL.");
+                alert("Error comunicándose con live_server.py. Asegúrate de tener corriendo 'make web' en tu terminal WSL.");
             } finally {
                 btn.disabled = false;
-                btn.textContent = "☁️ Subir Archivos y Ejecutar Procesos en Linux";
+                btn.textContent = "☁️ Subir Archivos y Procesar en Linux";
             }
         }
 
@@ -850,23 +817,35 @@
             } catch (e) {}
         }
 
+        async function clearServer() {
+            if (confirm("¿Deseas vaciar la carpeta uploads/ y reiniciar el estado del servidor?")) {
+                stagedFiles = [];
+                uploadedMeta = {};
+                renderStagedList();
+                try {
+                    await fetch('/api/clear');
+                    pollLiveStatus();
+                } catch (e) {}
+            }
+        }
+
         function renderStateBadge(p, simActive) {
             if (!simActive && p.logical_state === 'TERMINATED') {
-                return `<span class="badge badge-done">✅ COMPLETADO (wait4 OK)</span>`;
+                return `<span class="badge badge-done">✅ COMPLETADO</span>`;
             }
             if (p.zombie || p.proc_state === 'Z') {
-                return `<span class="badge badge-z">🧟 Z+ &lt;defunct&gt; (_exit)</span>`;
+                return `<span class="badge badge-z">🧟 Z+ &lt;defunct&gt;</span>`;
             }
             if (p.logical_state === 'RUNNING' || p.proc_state === 'R') {
-                return `<span class="badge badge-r">🟢 R+ EJECUTANDO CPU</span>`;
+                return `<span class="badge badge-r">🟢 R+ CPU</span>`;
             }
             if (p.logical_state === 'WAITING_IO' || p.proc_state === 'S') {
                 return `<span class="badge badge-s">🔵 S+ E/S (${p.wchan || 'pipe_read'})</span>`;
             }
             if (p.logical_state === 'READY') {
-                return `<span class="badge badge-t">🟡 T+ EN COLA (SIGSTOP)</span>`;
+                return `<span class="badge badge-t">🟡 T+ COLA (SIGSTOP)</span>`;
             }
-            return `<span class="badge badge-done">⏸ T+ ESPERANDO LLEGADA (t=${p.arrival}s)</span>`;
+            return `<span class="badge badge-done">⏸ T+ ESPERA (t=${p.arrival}s)</span>`;
         }
 
         async function pollLiveStatus() {
@@ -879,28 +858,37 @@
                     uploadedMeta = data.uploaded_files;
                 }
 
-                // Actualizar consolas ps reales
-                if (data.ps_top) {
-                    document.getElementById('psTopBox').textContent = data.ps_top;
-                }
+                // Actualizar consola exclusiva ps -C simulador
                 if (data.running_in_os && data.ps_forest) {
                     document.getElementById('psForestBox').textContent = data.ps_forest;
                     document.getElementById('kernelDot').classList.add('online');
-                    document.getElementById('kernelStatusText').textContent = "PROCESANDO ARCHIVOS EN LINUX (ACTIVO)";
+                    document.getElementById('kernelStatusText').textContent = "PLANIFICANDO EN KERNEL (ACTIVO)";
                 } else {
                     document.getElementById('kernelDot').classList.remove('online');
                     document.getElementById('kernelStatusText').textContent = "SERVIDOR EN REPOSO";
                     if (data.sim_state && data.sim_state.active === false) {
                         document.getElementById('psForestBox').textContent =
-                            "Todos los procesos hijos terminaron (_exit(0)) y fueron recolectados limpiamente por el padre con wait4().\n" +
-                            "No quedan procesos activos ni zombies en 'ps -C simulador'.";
+                            "Todos los procesos hijos terminaron (_exit(0)) y fueron recolectados limpiamente con wait4().\n" +
+                            "No quedan procesos activos en 'ps -C simulador'.";
                     }
                 }
 
                 const sim = data.sim_state;
-                if (!sim) return;
+                if (!sim) {
+                    // Si no hay simulación activa y uploads está vacío, mostrar tabla vacía
+                    if (Object.keys(uploadedMeta).length === 0) {
+                        document.getElementById('filesTableBody').innerHTML = `
+                            <tr>
+                                <td colspan="9" style="text-align: center; color: var(--text-muted); padding: 26px;">
+                                    El servidor está vacío. Selecciona archivos a la izquierda para instanciar los procesos hijos en Linux.
+                                </td>
+                            </tr>
+                        `;
+                    }
+                    return;
+                }
 
-                document.getElementById('parentPidPill').textContent = `PID Padre: ${sim.parent_pid || '-'}`;
+                document.getElementById('parentPidPill').textContent = `PID Demonio: ${sim.parent_pid || '-'}`;
                 document.getElementById('statTick').textContent = `${sim.tick} s`;
                 document.getElementById('activeAlgoLabel').textContent = `Política activa: ${sim.algorithm}`;
 
@@ -942,7 +930,7 @@
                                 <div style="font-weight: 600;">${p.name}</div>
                                 <div style="font-size: 11px; color: var(--text-muted);"><code>uploads/${p.name}</code></div>
                             </td>
-                            <td>${meta.size_bytes ? formatBytes(meta.size_bytes) : '-'}</td>
+                            <td><b>${meta.size_bytes ? formatBytes(meta.size_bytes) : '-'}</b></td>
                             <td style="font-family: monospace; font-weight: 700; color: #1e40af;">${p.os_pid}</td>
                             <td>
                                 Pri: <b>${p.dynamic_priority}</b> ${prioChanged ? '🔥 (Aging)' : ''}
@@ -953,15 +941,15 @@
                                 <div class="progress-wrap">
                                     <div class="progress-fill ${fillClass}" style="width: ${pct}%;"></div>
                                 </div>
-                                <div style="font-size: 11px; color: var(--text-muted); display: flex; justify-content: space-between;">
-                                    <span>${pct}% completado</span>
+                                <div style="font-size: 10.5px; color: var(--text-muted); display: flex; justify-content: space-between;">
+                                    <span>${pct}%</span>
                                     <span>Rest: ${p.rem_burst}s</span>
                                 </div>
                             </td>
-                            <td style="font-family: monospace; font-size: 11.5px; color: #475569;">
-                                ${meta.sha256 || 'calculando...'}
+                            <td style="font-family: monospace; font-size: 11px; color: #475569;">
+                                ${meta.sha256 || '-'}
                             </td>
-                            <td style="font-size: 12px;">
+                            <td style="font-size: 11.5px;">
                                 W: <b>${p.wait_time}s</b> | T: <b>${p.turnaround > 0 ? p.turnaround + 's' : '-'}</b>
                             </td>
                         `;
@@ -969,10 +957,10 @@
                     });
                 }
 
-                // Renderizar barra Gantt en vivo
+                // Renderizar Gantt en vivo
                 if (Array.isArray(sim.gantt)) {
                     const ganttEl = document.getElementById('ganttBarEl');
-                    document.getElementById('ganttTicksLabel').textContent = `${sim.gantt.length} segundos ejecutados`;
+                    document.getElementById('ganttTicksLabel').textContent = `${sim.gantt.length} ticks`;
                     ganttEl.innerHTML = '';
                     sim.gantt.forEach(seg => {
                         const div = document.createElement('div');
@@ -981,9 +969,9 @@
                         if (seg.pid === -2) {
                             div.style.background = '#ef4444';
                             div.textContent = 'CS';
-                            div.title = `t=${seg.t}s: Cambio de Contexto`;
+                            div.title = `t=${seg.t}s: Conmutación de Contexto`;
                         } else if (seg.pid === -1) {
-                            div.style.background = '#94a3b8';
+                            div.style.background = '#cbd5e1';
                             div.textContent = '-';
                         } else {
                             div.style.background = COLORS[(seg.pid - 1) % COLORS.length];
@@ -994,13 +982,13 @@
                     });
                 }
             } catch (e) {
-                // Ignorar error de red transitorio
+                // Error transitorio de red
             }
         }
 
-        // Cargar por defecto el lote de archivos mixtos listo para subir y hacer polling cada 450ms
+        // Iniciar con la cola vacía y polling cada 450ms
         window.addEventListener('DOMContentLoaded', () => {
-            loadPresetBatch('mixed_io');
+            renderStagedList();
             setInterval(pollLiveStatus, 450);
             pollLiveStatus();
         });
