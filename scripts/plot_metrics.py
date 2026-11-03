@@ -4,11 +4,17 @@ scripts/plot_metrics.py
 Generador gráfico de métricas y diagramas de Gantt para el proyecto de
 Gestión de Procesos y Planificación de CPU (Sistemas Operativos).
 
+Lectura 100% DINÁMICA desde los archivos CSV generados por el simulador:
+  - docs/resultados_escenario1.csv
+  - docs/resultados_escenario2.csv
+  - docs/resultados_escenario3.csv
+  - scenarios/escenario1_convoy.csv
+
 Genera 4 gráficas de alta resolución (300 DPI) en docs/graficas/:
   1. escenario1_comparativa.png
-  2. escenario1_gantt.png
-  3. escenario3_starvation_vs_aging.png
-  4. round_robin_sensibilidad_quantum.png
+  2. escenario1_gantt.png (Leído dinámicamente de la sección GANTT del CSV)
+  3. escenario3_starvation_vs_aging.png (Leído dinámicamente del CSV)
+  4. round_robin_sensibilidad_quantum.png (Simulado dinámicamente desde el CSV del escenario)
 """
 
 import os
@@ -19,9 +25,10 @@ import matplotlib.patches as mpatches
 from matplotlib.ticker import MultipleLocator
 import numpy as np
 
-# Configurar directorio base
+# Configurar directorios base
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DOCS_DIR = os.path.join(PROJECT_DIR, "docs")
+SCENARIOS_DIR = os.path.join(PROJECT_DIR, "scenarios")
 OUTPUT_DIR = os.path.join(DOCS_DIR, "graficas")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
@@ -38,10 +45,66 @@ plt.rcParams.update({
     'figure.titleweight': 'bold'
 })
 
-def parse_csv_summary(csv_path):
-    """Lee la sección '--- RESUMEN GLOBAL DE METRICAS ---' de un CSV exportado."""
+# Paleta armónica dinámica para procesos
+COLOR_PALETTE = [
+    "#2b5b84",  # Azul petróleo
+    "#27ae60",  # Verde esmeralda
+    "#2980b9",  # Celeste azul
+    "#8e44ad",  # Morado amatista
+    "#e67e22",  # Naranja
+    "#16a085",  # Turquesa
+    "#d35400",  # Óxido
+    "#7f8c8d"   # Gris medio
+]
+
+
+def load_scenario_processes(csv_path):
+    """Carga y parsea dinámicamente un archivo de escenario CSV en scenarios/."""
     if not os.path.exists(csv_path):
-        return None
+        raise FileNotFoundError(f"Archivo de escenario no encontrado: {csv_path}")
+
+    processes = []
+    with open(csv_path, mode="r", encoding="utf-8") as f:
+        reader = csv.reader(f)
+        for row in reader:
+            if not row or row[0].startswith('#') or row[0].lower() == 'pid':
+                continue
+            # PID, Nombre, Llegada, Prioridad, Rafagas...
+            pid = int(row[0].strip())
+            name = row[1].strip()
+            arrival = int(row[2].strip())
+            priority = int(row[3].strip())
+            bursts = []
+            for b in row[4:]:
+                b = b.strip()
+                if not b:
+                    continue
+                if b[0].upper() == 'C':
+                    bursts.append(('CPU', int(b[1:])))
+                elif b[0].upper() == 'I':
+                    bursts.append(('IO', int(b[1:])))
+                else:
+                    bursts.append(('CPU', int(b)))
+
+            total_cpu = sum(dur for btype, dur in bursts if btype == 'CPU')
+            total_io = sum(dur for btype, dur in bursts if btype == 'IO')
+            processes.append({
+                'pid': pid,
+                'name': name,
+                'arrival': arrival,
+                'priority': priority,
+                'bursts': bursts,
+                'total_cpu': total_cpu,
+                'total_io': total_io
+            })
+    return processes
+
+
+def parse_csv_summary(csv_path):
+    """Lee dinámicamente la sección '--- RESUMEN GLOBAL DE METRICAS ---' de un CSV exportado."""
+    if not os.path.exists(csv_path):
+        raise FileNotFoundError(f"Archivo de métricas no encontrado: {csv_path}. Ejecuta 'make test' primero.")
+
     summary_data = []
     in_summary = False
     with open(csv_path, mode="r", encoding="utf-8") as f:
@@ -53,8 +116,9 @@ def parse_csv_summary(csv_path):
                 in_summary = True
                 continue
             if in_summary:
+                if "---" in row[0]:
+                    break
                 if row[0] == "Algoritmo":
-                    header = row
                     continue
                 if len(row) >= 10:
                     try:
@@ -75,10 +139,12 @@ def parse_csv_summary(csv_path):
                         pass
     return summary_data
 
+
 def parse_csv_processes(csv_path):
-    """Lee la sección de procesos de un CSV exportado."""
+    """Lee dinámicamente la sección de procesos de un CSV exportado."""
     if not os.path.exists(csv_path):
-        return []
+        raise FileNotFoundError(f"Archivo de métricas no encontrado: {csv_path}. Ejecuta 'make test' primero.")
+
     processes = []
     with open(csv_path, mode="r", encoding="utf-8") as f:
         reader = csv.reader(f)
@@ -114,27 +180,60 @@ def parse_csv_processes(csv_path):
     return processes
 
 
+def parse_csv_gantt(csv_path):
+    """
+    Lee dinámicamente la sección '--- DIAGRAMA DE GANTT ---' del CSV exportado por el simulador.
+    Retorna un diccionario ordenado { algoritmo: [(inicio, fin, pid, etiqueta), ...] }
+    y un mapeo de etiquetas { pid: nombre }.
+    """
+    if not os.path.exists(csv_path):
+        raise FileNotFoundError(f"Archivo de métricas no encontrado: {csv_path}. Ejecuta 'make test' primero.")
+
+    gantt_by_algo = {}
+    pid_labels = {}
+    in_gantt = False
+
+    with open(csv_path, mode="r", encoding="utf-8") as f:
+        reader = csv.reader(f)
+        for row in reader:
+            if not row:
+                continue
+            if "--- DIAGRAMA DE GANTT ---" in row[0]:
+                in_gantt = True
+                continue
+            if in_gantt:
+                if row[0] == "Algoritmo":
+                    continue
+                if len(row) >= 5:
+                    algo = row[0].strip()
+                    try:
+                        start = int(row[1])
+                        end = int(row[2])
+                        pid = int(row[3])
+                        label = row[4].strip()
+                        if algo not in gantt_by_algo:
+                            gantt_by_algo[algo] = []
+                        gantt_by_algo[algo].append((start, end, pid, label))
+                        if pid > 0 and pid not in pid_labels:
+                            pid_labels[pid] = label
+                    except ValueError:
+                        pass
+
+    return gantt_by_algo, pid_labels
+
+
 # -----------------------------------------------------------------------------
 # 1. Gráfica Comparativa de Tiempos: Escenario 1 (Efecto Convoy)
 # -----------------------------------------------------------------------------
 def plot_escenario1_comparativa():
     csv_path = os.path.join(DOCS_DIR, "resultados_escenario1.csv")
     data = parse_csv_summary(csv_path)
-
-    # Datos de respaldo exactos si el CSV aún no existe
     if not data:
-        data = [
-            {"Algoritmo": "FCFS", "Promedio_Retorno": 39.6, "Promedio_Espera": 30.0, "Indice_Jain": 0.29},
-            {"Algoritmo": "Round Robin (q=4)", "Promedio_Retorno": 17.6, "Promedio_Espera": 7.8, "Indice_Jain": 0.75},
-            {"Algoritmo": "SRTF", "Promedio_Retorno": 14.8, "Promedio_Espera": 5.0, "Indice_Jain": 0.88},
-            {"Algoritmo": "Prioridad Estricta", "Promedio_Retorno": 16.4, "Promedio_Espera": 6.4, "Indice_Jain": 0.74},
-            {"Algoritmo": "Prioridad + Aging", "Promedio_Retorno": 22.8, "Promedio_Espera": 12.8, "Indice_Jain": 0.66}
-        ]
+        raise ValueError(f"No se pudieron leer datos válidos de {csv_path}")
 
     labels = []
     t_retorno = []
     t_espera = []
-    jain = []
 
     for d in data:
         algo_name = d["Algoritmo"]
@@ -149,10 +248,9 @@ def plot_escenario1_comparativa():
         elif "Estricta" in algo_name:
             labels.append("Prioridad\nEstricta")
         else:
-            labels.append(algo_name)
+            labels.append(algo_name[:15])
         t_retorno.append(d["Promedio_Retorno"])
         t_espera.append(d["Promedio_Espera"])
-        jain.append(d.get("Indice_Jain", 0.0))
 
     x = np.arange(len(labels))
     width = 0.35
@@ -165,7 +263,7 @@ def plot_escenario1_comparativa():
     rects1 = ax.bar(x - width/2, t_retorno, width, label='Tiempo de Retorno Promedio (T)', color=color_t, edgecolor='#0d47a1', alpha=0.9, zorder=3)
     rects2 = ax.bar(x + width/2, t_espera, width, label='Tiempo de Espera Promedio (W)', color=color_w, edgecolor='#d35400', alpha=0.9, zorder=3)
 
-    # Anotaciones numéricas en cada barra
+    # Anotaciones numéricas dinámicas
     for bar in rects1:
         yval = bar.get_height()
         ax.annotate(f"{yval:.1f}",
@@ -180,15 +278,20 @@ def plot_escenario1_comparativa():
                     xytext=(0, 4), textcoords="offset points",
                     ha='center', va='bottom', fontsize=9, fontweight='bold', color='#d35400')
 
-    # Anotación destacada del Efecto Convoy
-    ax.annotate('Efecto Convoy:\nEspera disparada a 30 ticks\n(Analítica Batch acapara CPU)',
-                xy=(0 + width/2, t_espera[0]), xytext=(0.6, 32),
+    # Anotaciones analíticas inferidas de los datos
+    fcfs_idx = 0
+    srtf_idx = 2 if len(t_espera) > 2 else 1
+    w_fcfs = t_espera[fcfs_idx]
+    w_srtf = t_espera[srtf_idx]
+    pct_reduction = ((w_fcfs - w_srtf) / w_fcfs) * 100.0 if w_fcfs > 0 else 0
+
+    ax.annotate(f'Efecto Convoy:\nEspera disparada a {w_fcfs:.1f} ticks\n(Proceso Batch acapara CPU)',
+                xy=(fcfs_idx + width/2, w_fcfs), xytext=(0.55, w_fcfs + 2),
                 arrowprops=dict(arrowstyle="->", color='#c0392b', lw=1.5),
                 fontsize=9, bbox=dict(boxstyle="round,pad=0.3", fc="#fce4ec", ec="#c0392b", lw=1))
 
-    # Anotación reducción SRTF
-    ax.annotate('Óptimo en Espera:\nSRTF reduce W en 83.3%\n(5.00 ticks)',
-                xy=(2 + width/2, t_espera[2]), xytext=(2.1, 19),
+    ax.annotate(f'Óptimo en Espera:\nSRTF reduce W en {pct_reduction:.1f}%\n({w_srtf:.1f} ticks)',
+                xy=(srtf_idx + width/2, w_srtf), xytext=(srtf_idx - 0.2, w_srtf + 14),
                 arrowprops=dict(arrowstyle="->", color='#27ae60', lw=1.5),
                 fontsize=9, bbox=dict(boxstyle="round,pad=0.3", fc="#e8f8f5", ec="#27ae60", lw=1))
 
@@ -197,79 +300,64 @@ def plot_escenario1_comparativa():
     ax.set_xticks(x)
     ax.set_xticklabels(labels, fontsize=10)
     ax.legend(loc='upper right', frameon=True, facecolor='white', framealpha=0.9)
-    ax.set_ylim(0, 46)
+    ax.set_ylim(0, max(max(t_retorno), max(t_espera)) * 1.2)
     ax.grid(axis='y', zorder=0)
 
     plt.tight_layout()
     out_file = os.path.join(OUTPUT_DIR, "escenario1_comparativa.png")
     plt.savefig(out_file, dpi=300)
     plt.close()
-    print(f"[OK] Gráfica generada: {out_file}")
+    print(f"[OK] Gráfica generada dinámicamente: {out_file}")
 
 
 # -----------------------------------------------------------------------------
-# 2. Diagrama de Gantt Visual de Alta Resolución: Escenario 1
+# 2. Diagrama de Gantt Visual de Alta Resolución: Escenario 1 (100% DINÁMICO)
 # -----------------------------------------------------------------------------
 def plot_escenario1_gantt():
-    # Paleta de colores por proceso
-    colors = {
-        1: "#2b5b84",  # Analitica_Batch (Azul petróleo)
-        2: "#27ae60",  # API_Login (Verde)
-        3: "#2980b9",  # API_Payment (Celeste azul)
-        4: "#8e44ad",  # API_Profile (Morado)
-        5: "#e67e22",  # API_Catalog (Naranja)
-        -2: "#e74c3c"  # Cambio de Contexto (Rojo suave)
-    }
+    csv_path = os.path.join(DOCS_DIR, "resultados_escenario1.csv")
+    gantt_by_algo, pid_labels = parse_csv_gantt(csv_path)
 
-    labels_map = {
-        1: "P1: Batch (35)",
-        2: "P2: Login (2)",
-        3: "P3: Pay (3)",
-        4: "P4: Prof (2)",
-        5: "P5: Cat (2)",
-        -2: "CS"
-    }
+    if not gantt_by_algo:
+        raise ValueError(f"No se encontró la sección '--- DIAGRAMA DE GANTT ---' en {csv_path}. Ejecuta 'make test'.")
 
-    # Definición rigurosa de los intervalos de Gantt para cada algoritmo
-    gantt_fcfs = [
-        (0, 35, 1), (35, 36, -2), (36, 38, 2), (38, 39, -2),
-        (39, 42, 3), (42, 43, -2), (43, 45, 4), (45, 46, -2), (46, 48, 5)
-    ]
+    # Mapeo dinámico de colores por PID detectado en el CSV
+    colors = {-2: "#e74c3c", -1: "#95a5a6"}  # -2 = Context Switch, -1 = IDLE
+    pids_found = sorted([pid for pid in pid_labels.keys() if pid > 0])
+    for idx, pid in enumerate(pids_found):
+        colors[pid] = COLOR_PALETTE[idx % len(COLOR_PALETTE)]
 
-    gantt_rr = [
-        (0, 4, 1), (4, 5, -2), (5, 7, 2), (7, 8, -2),
-        (8, 11, 3), (11, 12, -2), (12, 14, 4), (14, 15, -2),
-        (15, 17, 5), (17, 18, -2), (18, 49, 1)
-    ]
+    # Algoritmos a graficar ordenados
+    algo_order = []
+    for full_name in gantt_by_algo.keys():
+        short_name = full_name
+        if "FCFS" in full_name:
+            short_name = "FCFS (No Apropiativo)"
+        elif "Round Robin" in full_name:
+            short_name = "Round Robin (q=4)"
+        elif "SRTF" in full_name:
+            short_name = "SRTF (Apropiativo)"
+        elif "Aging" in full_name:
+            short_name = "Prioridad + Aging"
+        elif "Estricta" in full_name:
+            short_name = "Prioridad Estricta"
+        algo_order.append((short_name, gantt_by_algo[full_name]))
 
-    gantt_srtf = [
-        (0, 1, 1), (1, 2, -2), (2, 4, 2), (4, 5, -2),
-        (5, 7, 4), (7, 8, -2), (8, 10, 5), (10, 11, -2),
-        (11, 14, 3), (14, 15, -2), (15, 49, 1)
-    ]
-
-    gantt_aging = [
-        (0, 1, 1), (1, 3, 2), (3, 6, 3), (6, 7, -2),
-        (7, 9, 2), (9, 10, -2), (10, 12, 4), (12, 13, -2),
-        (13, 15, 5), (15, 47, 1), (47, 48, -2), (48, 50, 5)
-    ]
-
-    algorithms = [
-        ("Prioridad + Aging", gantt_aging),
-        ("SRTF (Apropiativo)", gantt_srtf),
-        ("Round Robin (q=4)", gantt_rr),
-        ("FCFS (No Apropiativo)", gantt_fcfs),
-    ]
+    # Invertir para que FCFS quede abajo y Aging arriba
+    algo_order.reverse()
 
     fig, ax = plt.subplots(figsize=(14, 6), dpi=300)
-
     bar_height = 0.55
-    y_positions = np.arange(len(algorithms))
+    y_positions = np.arange(len(algo_order))
+    max_time = 0
 
-    for y_idx, (algo_name, segments) in enumerate(algorithms):
-        for start, end, pid in segments:
+    for y_idx, (algo_name, segments) in enumerate(algo_order):
+        for seg in segments:
+            start, end, pid, label = seg[0], seg[1], seg[2], seg[3]
             dur = end - start
-            col = colors.get(pid, "#95a5a6")
+            if end > max_time:
+                max_time = end
+
+            col = colors.get(pid, "#bdc3c7")
             hatch = "//" if pid == -2 else None
             edgecol = "#922b21" if pid == -2 else "white"
 
@@ -277,71 +365,63 @@ def plot_escenario1_gantt():
                     color=col, edgecolor=edgecol, linewidth=0.8,
                     hatch=hatch, zorder=3)
 
-            # Etiqueta dentro del bloque si cabe
-            if dur >= 2.0:
-                text_label = labels_map.get(pid, f"P{pid}") if pid > 0 else "CS"
-                txt_col = "white"
-                ax.text(start + dur / 2, y_idx, text_label,
-                        ha='center', va='center', color=txt_col,
+            # Etiqueta interna si el bloque tiene ancho suficiente
+            if dur >= 2:
+                display_label = f"P{pid}" if pid > 0 else "CS"
+                ax.text(start + dur / 2, y_idx, display_label,
+                        ha='center', va='center', color='white',
                         fontsize=7.5, fontweight='bold', zorder=4)
 
     ax.set_yticks(y_positions)
-    ax.set_yticklabels([name for name, _ in algorithms], fontsize=10, fontweight='bold')
+    ax.set_yticklabels([name for name, _ in algo_order], fontsize=10, fontweight='bold')
     ax.set_xlabel('Línea de Tiempo del Reloj de la CPU (ticks)', fontsize=11, fontweight='bold')
-    ax.set_xlim(-1, 52)
+    ax.set_xlim(-1, max_time + 3)
     ax.xaxis.set_major_locator(MultipleLocator(5))
     ax.xaxis.set_minor_locator(MultipleLocator(1))
     ax.grid(axis='x', which='major', linestyle='--', alpha=0.7, zorder=0)
     ax.grid(axis='x', which='minor', linestyle=':', alpha=0.3, zorder=0)
 
-    ax.set_title('Diagrama de Gantt Comparativo - Escenario 1 (Efecto Convoy)', fontsize=13, pad=14)
+    ax.set_title('Diagrama de Gantt Comparativo - Escenario 1 (Efecto Convoy)\nInferencia Dinámica desde Resultados del Simulador C++',
+                 fontsize=13, pad=14)
 
-    # Leyenda personalizada
-    legend_patches = [
-        mpatches.Patch(facecolor=colors[1], label='P1: Analítica Batch (35 ticks)'),
-        mpatches.Patch(facecolor=colors[2], label='P2: API Login (2 ticks)'),
-        mpatches.Patch(facecolor=colors[3], label='P3: API Payment (3 ticks)'),
-        mpatches.Patch(facecolor=colors[4], label='P4: API Profile (2 ticks)'),
-        mpatches.Patch(facecolor=colors[5], label='P5: API Catalog (2 ticks)'),
-        mpatches.Patch(facecolor=colors[-2], hatch='//', label='Cambio de Contexto (CS = 1 tick)')
-    ]
+    # Leyenda generada 100% dinámicamente según los procesos detectados
+    legend_patches = []
+    for pid in pids_found:
+        proc_name = pid_labels.get(pid, f"Proceso {pid}")
+        legend_patches.append(mpatches.Patch(facecolor=colors[pid], label=f"P{pid}: {proc_name}"))
+    legend_patches.append(mpatches.Patch(facecolor=colors[-2], hatch='//', label='Cambio de Contexto (CS = 1 tick)'))
+
     ax.legend(handles=legend_patches, loc='upper center', bbox_to_anchor=(0.5, -0.15),
-              ncol=3, frameon=True, fontsize=9)
+              ncol=min(len(legend_patches), 3), frameon=True, fontsize=9)
 
     plt.tight_layout()
     out_file = os.path.join(OUTPUT_DIR, "escenario1_gantt.png")
     plt.savefig(out_file, dpi=300)
     plt.close()
-    print(f"[OK] Gráfica generada: {out_file}")
+    print(f"[OK] Diagrama de Gantt dinámico generado: {out_file}")
 
 
 # -----------------------------------------------------------------------------
-# 3. Gráfica de Inanición vs. Envejecimiento (Aging): Escenario 3
+# 3. Gráfica de Inanición vs. Envejecimiento (Aging): Escenario 3 (100% DINÁMICO)
 # -----------------------------------------------------------------------------
 def plot_escenario3_starvation_vs_aging():
     csv_path = os.path.join(DOCS_DIR, "resultados_escenario3.csv")
     procs = parse_csv_processes(csv_path)
 
-    # Filtrar datos de Prioridad Estricta y Prioridad con Aging
     strict_procs = [p for p in procs if "Sin Aging" in p["Algoritmo"] or "Estricta" in p["Algoritmo"]]
     aging_procs = [p for p in procs if ("Aging" in p["Algoritmo"] or "Envejecimiento" in p["Algoritmo"]) and "Sin" not in p["Algoritmo"]]
 
-    # Datos de respaldo exactos
     if not strict_procs or not aging_procs:
-        p_names = ['P1: Fondo', 'P2: Urg1', 'P3: Urg2', 'P4: Urg3', 'P5: Urg4', 'P6: Urg5', 'P7: Urg6']
-        w_strict = [26, 0, 1, 2, 3, 4, 5]
-        t_strict = [52, 4, 5, 6, 7, 9, 10]
-        w_aging = [21, 0, 1, 2, 3, 4, 30]
-        t_aging = [47, 4, 5, 6, 7, 9, 35]
-    else:
-        p_names = [f"P{p['PID']}: {p['Nombre'].replace('Urgente_Alarma_', 'Urg').replace('Tarea_Fondo_Batch', 'Fondo')}" for p in strict_procs]
-        w_strict = [p["Espera"] for p in strict_procs]
-        t_strict = [p["Retorno"] for p in strict_procs]
-        w_aging = [p["Espera"] for p in aging_procs]
-        t_aging = [p["Retorno"] for p in aging_procs]
+        raise ValueError(f"No se encontraron datos de Prioridad Estricta y Aging en {csv_path}. Ejecuta 'make test'.")
+
+    # Mapeo ordenado de nombres
+    p_names = [f"P{p['PID']}: {p['Nombre'].replace('Urgente_Alarma_', 'Urg').replace('Tarea_Fondo_Batch', 'Fondo')}" for p in strict_procs]
+    w_strict = [p["Espera"] for p in strict_procs]
+    t_strict = [p["Retorno"] for p in strict_procs]
+    w_aging = [p["Espera"] for p in aging_procs]
+    t_aging = [p["Retorno"] for p in aging_procs]
 
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(13, 5.5), dpi=300)
-
     x = np.arange(len(p_names))
     width = 0.38
 
@@ -349,14 +429,16 @@ def plot_escenario3_starvation_vs_aging():
     ax1.bar(x - width/2, w_strict, width, label='Prioridad Estricta (Sin Aging)', color='#c0392b', alpha=0.85, edgecolor='#922b21')
     ax1.bar(x + width/2, w_aging, width, label='Prioridad con Aging (th=5)', color='#27ae60', alpha=0.85, edgecolor='#1e8449')
 
-    # Destacar P1
-    ax1.annotate('Inanición severa:\nEspera = 26 ticks\n(Condenado al final)',
-                 xy=(0 - width/2, w_strict[0]), xytext=(0.5, 23),
+    # Anotaciones dinámicas sobre P1
+    p1_w_strict = w_strict[0]
+    p1_w_aging = w_aging[0]
+    ax1.annotate(f'Inanición severa:\nEspera = {p1_w_strict} ticks\n(Condenado al final)',
+                 xy=(0 - width/2, p1_w_strict), xytext=(0.5, p1_w_strict - 3),
                  arrowprops=dict(arrowstyle="->", color='#c0392b', lw=1.2),
                  fontsize=8.5, bbox=dict(boxstyle="round,pad=0.2", fc="#fadbd8", ec="#c0392b"))
 
-    ax1.annotate('Rescatado por Aging:\nEspera reducida a 21 ticks\n(Promoción 5 -> 1)',
-                 xy=(0 + width/2, w_aging[0]), xytext=(1.2, 14),
+    ax1.annotate(f'Rescatado por Aging:\nEspera = {p1_w_aging} ticks\n(Promoción dinámica)',
+                 xy=(0 + width/2, p1_w_aging), xytext=(1.2, p1_w_aging - 7),
                  arrowprops=dict(arrowstyle="->", color='#27ae60', lw=1.2),
                  fontsize=8.5, bbox=dict(boxstyle="round,pad=0.2", fc="#d4efdf", ec="#27ae60"))
 
@@ -367,17 +449,21 @@ def plot_escenario3_starvation_vs_aging():
     ax1.legend(loc='upper right', frameon=True, fontsize=8.5)
     ax1.grid(axis='y')
 
-    # Panel 2: Tiempo de Finalización y Retorno (T)
+    # Panel 2: Tiempo de Retorno (T)
     ax2.bar(x - width/2, t_strict, width, label='Prioridad Estricta (Sin Aging)', color='#e74c3c', alpha=0.85, edgecolor='#c0392b')
     ax2.bar(x + width/2, t_aging, width, label='Prioridad con Aging (th=5)', color='#2ecc71', alpha=0.85, edgecolor='#27ae60')
 
-    ax2.annotate('P1 culmina en Tick 52\n(Último proceso)',
-                 xy=(0 - width/2, t_strict[0]), xytext=(0.8, 48),
+    p1_t_strict = t_strict[0]
+    p1_t_aging = t_aging[0]
+    diff_t = p1_t_strict - p1_t_aging
+
+    ax2.annotate(f'Culmina en Tick {p1_t_strict}\n(Último proceso)',
+                 xy=(0 - width/2, p1_t_strict), xytext=(0.8, p1_t_strict - 4),
                  arrowprops=dict(arrowstyle="->", color='#c0392b', lw=1.2),
                  fontsize=8.5, bbox=dict(boxstyle="round,pad=0.2", fc="#fadbd8", ec="#c0392b"))
 
-    ax2.annotate('P1 culmina en Tick 47\n(5 ticks antes)',
-                 xy=(0 + width/2, t_aging[0]), xytext=(1.3, 38),
+    ax2.annotate(f'Culmina en Tick {p1_t_aging}\n({diff_t} ticks antes gracias al Aging)',
+                 xy=(0 + width/2, p1_t_aging), xytext=(1.3, p1_t_aging - 9),
                  arrowprops=dict(arrowstyle="->", color='#27ae60', lw=1.2),
                  fontsize=8.5, bbox=dict(boxstyle="round,pad=0.2", fc="#d4efdf", ec="#27ae60"))
 
@@ -388,30 +474,36 @@ def plot_escenario3_starvation_vs_aging():
     ax2.legend(loc='upper right', frameon=True, fontsize=8.5)
     ax2.grid(axis='y')
 
-    fig.suptitle('Escenario 3: Fenómeno de Inanición vs. Solución por Envejecimiento (Aging)',
+    fig.suptitle('Escenario 3: Fenómeno de Inanición vs. Solución por Envejecimiento (Aging)\nInferencia Dinámica desde Resultados del Simulador C++',
                  fontsize=13, y=1.02)
     plt.tight_layout()
     out_file = os.path.join(OUTPUT_DIR, "escenario3_starvation_vs_aging.png")
     plt.savefig(out_file, dpi=300, bbox_inches='tight')
     plt.close()
-    print(f"[OK] Gráfica generada: {out_file}")
+    print(f"[OK] Gráfica de Inanición vs Aging generada dinámicamente: {out_file}")
 
 
 # -----------------------------------------------------------------------------
-# 4. Curva de Sensibilidad del Quantum: Round Robin vs Context Switch
+# 4. Curva de Sensibilidad del Quantum: Simulación Dinámica desde CSV de Escenario
 # -----------------------------------------------------------------------------
-def simulate_rr_for_quantum(q, cs_penalty=1):
+def simulate_rr_from_scenario(scenario_procs, q, cs_penalty=1):
     """
-    Simulador determinista de Round Robin idéntico al motor C++ para el Escenario 1.
-    Permite calcular con precisión matemática W_promedio y sobrecarga de CS para q in [1..15].
+    Simulador determinista de Round Robin ejecutado directamente sobre la lista de procesos
+    cargada dinámicamente desde el CSV del escenario.
     """
-    procs = [
-        {'pid': 1, 'name': 'Analitica_Batch', 'arr': 0, 'rem': 35, 'total': 35, 'wait': 0, 'term': -1},
-        {'pid': 2, 'name': 'API_Login', 'arr': 1, 'rem': 2, 'total': 2, 'wait': 0, 'term': -1},
-        {'pid': 3, 'name': 'API_Payment', 'arr': 2, 'rem': 3, 'total': 3, 'wait': 0, 'term': -1},
-        {'pid': 4, 'name': 'API_Profile', 'arr': 3, 'rem': 2, 'total': 2, 'wait': 0, 'term': -1},
-        {'pid': 5, 'name': 'API_Catalog', 'arr': 4, 'rem': 2, 'total': 2, 'wait': 0, 'term': -1},
-    ]
+    import copy
+    procs = []
+    for p in scenario_procs:
+        procs.append({
+            'pid': p['pid'],
+            'name': p['name'],
+            'arr': p['arrival'],
+            'rem': p['total_cpu'],
+            'total': p['total_cpu'],
+            'wait': 0,
+            'term': -1
+        })
+
     ready = []
     current_time = 0
     state = 'IDLE'
@@ -477,14 +569,18 @@ def simulate_rr_for_quantum(q, cs_penalty=1):
     overhead = (total_cs_time / current_time) * 100
     return q, current_time, total_cs_count, avg_wait, overhead
 
+
 def plot_round_robin_sensibilidad_quantum():
+    scenario_path = os.path.join(SCENARIOS_DIR, "escenario1_convoy.csv")
+    scenario_procs = load_scenario_processes(scenario_path)
+
     quantums = list(range(1, 16))
     w_prom = []
     cs_overheads = []
     cs_counts = []
 
     for q in quantums:
-        _, _, cs, w, ov = simulate_rr_for_quantum(q)
+        _, _, cs, w, ov = simulate_rr_from_scenario(scenario_procs, q)
         w_prom.append(w)
         cs_overheads.append(ov)
         cs_counts.append(cs)
@@ -498,7 +594,7 @@ def plot_round_robin_sensibilidad_quantum():
     ax1.set_ylabel('Tiempo de Espera Promedio W (ticks)', color=color_w, fontsize=11, fontweight='bold')
     line1 = ax1.plot(quantums, w_prom, marker='o', linewidth=2.2, color=color_w, label='Tiempo de Espera Promedio (W)')
     ax1.tick_params(axis='y', labelcolor=color_w)
-    ax1.set_ylim(5, 20)
+    ax1.set_ylim(min(w_prom) * 0.7, max(w_prom) * 1.25)
     ax1.set_xticks(quantums)
     ax1.grid(True, linestyle='--', alpha=0.6)
 
@@ -507,24 +603,26 @@ def plot_round_robin_sensibilidad_quantum():
     ax2.set_ylabel('Sobrecarga por Cambio de Contexto (%)', color=color_cs, fontsize=11, fontweight='bold')
     line2 = ax2.plot(quantums, cs_overheads, marker='s', linewidth=2.2, linestyle='--', color=color_cs, label='Sobrecarga CS Overhead (%)')
     ax2.tick_params(axis='y', labelcolor=color_cs)
-    ax2.set_ylim(5, 30)
+    ax2.set_ylim(min(cs_overheads) * 0.7, max(cs_overheads) * 1.3)
 
-    # Sombrear la zona óptima de compromiso (Sweet Spot)
-    ax1.axvspan(3, 5, color='#2ecc71', alpha=0.18, label='Zona Óptima (Sweet Spot: q=3..5)')
+    # Sombrear la zona óptima inferida
+    min_w_idx = int(np.argmin(w_prom))
+    opt_q = quantums[min_w_idx]
+    ax1.axvspan(max(1, opt_q - 1), opt_q + 1, color='#2ecc71', alpha=0.18, label=f'Zona Óptima (Sweet Spot: q={opt_q-1}..{opt_q+1})')
 
-    # Anotaciones didácticas
-    ax1.annotate('Sobrecarga Excesiva (Thrashing):\n13 cambios de contexto\n22.8% CPU desperdiciada',
-                 xy=(1, w_prom[0]), xytext=(1.4, 16.5),
+    # Anotaciones didácticas inferidas
+    ax1.annotate(f'Sobrecarga Excesiva (Thrashing):\n{cs_counts[0]} cambios de contexto\n{cs_overheads[0]:.1f}% CPU en cambios de contexto',
+                 xy=(1, w_prom[0]), xytext=(1.4, max(w_prom) * 0.9),
                  arrowprops=dict(arrowstyle="->", color='#c0392b', lw=1.3),
                  fontsize=8.5, bbox=dict(boxstyle="round,pad=0.25", fc="#fadbd8", ec="#c0392b"))
 
-    ax1.annotate('Mínimo W = 7.8 ticks\nBalance óptimo',
-                 xy=(4, w_prom[3]), xytext=(4.3, 6.2),
+    ax1.annotate(f'Mínimo W = {w_prom[min_w_idx]:.1f} ticks (q={opt_q})\nBalance óptimo',
+                 xy=(opt_q, w_prom[min_w_idx]), xytext=(opt_q + 0.3, min(w_prom) * 0.8),
                  arrowprops=dict(arrowstyle="->", color='#27ae60', lw=1.3),
                  fontsize=8.5, bbox=dict(boxstyle="round,pad=0.25", fc="#d4efdf", ec="#27ae60"))
 
     ax1.annotate('Degeneración hacia FCFS:\nEspera sube linealmente\n(Efecto Convoy reaparece)',
-                 xy=(15, w_prom[-1]), xytext=(10.5, 17.5),
+                 xy=(15, w_prom[-1]), xytext=(10.2, max(w_prom) * 0.95),
                  arrowprops=dict(arrowstyle="->", color='#2980b9', lw=1.3),
                  fontsize=8.5, bbox=dict(boxstyle="round,pad=0.25", fc="#ebf5fb", ec="#2980b9"))
 
@@ -532,27 +630,27 @@ def plot_round_robin_sensibilidad_quantum():
     labels = [l.get_label() for l in lines]
     ax1.legend(lines, labels, loc='upper center', bbox_to_anchor=(0.5, 1.13), ncol=2, frameon=True)
 
-    plt.title('Sensibilidad del Quantum en Round Robin vs. Costo de Conmutación de Contexto',
+    plt.title('Sensibilidad del Quantum en Round Robin vs. Sobrecarga de Kernel\n(Inferencia Dinámica desde scenarios/escenario1_convoy.csv)',
               fontsize=12, pad=25)
     plt.tight_layout()
     out_file = os.path.join(OUTPUT_DIR, "round_robin_sensibilidad_quantum.png")
     plt.savefig(out_file, dpi=300)
     plt.close()
-    print(f"[OK] Gráfica generada: {out_file}")
+    print(f"[OK] Curva de sensibilidad generada dinámicamente: {out_file}")
 
 
 def main():
-    print("=" * 70)
-    print("  GENERANDO MÓDULO GRÁFICO DE MÉTRICAS (SISTEMAS OPERATIVOS)")
-    print(f"  Destino: {OUTPUT_DIR}")
-    print("=" * 70)
+    print("=" * 75)
+    print("  GENERANDO MÓDULO GRÁFICO DINÁMICO DE MÉTRICAS (SISTEMAS OPERATIVOS)")
+    print(f"  Directorio destino: {OUTPUT_DIR}")
+    print("=" * 75)
 
     plot_escenario1_comparativa()
     plot_escenario1_gantt()
     plot_escenario3_starvation_vs_aging()
     plot_round_robin_sensibilidad_quantum()
 
-    print("\n[+] Todas las gráficas fueron generadas exitosamente con resolución 300 DPI.")
+    print("\n[+] Todas las gráficas fueron generadas exitosamente desde datos reales a 300 DPI.")
 
 if __name__ == "__main__":
     main()

@@ -2,557 +2,1597 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Sustentación Proyecto Final: Planificación de CPU</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sustentación y Simulador Interactivo de Planificación de CPU - Sistemas Operativos</title>
     <style>
+        :root {
+            --primary: #0f172a;
+            --primary-light: #1e293b;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --text-main: #334155;
+            --text-dark: #0f172a;
+            --text-light: #f8fafc;
+            --border: #e2e8f0;
+            --bg-card: #ffffff;
+            --running: #10b981;
+            --cs: #ef4444;
+            --idle: #94a3b8;
+            --ready: #3b82f6;
+            --waiting: #f59e0b;
+        }
+
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            background: #1e293b;
-            color: #334155;
+            background: #0b0f19;
+            color: var(--text-main);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             min-height: 100vh;
-            overflow: hidden;
+            padding: 12px;
         }
-        .slide-container {
-            width: 1200px;
-            height: 720px;
-            background: #ffffff;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            border-radius: 12px;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-        .slide {
-            display: none;
-            flex-direction: column;
-            height: 100%;
-            padding: 35px 50px 25px;
-        }
-        .slide.active {
-            display: flex;
-        }
-        .slide-content {
-            flex: 1;
-            overflow-y: auto;
-        }
-        h1 {
-            color: #0d47a1;
-            font-size: 26px;
-            border-bottom: 3px solid #1976d2;
-            padding-bottom: 6px;
-            margin-bottom: 12px;
-        }
-        h2 {
-            color: #1565c0;
-            font-size: 20px;
-            margin-bottom: 10px;
-        }
-        h3 {
-            color: #283593;
-            font-size: 17px;
-            margin-top: 10px;
-            margin-bottom: 6px;
-        }
-        p, li {
-            font-size: 15px;
-            line-height: 1.5;
-            color: #222;
-        }
-        ul, ol {
-            margin-left: 20px;
-            margin-bottom: 10px;
-        }
-        table {
+
+        /* Barra de Navegación Superior */
+        .top-navbar {
             width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-            margin: 10px 0;
-        }
-        th {
-            background: #0d47a1;
-            color: white;
-            padding: 6px 10px;
-            text-align: left;
-        }
-        td {
-            border-bottom: 1px solid #cfd8dc;
-            padding: 5px 8px;
-        }
-        img {
-            max-width: 100%;
-            max-height: 310px;
-            object-fit: contain;
-            display: block;
-            margin: 6px auto;
-            border-radius: 6px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-        }
-        pre {
-            background: #0f172a;
-            color: #f8fafc;
-            padding: 10px;
-            border-radius: 6px;
-            font-size: 12.5px;
-            overflow-x: auto;
-            margin: 8px 0;
-        }
-        .two-cols {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            align-items: center;
-        }
-        .highlight {
-            background: #e8f5e9;
-            border-left: 4px solid #2e7d32;
-            padding: 8px 12px;
-            border-radius: 4px;
-            margin: 8px 0;
-            font-size: 14px;
-        }
-        .warning-box {
-            background: #ffebee;
-            border-left: 4px solid #c62828;
-            padding: 8px 12px;
-            border-radius: 4px;
-            margin: 8px 0;
-            font-size: 14px;
-        }
-        .notes {
-            background: #f8fafc;
-            border: 1px solid #cbd5e1;
-            padding: 6px 10px;
-            border-radius: 4px;
-            font-size: 12px;
-            color: #475569;
-            margin-top: 10px;
-        }
-        .slide-footer {
-            border-top: 1px solid #e2e8f0;
-            padding-top: 10px;
-            font-size: 12px;
-            color: #64748b;
+            max-width: 1300px;
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 10px 20px;
             display: flex;
             justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3);
+            border: 1px solid #334155;
         }
-        .controls {
-            position: fixed;
-            bottom: 20px;
+
+        .nav-brand {
+            color: #f8fafc;
+            font-weight: 700;
+            font-size: 16px;
             display: flex;
-            gap: 10px;
-            z-index: 100;
+            align-items: center;
+            gap: 8px;
         }
-        .btn {
+        .nav-brand span {
             background: #2563eb;
             color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .tab-btn {
+            background: #334155;
+            color: #cbd5e1;
             border: none;
             padding: 8px 16px;
             border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
+            font-weight: 600;
             font-size: 14px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
-        .btn:hover { background: #1d4ed8; }
-        .badge {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            color: #94a3b8;
+        .tab-btn:hover { background: #475569; color: white; }
+        .tab-btn.active {
+            background: #2563eb;
+            color: white;
+            box-shadow: 0 0 10px rgba(37,99,235,0.5);
+        }
+
+        /* Contenedor Principal */
+        .main-container {
+            width: 100%;
+            max-width: 1300px;
+            height: calc(100vh - 100px);
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Vista 1: Diapositivas */
+        .view-section {
+            display: none;
+            height: 100%;
+            width: 100%;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .view-section.active { display: flex; }
+
+        .slide {
+            display: none;
+            height: 100%;
+            padding: 30px 48px 20px;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        .slide.active { display: flex; }
+
+        h1 { color: #0d47a1; font-size: 26px; border-bottom: 3px solid #1976d2; padding-bottom: 6px; margin-bottom: 12px; }
+        h2 { color: #1565c0; font-size: 19px; margin-bottom: 10px; }
+        h3 { color: #283593; font-size: 16px; margin-top: 10px; margin-bottom: 6px; }
+
+        .two-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        .three-cols { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+        .card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin-bottom: 12px;
+        }
+        .card-title { font-weight: 700; color: #1e3a8a; margin-bottom: 6px; font-size: 15px; }
+
+        .highlight-box {
+            background: #ecfdf5;
+            border-left: 4px solid #10b981;
+            padding: 10px 14px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        .warning-box {
+            background: #fef2f2;
+            border-left: 4px solid #ef4444;
+            padding: 10px 14px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+
+        table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 13.5px; }
+        th { background: #0d47a1; color: white; padding: 7px 10px; text-align: left; }
+        td { padding: 6px 10px; border-bottom: 1px solid #e2e8f0; }
+        tr:nth-child(even) { background: #f8fafc; }
+
+        .speaker-notes {
+            background: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            padding: 8px 14px;
+            font-size: 12.5px;
+            color: #78350f;
+            border-radius: 4px;
+            margin-top: auto;
+        }
+        .speaker-notes b { color: #b45309; }
+
+        .slide-footer {
+            height: 48px;
+            border-top: 1px solid #e2e8f0;
+            padding: 0 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8fafc;
+        }
+        .nav-btn {
+            background: #0d47a1;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
             font-size: 13px;
         }
+        .nav-btn:hover { background: #1565c0; }
+        .nav-btn:disabled { background: #cbd5e1; cursor: not-allowed; }
+
+        .btn-launch-sim {
+            background: #059669;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        .btn-launch-sim:hover { background: #047857; }
+
+        .slide-img {
+            max-width: 100%;
+            max-height: 290px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            display: block;
+            margin: 8px auto;
+            border: 1px solid #cbd5e1;
+        }
+
+        /* Vista 2: Simulador Interactivo en Vivo */
+        .simulator-layout {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            height: 100%;
+            overflow: hidden;
+            background: #0f172a;
+            color: #e2e8f0;
+        }
+
+        /* Panel Izquierdo: Controles */
+        .sim-controls-panel {
+            background: #1e293b;
+            padding: 16px;
+            border-right: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            overflow-y: auto;
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .control-label {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #94a3b8;
+        }
+        .sim-select {
+            background: #0f172a;
+            color: #f8fafc;
+            border: 1px solid #475569;
+            padding: 8px 10px;
+            border-radius: 6px;
+            font-size: 13px;
+            outline: none;
+        }
+        .sim-slider-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+        .sim-slider {
+            flex: 1;
+            accent-color: #2563eb;
+        }
+        .slider-val {
+            font-weight: 700;
+            color: #38bdf8;
+            font-size: 13px;
+            min-width: 28px;
+            text-align: right;
+        }
+
+        .playback-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 4px;
+        }
+        .play-btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .play-btn:hover { background: #1d4ed8; }
+        .play-btn.paused { background: #10b981; }
+        .step-btn {
+            background: #334155;
+            color: #f8fafc;
+            border: 1px solid #475569;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+        .step-btn:hover { background: #475569; }
+        .reset-btn {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 2px;
+        }
+        .reset-btn:hover { background: #b91c1c; }
+
+        /* Panel Derecho: Visualización */
+        .sim-canvas-panel {
+            padding: 18px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            overflow-y: auto;
+            background: #0b0f19;
+        }
+
+        /* Fila de Métricas y Reloj */
+        .hud-row {
+            display: grid;
+            grid-template-columns: 140px repeat(6, 1fr);
+            gap: 10px;
+        }
+        .hud-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+        }
+        .hud-card.clock {
+            background: #1e3a8a;
+            border-color: #3b82f6;
+        }
+        .hud-label { font-size: 11px; color: #94a3b8; text-transform: uppercase; margin-bottom: 4px; }
+        .hud-val { font-size: 18px; font-weight: 800; color: #f8fafc; }
+        .hud-card.clock .hud-val { color: #38bdf8; font-size: 22px; font-family: monospace; }
+
+        /* Núcleo CPU y Colas */
+        .system-state-row {
+            display: grid;
+            grid-template-columns: 280px 1fr 1fr;
+            gap: 14px;
+        }
+
+        .component-box {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            min-height: 140px;
+        }
+        .component-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #94a3b8;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .component-badge {
+            font-size: 11px;
+            background: #0f172a;
+            padding: 2px 8px;
+            border-radius: 12px;
+            color: #38bdf8;
+        }
+
+        /* CPU Box */
+        .cpu-core {
+            border: 2px solid #334155;
+            background: #0f172a;
+            border-radius: 8px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 12px;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+        .cpu-core.running {
+            border-color: var(--running);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+        }
+        .cpu-core.cs {
+            border-color: var(--cs);
+            background: repeating-linear-gradient(45deg, #450a0a, #450a0a 10px, #7f1d1d 10px, #7f1d1d 20px);
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+        }
+        .cpu-status-badge {
+            font-size: 11px;
+            font-weight: 800;
+            padding: 3px 10px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        .status-idle { background: #334155; color: #cbd5e1; }
+        .status-running { background: var(--running); color: #022c22; }
+        .status-cs { background: var(--cs); color: white; }
+
+        .cpu-proc-name { font-size: 16px; font-weight: 800; color: #f8fafc; }
+        .cpu-proc-sub { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+
+        /* Colas Listos y E/S */
+        .process-queue-list {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            flex: 1;
+            align-items: center;
+            padding: 4px 0;
+        }
+        .proc-card {
+            background: #0f172a;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            padding: 8px 10px;
+            min-width: 100px;
+            font-size: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            position: relative;
+        }
+        .proc-card.promoted {
+            border-color: #10b981;
+            box-shadow: 0 0 8px rgba(16,185,129,0.5);
+        }
+        .proc-card-pid { font-weight: 700; color: #38bdf8; display: flex; justify-content: space-between; }
+        .proc-card-burst { color: #cbd5e1; }
+        .proc-card-pri { font-size: 10px; color: #94a3b8; }
+        .proc-card-pri span { color: #f59e0b; font-weight: 700; }
+        .empty-queue { color: #64748b; font-size: 12px; font-style: italic; margin: auto; }
+
+        /* Diagrama de Gantt Dinámico */
+        .gantt-section {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 14px;
+        }
+        .gantt-canvas-wrap {
+            width: 100%;
+            overflow-x: auto;
+            padding: 8px 0;
+        }
+        .gantt-track {
+            display: flex;
+            height: 44px;
+            background: #0f172a;
+            border-radius: 6px;
+            border: 1px solid #334155;
+            position: relative;
+            min-width: 100%;
+        }
+        .gantt-block {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: white;
+            border-right: 1px solid rgba(0,0,0,0.2);
+            position: relative;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .gantt-block:hover { filter: brightness(1.2); }
+        .gantt-block.cs-block {
+            background: repeating-linear-gradient(45deg, #b91c1c, #b91c1c 4px, #ef4444 4px, #ef4444 8px);
+            color: #fee2e2;
+        }
+        .gantt-block.idle-block {
+            background: #334155;
+            color: #94a3b8;
+        }
+        .gantt-ruler {
+            display: flex;
+            position: relative;
+            height: 20px;
+            margin-top: 4px;
+            color: #64748b;
+            font-size: 10px;
+            font-family: monospace;
+        }
+
+        /* Consola de Eventos del Kernel */
+        .kernel-log-box {
+            background: #020617;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 10px 14px;
+            height: 100px;
+            overflow-y: auto;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 12px;
+            color: #cbd5e1;
+        }
+        .log-entry { margin-bottom: 3px; }
+        .log-time { color: #38bdf8; font-weight: bold; }
+        .log-preempt { color: #ef4444; }
+        .log-aging { color: #10b981; font-weight: bold; }
+        .log-dispatch { color: #fbbf24; }
     </style>
 </head>
 <body>
-    <div class="badge">Usa Flechas [Izquierda/Derecha] o [Espacio] para navegar</div>
-    <div class="slide-container">
-        
-    <div class="slide" id="slide-0">
-        <div class="slide-content">
-            <!-- SLIDE 1 -->
-<h1>Simulación y Análisis Cuantitativo de Políticas de Planificación de CPU</h1>
-<h2>Modelado del Ciclo de Vida de Procesos, Desalojo, Inanición y Sobrecarga de Kernel</h2>
-<p><strong>Asignatura:</strong> Sistemas Operativos<br />
-<strong>Opción Seleccionada:</strong> Opción 1 — Gestión de Procesos y Planificación de CPU<br />
-<strong>Tecnología del Simulador:</strong> C++17 Puro (Arquitectura Modular y Determinista)<br />
-<strong>Herramientas de Análisis:</strong> Python 3 (Matplotlib, Pandas, Seaborn)</p>
+
+    <!-- Barra de Navegación Superior -->
+    <div class="top-navbar">
+        <div class="nav-brand">
+            Sistemas Operativos <span>Opción 1</span>
+            <span style="background:#059669;">Planificación de CPU & Kernel Model</span>
         </div>
-        <div class="slide-footer">
-            <span>Sistemas Operativos (Periodo 2610) - Proyecto Final</span>
-            <span>Diapositiva 1 de 11</span>
+        <div class="tab-buttons">
+            <button class="tab-btn active" id="tabBtnSlides" onclick="switchTab('slides')">
+                📑 Diapositivas de Sustentación (20 min)
+            </button>
+            <button class="tab-btn" id="tabBtnSim" onclick="switchTab('simulator')">
+                🔬 Simulador Interactivo en Vivo
+            </button>
         </div>
     </div>
-    
-    <div class="slide" id="slide-1">
-        <div class="slide-content">
-            <h3>Integrantes del Equipo de Trabajo:</h3>
-<ul>
-<li><strong>Desarrollador 1:</strong> Arquitectura del Simulador, PCB, Dispatcher y Motor de Métricas</li>
-<li><strong>Desarrollador 2:</strong> Módulo Gráfico de Métricas, Diagramas de Gantt y Diapositivas</li>
-</ul>
-<div class="notes">
-<b>Guía del Orador (Minuto 0:00 - 1:30):</b><br>
-"Buenos días profesor. Hoy presentamos nuestro proyecto de Sistemas Operativos enfocado en la gestión de procesos y la planificación de CPU. Hemos desarrollado desde cero un simulador determinista en C++17 modular que reproduce el comportamiento de un kernel real, incluyendo el Bloque de Control de Proceso (PCB), transiciones canónicas de estado, colas de E/S desacopladas, penalizaciones explícitas por cambio de contexto y mecanismos dinámicos anti-inanición."
-</div>
+
+    <!-- Contenedor Principal -->
+    <div class="main-container">
+
+        <!-- ============================================================= -->
+        <!-- VISTA 1: DIAPOSITIVAS DE LA SUSTENTACIÓN                      -->
+        <!-- ============================================================= -->
+        <div class="view-section active" id="viewSlides">
+            
+            <!-- SLIDE 1: Portada -->
+            <div class="slide active" id="slide1">
+                <h1>Simulación y Análisis Cuantitativo de Políticas de Planificación de CPU</h1>
+                <h2>Modelado del Ciclo de Vida de Procesos, Desalojo, Inanición y Sobrecarga de Kernel</h2>
+                
+                <div class="two-cols" style="margin-top: 24px;">
+                    <div class="card">
+                        <div class="card-title">📌 Ficha Técnica del Proyecto</div>
+                        <ul style="line-height: 1.8; margin-left: 18px; font-size: 14px;">
+                            <li><b>Asignatura:</b> Sistemas Operativos (Periodo 2610)</li>
+                            <li><b>Mecanismo Seleccionado:</b> Gestión de Procesos y Planificación de CPU</li>
+                            <li><b>Motor Central:</b> C++17 Puro (Modular, Determinista y Desacoplado)</li>
+                            <li><b>Módulo Visual & Análisis:</b> Python 3 (Matplotlib, Pandas) & JavaScript Live Studio</li>
+                            <li><b>Duración de Sustentación:</b> 20 Minutos</li>
+                        </ul>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">👥 Integrantes del Equipo</div>
+                        <ul style="line-height: 1.8; margin-left: 18px; font-size: 14px;">
+                            <li><b>Desarrollador 1:</b> Núcleo del Simulador C++, Modelado de PCB, Dispatcher y Métricas Canónicas.</li>
+                            <li><b>Desarrollador 2:</b> Módulo Gráfico Dinámico, Diagramas de Gantt y Diapositivas / Laboratorio Interactivo.</li>
+                        </ul>
+                        <div class="highlight-box">
+                            ✅ Repositorio Git con trazabilidad individual y ramas de desarrollo separadas.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="speaker-notes">
+                    <b>Guía del Orador (Minuto 0:00 - 1:30):</b><br>
+                    "Buenos días profesor. Hoy presentamos nuestro simulador de Sistemas Operativos enfocado en la gestión de procesos y la planificación de CPU. Hemos desarrollado desde cero un kernel determinista en C++17 modular que reproduce el comportamiento de un sistema operativo real: el Bloque de Control de Proceso (PCB), transiciones canónicas de estado, colas de E/S desacopladas, penalizaciones explícitas por cambio de contexto y mecanismos dinámicos anti-inanición."
+                </div>
+            </div>
+
+            <!-- SLIDE 2: Planteamiento del Problema -->
+            <div class="slide" id="slide2">
+                <h1>1. Planteamiento del Problema Real</h1>
+                <h2>Cargas Heterogéneas y Conflictos de Recursos en Servidores Backend</h2>
+                
+                <div class="three-cols">
+                    <div class="card">
+                        <div class="card-title">1. Procesos Web/API</div>
+                        <p style="font-size: 13.5px;">Peticiones interactivas (Login, Pagos, Catálogo) con ráfagas ultracortas ($2 \dots 3$ ticks). Requieren tiempo de respuesta inmediato para cumplir con acuerdos SLA.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">2. Procesos E/S-Bound</div>
+                        <p style="font-size: 13.5px;">Búsquedas y transferencias que alternan cómputo breve con esperas prolongadas en almacenamiento o red (estado <code>WAITING</code>).</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">3. Procesos Batch CPU-Bound</div>
+                        <p style="font-size: 13.5px;">Cálculos analíticos masivos ($35 \dots 50$ ticks) que monopolizan la CPU si el planificador no implementa apropiación (*preemption*).</p>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <b>Los Tres Conflictos Críticos Demostrados:</b>
+                    <ol style="margin-left: 20px; margin-top: 4px;">
+                        <li><b>Efecto Convoy:</b> En FCFS, un proceso batch largo condena a las peticiones interactivas a esperas gigantescas.</li>
+                        <li><b>Sobrecarga por Conmutación (CS Overhead):</b> En Round Robin con quantum ínfimo ($q=1$), la CPU gasta más del 20% de su tiempo cambiando tablas de registros (*thrashing*).</li>
+                        <li><b>Inanición (Starvation):</b> En prioridad estricta, las tareas de fondo nunca reciben CPU ante un flujo incesante de tareas urgentes.</li>
+                    </ol>
+                </div>
+
+                <div class="speaker-notes">
+                    <b>Guía del Orador (Minuto 1:30 - 4:00):</b><br>
+                    "En cualquier servidor de aplicaciones conviven tareas con naturalezas dispares. Si el planificador utiliza FCFS, sufrimos el Efecto Convoy. Si usamos Round Robin con un quantum diminuto para ser responsivos, el costo de conmutación de contexto devora la CPU. Y si usamos prioridades fijas, condenamos a las tareas de fondo a la inanición. Demostraremos experimentalmente cómo resolver este equilibrio."
+                </div>
+            </div>
+
+            <!-- SLIDE 3: Arquitectura del Simulador -->
+            <div class="slide" id="slide3">
+                <h1>2. Arquitectura del Simulador</h1>
+                <h2>Estructura Formal del PCB y Estados Canónicos del Kernel</h2>
+
+                <div class="two-cols">
+                    <div class="card">
+                        <div class="card-title">Bloque de Control de Proceso (PCB)</div>
+                        <ul style="font-size: 13.5px; line-height: 1.7; margin-left: 18px;">
+                            <li><code>PID</code> y Nombre descriptivo de la tarea.</li>
+                            <li><code>ProcessState</code>: <code>NEW</code>, <code>READY</code>, <code>RUNNING</code>, <code>WAITING</code>, <code>TERMINATED</code>.</li>
+                            <li><code>base_priority</code> y <code>dynamic_priority</code> (modificada por Aging).</li>
+                            <li>Vector secuencial de ráfagas CPU y E/S (<code>bursts</code>).</li>
+                            <li>Métricas acumuladas: $T_{llegada}$, $T_{inicio}$, $T_{fin}$, Espera acumulada y Conmutaciones de Contexto.</li>
+                        </ul>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Mecanismos del Kernel Modelados</div>
+                        <ul style="font-size: 13.5px; line-height: 1.7; margin-left: 18px;">
+                            <li><b>Dispatcher con Penalización:</b> Costo explícito configurable (por defecto 1 tick de reloj) por cambio de contexto.</li>
+                            <li><b>Cola de E/S Concurrente:</b> Procesos bloqueados que avanzan en paralelo con la CPU.</li>
+                            <li><b>Mecanismo de Desalojo (Preemption):</b> Interrupción inmediata cuando entra un proceso con menor ráfaga restante o mayor prioridad.</li>
+                            <li><b>Envejecimiento Dinámico (Aging):</b> Si un proceso acumula $th$ ticks en <code>READY</code>, su prioridad se incrementa.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <button class="btn-launch-sim" onclick="launchSimulationScenario(2, 'rr', 4, 1, 5)">
+                    ⚡ Probar Arquitectura con E/S Concurrente en el Simulador en Vivo
+                </button>
+
+                <div class="speaker-notes">
+                    <b>Guía del Orador (Minuto 4:00 - 7:00):</b><br>
+                    "Nuestra implementación modela fielmente las estructuras de datos de un kernel Unix moderno. El PCB mantiene el vector de ráfagas alternadas y registra de manera auditada cada tick de espera. El subsistema de E/S es independiente de la CPU, permitiendo que mientras un proceso hace I/O, otro ejecute en la CPU."
+                </div>
+            </div>
+
+            <!-- SLIDE 4: Algoritmos Evaluados -->
+            <div class="slide" id="slide4">
+                <h1>3. Algoritmos de Planificación Evaluados</h1>
+                <h2>Políticas Apropiativas vs. No Apropiativas</h2>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Algoritmo</th>
+                            <th>Tipo</th>
+                            <th>Criterio de Selección</th>
+                            <th>Ventaja Principal</th>
+                            <th>Riesgo / Desventaja</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><b>FCFS</b></td>
+                            <td>No Apropiativo</td>
+                            <td>Orden de llegada FIFO</td>
+                            <td>Simplicidad, cero sobrecarga de CS</td>
+                            <td>Efecto Convoy severo en cargas mixtas</td>
+                        </tr>
+                        <tr>
+                            <td><b>Round Robin (RR)</b></td>
+                            <td>Apropiativo</td>
+                            <td>Tiempo compartido ($q$ ticks)</td>
+                            <td>Alta responsividad y equidad</td>
+                            <td>Degenera a FCFS si $q$ es grande; *Thrashing* si $q$ es chico</td>
+                        </tr>
+                        <tr>
+                            <td><b>SRTF</b></td>
+                            <td>Apropiativo</td>
+                            <td>Menor tiempo restante de CPU</td>
+                            <td>Minimiza el Tiempo de Espera promedio ($W$)</td>
+                            <td>Requiere conocer la ráfaga a priori; Inanición a procesos largos</td>
+                        </tr>
+                        <tr>
+                            <td><b>Prioridad con Aging</b></td>
+                            <td>Apropiativo</td>
+                            <td>Mayor prioridad dinámica ($1 = \max$)</td>
+                            <td>Atención garantizada a tareas críticas</td>
+                            <td>Resuelve la inanición promoviendo prioridades tras umbral $th$</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="highlight-box">
+                    <b>Índice de Equidad de Jain ($J$):</b> Métrica formal que mide si el servicio útil de CPU se distribuye equitativamente entre los procesos:
+                    $$J = \frac{(\sum x_i)^2}{n \sum x_i^2}, \quad x_i = \frac{\text{CPU Total}}{\text{Tiempo de Retorno } T_i}$$
+                </div>
+
+                <div class="speaker-notes">
+                    <b>Guía del Orador (Minuto 7:00 - 10:00):</b><br>
+                    "Hemos implementado el espectro canónico completo de la literatura de Tanenbaum y Silberschatz: FCFS como línea base no apropiativa, Round Robin para tiempo compartido, SRTF como el óptimo teórico en tiempo de espera, y Prioridad Apropiativa complementada con Envejecimiento para garantizar la supervivencia de tareas postergadas."
+                </div>
+            </div>
+
+            <!-- SLIDE 5: Escenario 1 - Efecto Convoy -->
+            <div class="slide" id="slide5">
+                <h1>4. Evidencia Experimental: Efecto Convoy</h1>
+                <h2>Escenario 1: Proceso Batch Monopolizador vs. Peticiones Interactivas</h2>
+
+                <div class="two-cols">
+                    <div>
+                        <img src="graficas/escenario1_comparativa.png" class="slide-img" alt="Comparativa Escenario 1">
+                    </div>
+                    <div>
+                        <div class="card">
+                            <div class="card-title">Hallazgos Cuantitativos</div>
+                            <ul style="font-size: 13.5px; line-height: 1.7; margin-left: 18px;">
+                                <li><b>FCFS:</b> Espera promedio disparada a <b>30.0 ticks</b>. Las APIs de 2 ticks tuvieron que esperar 35 ticks a que terminara la analítica batch.</li>
+                                <li><b>Round Robin ($q=4$):</b> Reduce la espera a <b>7.8 ticks</b> (reducción del 74%), dando servicio interactivo inmediato.</li>
+                                <li><b>SRTF:</b> Óptimo absoluto con espera de <b>5.0 ticks</b> (reducción del 83.3%). Desaloja a Batch en el tick 1 y ejecuta todas las APIs primero.</li>
+                                <li><b>Equidad de Jain:</b> FCFS cae a $J = 0.29$ (injusticia severa), mientras que SRTF alcanza $J = 0.88$.</li>
+                            </ul>
+                        </div>
+                        <button class="btn-launch-sim" onclick="launchSimulationScenario(1, 'fcfs', 4, 1, 5)">
+                            ⚡ Simular Efecto Convoy en Vivo (Tick a Tick)
+                        </button>
+                    </div>
+                </div>
+
+                <div class="speaker-notes">
+                    <b>Guía del Orador (Minuto 10:00 - 13:30):</b><br>
+                    "En esta gráfica generada por nuestro módulo con los datos del simulador C++, podemos apreciar con total claridad el Efecto Convoy. En FCFS, el tiempo de retorno es de 39.6 ticks y la espera de 30 ticks. En cambio, SRTF desaloja a la tarea batch apenas llega la primera API y atiende a las tareas cortas, reduciendo la espera promedio a solo 5 ticks."
+                </div>
+            </div>
+
+            <!-- SLIDE 6: Escenario 3 - Inanición y Aging -->
+            <div class="slide" id="slide6">
+                <h1>5. Evidencia Experimental: Inanición y Solución por Aging</h1>
+                <h2>Escenario 3: Tarea de Fondo Batch vs. Flujo Continuo de Alarmas Urgentes</h2>
+
+                <div class="two-cols">
+                    <div>
+                        <img src="graficas/escenario3_starvation_vs_aging.png" class="slide-img" alt="Inanición vs Aging">
+                    </div>
+                    <div>
+                        <div class="card">
+                            <div class="card-title">Contraste Experimental</div>
+                            <ul style="font-size: 13px; line-height: 1.6; margin-left: 16px;">
+                                <li><b>Prioridad Estricta (Sin Aging):</b>
+                                    El proceso $P_1$ (Fondo, prioridad 5) sufre inanición severa; espera <b>26 ticks</b> y es condenado al final (culmina en Tick 52).
+                                </li>
+                                <li><b>Prioridad con Aging ($th=5$):</b>
+                                    Cada 5 ticks en <code>READY</code>, $P_1$ sube de prioridad ($5 \to 4 \to 3 \to 2 \to 1$).
+                                    En el tick 13 alcanza prioridad 1, desaloja la CPU y <b>termina 5 ticks antes</b> (Tick 47).
+                                </li>
+                                <li>El Aging previene el congelamiento del sistema sin degradar significativamente la latencia de las tareas críticas.</li>
+                            </ul>
+                        </div>
+                        <button class="btn-launch-sim" onclick="launchSimulationScenario(3, 'priority_aging', 4, 1, 5)">
+                            ⚡ Ver Promoción de Prioridad en Vivo en el Simulador
+                        </button>
+                    </div>
+                </div>
+
+                <div class="speaker-notes">
+                    <b>Guía del Orador (Minuto 13:30 - 16:30):</b><br>
+                    "Aquí demostramos la solución matemática a la inanición. Sin envejecimiento, la tarea de fondo es postergada indefinidamente por el flujo de alarmas. Con nuestra política de Aging, cada 5 ticks de espera en la cola de listos se promueve su prioridad dinámica, logrando arrebatar la CPU en el tick 13 y culminar antes, protegiendo al sistema de bloqueos permanentes."
+                </div>
+            </div>
+
+            <!-- SLIDE 7: Sensibilidad del Quantum y Conclusiones -->
+            <div class="slide" id="slide7">
+                <h1>6. Sensibilidad del Quantum y Conclusiones</h1>
+                <h2>El Dilema Latencia vs. Sobrecarga de Kernel</h2>
+
+                <div class="two-cols">
+                    <div>
+                        <img src="graficas/round_robin_sensibilidad_quantum.png" class="slide-img" alt="Sensibilidad Quantum">
+                    </div>
+                    <div>
+                        <div class="card">
+                            <div class="card-title">Compromisos de Ingeniería</div>
+                            <ul style="font-size: 12.5px; line-height: 1.5; margin-left: 16px;">
+                                <li><b>Régimen de Thrashing ($q=1$):</b> 13 conmutaciones de contexto; más del 22% del tiempo de CPU desperdiciado en registros.</li>
+                                <li><b>Punto Dulce ($q \in [3, 5]$):</b> Mínimo tiempo de espera ($W = 7.8$) con sobrecarga de CS controlada ($10\%$).</li>
+                                <li><b>Degeneración hacia FCFS ($q > 10$):</b> La espera se degrada linealmente y reaparece el Efecto Convoy.</li>
+                            </ul>
+                        </div>
+
+                        <div class="highlight-box" style="font-size: 12.5px;">
+                            <b>Conclusión Final:</b> El planificador ideal para entornos modernos no es una política estática, sino una política multinivel adaptativa que combine el tiempo compartido de Round Robin con Aging dinámico.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="speaker-notes">
+                    <b>Guía del Orador (Minuto 16:30 - 20:00):</b><br>
+                    "Concluimos que la elección del quantum es un dilema de optimización en sistemas operativos. Ni un quantum microscópico ni uno gigantesco son viables. La zona óptima se ubica cuando el 80% de las ráfagas interactivas caben en un solo quantum, limitando la sobrecarga por conmutación al 10%. Quedamos atentos a sus preguntas."
+                </div>
+            </div>
+
+            <!-- Footer de Navegación de Diapositivas -->
+            <div class="slide-footer">
+                <button class="nav-btn" id="prevSlideBtn" onclick="changeSlide(-1)">◀ Anterior</button>
+                <span id="slideCounter" style="font-weight: 700; color: #475569; font-size: 13px;">Diapositiva 1 de 7</span>
+                <button class="nav-btn" id="nextSlideBtn" onclick="changeSlide(1)">Siguiente ▶</button>
+            </div>
+
         </div>
-        <div class="slide-footer">
-            <span>Sistemas Operativos (Periodo 2610) - Proyecto Final</span>
-            <span>Diapositiva 2 de 11</span>
+
+
+        <!-- ============================================================= -->
+        <!-- VISTA 2: SIMULADOR INTERACTIVO EN VIVO                        -->
+        <!-- ============================================================= -->
+        <div class="view-section" id="viewSimulator">
+            <div class="simulator-layout">
+                
+                <!-- Panel Lateral de Controles -->
+                <div class="sim-controls-panel">
+                    <h3 style="color: #38bdf8; font-size: 14px; border-bottom: 1px solid #334155; padding-bottom: 6px;">
+                        ⚙️ Configuración del Kernel
+                    </h3>
+
+                    <div class="control-group">
+                        <label class="control-label">Escenario de Prueba</label>
+                        <select class="sim-select" id="simScenarioSelect" onchange="onScenarioChange()">
+                            <option value="1">Escenario 1: Efecto Convoy (Batch vs APIs)</option>
+                            <option value="2">Escenario 2: E/S Concurrente (I/O Bursts)</option>
+                            <option value="3">Escenario 3: Inanición vs. Aging</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">Algoritmo de Planificación</label>
+                        <select class="sim-select" id="simAlgoSelect" onchange="onAlgoChange()">
+                            <option value="fcfs">FCFS (First-Come, First-Served)</option>
+                            <option value="rr" selected>Round Robin (RR)</option>
+                            <option value="srtf">SRTF (Shortest Remaining Time First)</option>
+                            <option value="priority_strict">Prioridad Estricta (Sin Aging)</option>
+                            <option value="priority_aging">Prioridad con Aging Dinámico</option>
+                        </select>
+                    </div>
+
+                    <!-- Parámetros Dinámicos -->
+                    <div class="control-group" id="groupQuantum">
+                        <div class="sim-slider-row">
+                            <label class="control-label">Quantum (q):</label>
+                            <span class="slider-val" id="valQuantum">4</span>
+                        </div>
+                        <input type="range" class="sim-slider" id="sliderQuantum" min="1" max="15" value="4" oninput="onParamChange()">
+                    </div>
+
+                    <div class="control-group">
+                        <div class="sim-slider-row">
+                            <label class="control-label">Costo Context Switch (cs):</label>
+                            <span class="slider-val" id="valCS">1</span>
+                        </div>
+                        <input type="range" class="sim-slider" id="sliderCS" min="0" max="5" value="1" oninput="onParamChange()">
+                    </div>
+
+                    <div class="control-group" id="groupAging">
+                        <div class="sim-slider-row">
+                            <label class="control-label">Umbral de Aging (th):</label>
+                            <span class="slider-val" id="valAging">5</span>
+                        </div>
+                        <input type="range" class="sim-slider" id="sliderAging" min="1" max="10" value="5" oninput="onParamChange()">
+                    </div>
+
+                    <div class="control-group">
+                        <div class="sim-slider-row">
+                            <label class="control-label">Velocidad Simulación:</label>
+                            <span class="slider-val" id="valSpeed">300ms</span>
+                        </div>
+                        <input type="range" class="sim-slider" id="sliderSpeed" min="50" max="1000" step="50" value="300" oninput="onSpeedChange()">
+                    </div>
+
+                    <!-- Botones de Control de Ejecución -->
+                    <div class="playback-buttons">
+                        <button class="play-btn" id="btnPlayPause" onclick="togglePlayPause()">
+                            ▶ Iniciar
+                        </button>
+                        <button class="step-btn" onclick="stepTick()">
+                            ⏭ Paso (+1)
+                        </button>
+                    </div>
+
+                    <button class="reset-btn" onclick="resetSimulation()">
+                        🔄 Reiniciar Simulación
+                    </button>
+                </div>
+
+                <!-- Panel Principal de Simulación -->
+                <div class="sim-canvas-panel">
+                    
+                    <!-- HUD Superior: Métricas en Vivo -->
+                    <div class="hud-row">
+                        <div class="hud-card clock">
+                            <div class="hud-label">Reloj CPU</div>
+                            <div class="hud-val" id="hudClock">Tick 0</div>
+                        </div>
+                        <div class="hud-card">
+                            <div class="hud-label">Retorno (T)</div>
+                            <div class="hud-val" id="hudAvgT">-</div>
+                        </div>
+                        <div class="hud-card">
+                            <div class="hud-label">Espera (W)</div>
+                            <div class="hud-val" id="hudAvgW">-</div>
+                        </div>
+                        <div class="hud-card">
+                            <div class="hud-label">Respuesta (R)</div>
+                            <div class="hud-val" id="hudAvgR">-</div>
+                        </div>
+                        <div class="hud-card">
+                            <div class="hud-label">CPU Ocupada</div>
+                            <div class="hud-val" id="hudCPUUtil">0.0%</div>
+                        </div>
+                        <div class="hud-card">
+                            <div class="hud-label">CS Sobrecarga</div>
+                            <div class="hud-val" id="hudCSOverhead">0.0%</div>
+                        </div>
+                        <div class="hud-card">
+                            <div class="hud-label">Cambios CS</div>
+                            <div class="hud-val" id="hudCSTotal">0</div>
+                        </div>
+                    </div>
+
+                    <!-- Estado del Sistema: CPU, Cola Listos y Cola E/S -->
+                    <div class="system-state-row">
+                        
+                        <!-- CPU Core Box -->
+                        <div class="component-box">
+                            <div class="component-title">
+                                <span>⚡ Núcleo de CPU</span>
+                                <span class="component-badge" id="cpuBadgeState">IDLE</span>
+                            </div>
+                            <div class="cpu-core" id="cpuCoreEl">
+                                <div class="cpu-status-badge status-idle" id="cpuStatusBadge">IDLE</div>
+                                <div class="cpu-proc-name" id="cpuProcName">Sin Proceso</div>
+                                <div class="cpu-proc-sub" id="cpuProcSub">Esperando despacho...</div>
+                            </div>
+                        </div>
+
+                        <!-- Cola de Listos (Ready Queue) -->
+                        <div class="component-box">
+                            <div class="component-title">
+                                <span>📋 Cola de Listos (READY)</span>
+                                <span class="component-badge" id="badgeReadyCount">0 en cola</span>
+                            </div>
+                            <div class="process-queue-list" id="readyQueueEl">
+                                <span class="empty-queue">Cola vacía</span>
+                            </div>
+                        </div>
+
+                        <!-- Cola de E/S (Blocked Queue) -->
+                        <div class="component-box">
+                            <div class="component-title">
+                                <span>⏳ Cola de Bloqueados (E/S)</span>
+                                <span class="component-badge" id="badgeIOCount">0 en E/S</span>
+                            </div>
+                            <div class="process-queue-list" id="ioQueueEl">
+                                <span class="empty-queue">Sin procesos bloqueados</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Diagrama de Gantt Dinámico -->
+                    <div class="gantt-section">
+                        <div class="component-title">
+                            <span>📊 Diagrama de Gantt en Tiempo Real</span>
+                            <span class="component-badge" id="badgeGanttTicks">0 Ticks registrados</span>
+                        </div>
+                        <div class="gantt-canvas-wrap">
+                            <div class="gantt-track" id="ganttTrackEl"></div>
+                            <div class="gantt-ruler" id="ganttRulerEl"></div>
+                        </div>
+                    </div>
+
+                    <!-- Consola de Eventos del Kernel -->
+                    <div>
+                        <div class="component-title" style="margin-bottom: 4px;">
+                            <span>📜 Registro de Eventos del Kernel (Audit Trail)</span>
+                            <span style="font-size: 11px; color: #64748b;">Tick a Tick</span>
+                        </div>
+                        <div class="kernel-log-box" id="kernelLogEl">
+                            <div class="log-entry"><span class="log-time">[Tick 0]</span> Kernel inicializado. Carga del escenario completada.</div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
         </div>
+
     </div>
-    
-    <div class="slide" id="slide-2">
-        <div class="slide-content">
-            <!-- SLIDE 2 -->
-<h1>1. Planteamiento del Problema en Sistemas Operativos Reales</h1>
-<p>En entornos modernos de backend, cloud computing y microservicios, la CPU atiende cargas de cómputo altamente heterogéneas que compiten por ciclos de ejecución:</p>
-<div class="two-cols">
-<div>
 
-### Tipos de Carga Concurrente:
-1. **Peticiones Web / Microservicios (Interactive):**
-   * Ráfagas de CPU ultracortas ($2 - 3\text{ ticks}$).
-   * Exigen tiempo de respuesta $R \approx 0$ para SLAs.
-2. **Procesos I/O-Bound (Base de Datos / Red):**
-   * Alternan cómputo breve con esperas prolongadas.
-   * Deben bloquearse sin degradar el rendimiento global.
-3. **Procesos Batch CPU-Bound (Analítica / IA):**
-   * Ráfagas continuas de $35+\text{ ticks}$.
-
-</div>
-<div>
-
-<div class="warning-box">
-<b>Peligros de una Política Incorrecta:</b>
-<ul>
-  <li><b>Efecto Convoy:</b> Tareas largas monopolizan la CPU; procesos rápidos sufren esperas colosales.</li>
-  <li><b>Thrashing por Context Switch:</b> Conmutaciones continuas desperdician hasta el 23% de ciclos útiles.</li>
-  <li><b>Inanición (Starvation):</b> Procesos de baja prioridad quedan congelados indefinidamente.</li>
-</ul>
-</div>
-
-</div>
-</div>
-
-<div class="notes">
-<b>Guía del Orador (Minuto 1:30 - 4:00):</b><br>
-"En un servidor de producción convergen tareas de background (como analítica por lotes) con microservicios web de autenticación y pasarelas de pago. Si el planificador del kernel es no apropiativo (como FCFS), caemos en el Efecto Convoy. Si usamos un Round Robin mal calibrado, la CPU gasta más tiempo cambiando de contexto que trabajando. Y si usamos prioridades fijas, las tareas secundarias sufren inanición permanente. Nuestro simulador recrea y mide formalmente cada uno de estos conflictos."
-</div>
-        </div>
-        <div class="slide-footer">
-            <span>Sistemas Operativos (Periodo 2610) - Proyecto Final</span>
-            <span>Diapositiva 3 de 11</span>
-        </div>
-    </div>
-    
-    <div class="slide" id="slide-3">
-        <div class="slide-content">
-            <!-- SLIDE 3 -->
-<h1>2. Arquitectura Interna del Kernel Simulado</h1>
-<p>El simulador implementa el ciclo de vida canónico de procesos mediante una <strong>Máquina de Estados Finitos (FSM)</strong> determinista controlada por un reloj discreto ($t = 0, 1, 2, \dots$):</p>
-<pre><code>        +-----------------------------------------------------------+
-        |                          NEW                              |
-        +-----------------------------------------------------------+
-                                     | (Arribo en t = T_llegada)
-                                     v
-                 +-----------------------------------------+
-                 |                  READY                  |&lt;---------------+
-                 +-----------------------------------------+                |
-                    | Dispatcher              ^ Preemption                  |
-                    v (Algoritmo de CPU)      | (Quantum / Prioridad / SRTF)|
-                 +-----------------------------------------+                | E/S Completada
-                 |                 RUNNING                 |                | (IOQueue)
-                 +-----------------------------------------+                |
-                    |                        |                              |
-      Terminación   v                        v Solicitud de E/S             |
-        +-----------------------+     +-----------------------------------------+
-        |      TERMINATED       |     |                 WAITING                 |
-        +-----------------------+     +-----------------------------------------+
-</code></pre>
-<ul>
-<li><strong>PCB Formal (<code>Process</code>):</strong> PID, estado, ráfagas secuenciales <code>{CPU, E/S}</code>, prioridades estática y dinámica, contadores de espera ($W$), respuesta ($R$) y cambios de contexto.</li>
-<li><strong>CPU con Penalización:</strong> Modela explícitamente $P = 1\text{ tick}$ de penalización por conmutación de registros de hardware (<code>CONTEXT_SWITCHING</code>).</li>
-</ul>
-<div class="notes">
-<b>Guía del Orador (Minuto 4:00 - 7:30):</b><br>
-"Diseñamos una arquitectura modular en C++17 desacoplada en 5 subsistemas: el PCB para persistir el estado de cada proceso, la CPU que cobra un tick físico por cambio de registros de hardware, el Scheduler mediante una interfaz polimórfica que permite intercambiar algoritmos en caliente, la IOQueue concurrente que atiende bloqueos de E/S sin pausar la CPU, y el Simulator que orquesta el reloj discreto."
-</div>
-        </div>
-        <div class="slide-footer">
-            <span>Sistemas Operativos (Periodo 2610) - Proyecto Final</span>
-            <span>Diapositiva 4 de 11</span>
-        </div>
-    </div>
-    
-    <div class="slide" id="slide-4">
-        <div class="slide-content">
-            <!-- SLIDE 4 -->
-<h1>3. Políticas de Planificación Evaluadas</h1>
-<p>Evaluamos cuantitativamente cuatro políticas fundamentales de los sistemas operativos:</p>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">Política</th>
-<th style="text-align: center;">Naturaleza</th>
-<th style="text-align: left;">Criterio de Decisión</th>
-<th style="text-align: left;">Fortaleza Técnica</th>
-<th style="text-align: left;">Vulnerabilidad Clave</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;"><strong>FCFS</strong></td>
-<td style="text-align: center;">No Apropiativo</td>
-<td style="text-align: left;">Orden de llegada FIFO</td>
-<td style="text-align: left;">Cero sobrecarga de planificación</td>
-<td style="text-align: left;">Vulnerable al <strong>Efecto Convoy</strong> ($W$ elevado)</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>Round Robin (RR)</strong></td>
-<td style="text-align: center;">Apropiativo</td>
-<td style="text-align: left;">Turnos por <em>Quantum</em> ($q$)</td>
-<td style="text-align: left;">Máxima equidad interactiva</td>
-<td style="text-align: left;">Sensible al costo de <em>Context Switch</em></td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>SRTF</strong></td>
-<td style="text-align: center;">Apropiativo</td>
-<td style="text-align: left;">Menor tiempo restante de CPU</td>
-<td style="text-align: left;"><strong>Demostrablemente óptimo</strong> en $W_{\text{prom}}$</td>
-<td style="text-align: left;">Susceptible a inanición de tareas largas</td>
-</tr>
-<tr>
-<td style="text-align: left;"><strong>Prioridad con Aging</strong></td>
-<td style="text-align: center;">Apropiativo</td>
-<td style="text-align: left;">Mayor prioridad (1 = Máxima)</td>
-<td style="text-align: left;">Promoción dinámica: <strong>Erradica Inanición</strong></td>
-<td style="text-align: left;">Requiere calibrar el umbral de aging ($K$)</td>
-</tr>
-</tbody>
-</table>
-<div class="highlight">
-<b>Mecanismo Matemático de Envejecimiento (Aging):</b><br>
-$$\text{Prioridad Dinámica} = \max\left(1, \; \text{Prioridad Base} - \left\lfloor \frac{\text{Tiempo en READY}}{K} \right\rfloor \right)$$
-Garantiza una cota superior finita al tiempo de espera: ningún proceso espera indefinidamente.
-</div>
-
-<div class="notes">
-<b>Guía del Orador (Minuto 7:30 - 10:30):</b><br>
-"Comparamos los 4 pilares: FCFS como línea base no apropiativa; Round Robin con quantum parametrizable; SRTF como benchmark óptimo matemático; y Prioridad Apropiativa enriquecida con Aging. El Aging es crucial: cada K ticks en estado READY, el kernel incrementa la prioridad dinámica del proceso, garantizando matemáticamente que tarde o temprano tomará la CPU."
-</div>
-        </div>
-        <div class="slide-footer">
-            <span>Sistemas Operativos (Periodo 2610) - Proyecto Final</span>
-            <span>Diapositiva 5 de 11</span>
-        </div>
-    </div>
-    
-    <div class="slide" id="slide-5">
-        <div class="slide-content">
-            <!-- SLIDE 5 -->
-<h1>4. Evidencia Experimental: Efecto Convoy (Escenario 1)</h1>
-<p><strong>Escenario:</strong> P1 (Batch, $35\text{ ticks}$) llega en $t=0$, seguido de peticiones interactivas P2 a P5 ($2 - 3\text{ ticks}$) en $t=1, 2, 3, 4$.</p>
-<div class="two-cols">
-<div>
-
-### Resultados Cuantitativos:
-* **FCFS:**
-  * $W_{\text{prom}} = \mathbf{30.00\text{ ticks}}$
-  * Equidad de Jain: **$J = 0.29$** (Pésima)
-  * P2 espera $34\text{ ticks}$ para correr $2\text{ ticks}$.
-* **SRTF (Apropiativo):**
-  * $W_{\text{prom}} = \mathbf{5.00\text{ ticks}}$ (**-83.3% de espera**)
-  * Equidad de Jain: **$J = 0.88$**
-* **Round Robin ($q=4$):**
-  * $W_{\text{prom}} = \mathbf{7.80\text{ ticks}}$
-  * Equidad de Jain: **$J = 0.75$**
-
-</div>
-<div>
-
-![width:520px](graficas/escenario1_comparativa.png)
-
-</div>
-</div>
-
-<div class="notes">
-<b>Guía del Orador (Minuto 10:30 - 13:30):</b><br>
-"Observemos la gráfica de la derecha generada por nuestro módulo de Python. En FCFS, las 4 peticiones web sufren el Efecto Convoy: quedan atrapadas detrás del proceso batch, llevando la espera promedio a 30 ticks y hundiendo la equidad de Jain a 0.29. Al introducir desalojo con SRTF, las tareas cortas se adelantan de inmediato, desplomando la espera media a solo 5 ticks (83.3% de mejora) y elevando la equidad a 0.88."
-</div>
-        </div>
-        <div class="slide-footer">
-            <span>Sistemas Operativos (Periodo 2610) - Proyecto Final</span>
-            <span>Diapositiva 6 de 11</span>
-        </div>
-    </div>
-    
-    <div class="slide" id="slide-6">
-        <div class="slide-content">
-            <!-- SLIDE 6 -->
-<h1>5. Diagrama de Gantt: Línea de Tiempo de la CPU (Escenario 1)</h1>
-<p>Visualización de alta resolución generada por <code>scripts/plot_metrics.py</code>:</p>
-<p><img alt="width:1050px" src="graficas/escenario1_gantt.png" /></p>
-<ul>
-<li><strong>FCFS:</strong> Monopolio absoluto de P1 durante los primeros 35 ticks.</li>
-<li><strong>Round Robin ($q=4$):</strong> P1 corre 4 ticks y cede la CPU. Las 4 APIs finalizan antes del tick 18.</li>
-<li><strong>SRTF:</strong> Desalojo inmediato de P1 en $t=1$. Todas las tareas interactivas culminan rápidamente.</li>
-<li><strong>Rojo achurado (CS):</strong> Representa el costo computacional de conmutación de contexto ($1\text{ tick}$).</li>
-</ul>
-<div class="notes">
-<b>Guía del Orador (Minuto 13:30 - 15:30):</b><br>
-"En este diagrama de Gantt comparativo vemos cómo se comporta la CPU ciclo a ciclo. En FCFS vemos la enorme barra azul de P1 bloqueando a todos los demás. En Round Robin y SRTF, el kernel desaloja a P1, inserta un ciclo de cambio de contexto (visible en las barras rojas con patrón achurado) y despacha las peticiones web en micro-ráfagas, logrando que los usuarios interactivos obtengan respuesta en menos de 10 ticks."
-</div>
-        </div>
-        <div class="slide-footer">
-            <span>Sistemas Operativos (Periodo 2610) - Proyecto Final</span>
-            <span>Diapositiva 7 de 11</span>
-        </div>
-    </div>
-    
-    <div class="slide" id="slide-7">
-        <div class="slide-content">
-            <!-- SLIDE 7 -->
-<h1>6. Evidencia Experimental: Inanición vs. Aging (Escenario 3)</h1>
-<p><strong>Escenario:</strong> Tarea de fondo P1 (Prioridad 5, $25\text{ ticks}$) frente a un flujo continuo de alarmas urgentes P2 a P7 (Prioridad 1 y 2).</p>
-<div class="two-cols">
-<div>
-
-### Prioridad Estricta (Sin Aging):
-* P1 es desalojado en $t=1$ y **sufre inanición**.
-* Espera acumulada: $\mathbf{26\text{ ticks}}$.
-* Termina en el último ciclo de la simulación ($t = \mathbf{52}$).
-
-### Prioridad con Aging ($K = 5\text{ ticks}$):
-* Dinámica de promoción: $5 \rightarrow 4 \rightarrow 3 \rightarrow 2 \rightarrow \mathbf{1}$.
-* P1 arrebata la CPU en $t=22$ antes de que entre la última alarma.
-* **Espera reducida a $21\text{ ticks}$ y termina en $t = \mathbf{47}$ (5 ticks antes).**
-
-</div>
-<div>
-
-![width:520px](graficas/escenario3_starvation_vs_aging.png)
-
-</div>
-</div>
-
-<div class="notes">
-<b>Guía del Orador (Minuto 15:30 - 17:30):</b><br>
-"En el Escenario 3 demostramos el peligro crítico de la inanición. Bajo prioridad estricta, la tarea de fondo es aplazada indefinidamente por las alarmas entrantes y termina de última en el tick 52. Con nuestro algoritmo de Aging configurado con umbral K=5, el proceso de fondo va acumulando antigüedad y su prioridad dinámica pasa de 5 hasta 1, logrando tomar la CPU en el tick 22 y culminar con éxito 5 ciclos antes, sin perjudicar de forma crítica a las alarmas."
-</div>
-        </div>
-        <div class="slide-footer">
-            <span>Sistemas Operativos (Periodo 2610) - Proyecto Final</span>
-            <span>Diapositiva 8 de 11</span>
-        </div>
-    </div>
-    
-    <div class="slide" id="slide-8">
-        <div class="slide-content">
-            <!-- SLIDE 8 -->
-<h1>7. Sensibilidad del Quantum: El Dilema del Ingeniero de Kernel</h1>
-<p>Curva experimental generada mediante barrido exhaustivo de $q \in [1, 15]$ en el Escenario 1:</p>
-<div class="two-cols">
-<div>
-
-![width:500px](graficas/round_robin_sensibilidad_quantum.png)
-
-</div>
-<div>
-
-### Tres Regímenes Identificados:
-1. **Zona de Sobrecarga ($q = 1$ - Thrashing):**
-   * $13\text{ cambios de contexto}$.
-   * **$22.81\%$ de la CPU desperdiciada en sobrecarga.**
-   * $W_{\text{prom}}$ sube a $13.20\text{ ticks}$.
-2. **Zona Óptima ($q \in [3, 5]$ - Sweet Spot):**
-   * Minimiza la espera a **$W = 7.80\text{ ticks}$**.
-   * Sobrecarga controlada en $10.20\%$.
-3. **Zona de Degeneración ($q \ge 10$):**
-   * El algoritmo degenera hacia FCFS; el Efecto Convoy reaparece linealmente.
-
-</div>
-</div>
-
-<div class="notes">
-<b>Guía del Orador (Minuto 17:30 - 19:00):</b><br>
-"Esta gráfica sintetiza el problema de ingeniería central en la planificación de CPU. Si el quantum es de 1 tick, incurrimos en 13 conmutaciones de contexto y desperdiciamos casi el 23% de la potencia del procesador guardando y restaurando registros. Si el quantum es muy grande (15 ticks), el algoritmo degenera en FCFS y la espera vuelve a subir. El rango óptimo se ubica exactamente entre 3 y 5 ticks, donde se minimiza la espera con sobrecarga perfectamente acotada."
-</div>
-        </div>
-        <div class="slide-footer">
-            <span>Sistemas Operativos (Periodo 2610) - Proyecto Final</span>
-            <span>Diapositiva 9 de 11</span>
-        </div>
-    </div>
-    
-    <div class="slide" id="slide-9">
-        <div class="slide-content">
-            <!-- SLIDE 9 -->
-<h1>8. Conclusiones y Responsabilidad Profesional</h1>
-<h3>Conclusiones Técnicas:</h3>
-<ol>
-<li><strong>No existe un algoritmo universalmente superior:</strong> Cada política optimiza una métrica a expensas de otra. SRTF optimiza $W$ pero desconoce ráfagas futuras; Round Robin asegura interactividad pero añade costo de conmutación.</li>
-<li><strong>El Aging es obligatorio en sistemas robustos:</strong> Elimina la vulnerabilidad matemática de inanición mediante promoción temporal acotada.</li>
-<li><strong>Reproducibilidad y Automatización:</strong> El proyecto se compila y verifica limpiamente con <code>make</code>, <code>make test</code> y <code>make plots</code>.</li>
-</ol>
-<div class="highlight">
-<b>Dimensión Ética y Responsabilidad del Ingeniero:</b><br>
-En sistemas ciberfísicos, médicos o de aviación (ej. la falla del <i>Mars Pathfinder</i> en 1997 por inversión de prioridades), un fallo en la calibración del planificador o la ausencia de mecanismos anti-inanición puede resultar en pérdidas humanas catastróficas.
-</div>
-        </div>
-        <div class="slide-footer">
-            <span>Sistemas Operativos (Periodo 2610) - Proyecto Final</span>
-            <span>Diapositiva 10 de 11</span>
-        </div>
-    </div>
-    
-    <div class="slide" id="slide-10">
-        <div class="slide-content">
-            <h1>¡Muchas Gracias por su Atención!</h1>
-<h3>Sesión de Preguntas y Respuestas (Q&amp;A)</h3>
-<ul>
-<li>Repositorio de código fuente: <code>github.com/Anticife/sis_op</code></li>
-<li>Comandos disponibles:</li>
-<li><code>make &amp;&amp; make test</code> — Compilación y ejecución de escenarios</li>
-<li><code>make plots</code> — Generación de gráficas de alta resolución</li>
-<li><code>./simulador --scenario &lt;path&gt; --step</code> — Modo interactivo paso a paso</li>
-</ul>
-        </div>
-        <div class="slide-footer">
-            <span>Sistemas Operativos (Periodo 2610) - Proyecto Final</span>
-            <span>Diapositiva 11 de 11</span>
-        </div>
-    </div>
-    
-    </div>
-    <div class="controls">
-        <button class="btn" onclick="prevSlide()">◀ Anterior</button>
-        <button class="btn" onclick="nextSlide()">Siguiente ▶</button>
-    </div>
     <script>
-        let current = 0;
-        const slides = document.querySelectorAll('.slide');
-        function showSlide(idx) {
-            slides.forEach(s => s.classList.remove('active'));
-            if (idx >= 0 && idx < slides.length) {
-                current = idx;
-                slides[current].classList.add('active');
+        // ====================================================================
+        // GESTIÓN DE VISTAS (DIAPOSITIVAS / SIMULADOR)
+        // ====================================================================
+        let currentSlide = 1;
+        const totalSlides = 7;
+
+        function switchTab(tab) {
+            document.getElementById('tabBtnSlides').classList.toggle('active', tab === 'slides');
+            document.getElementById('tabBtnSim').classList.toggle('active', tab === 'simulator');
+            document.getElementById('viewSlides').classList.toggle('active', tab === 'slides');
+            document.getElementById('viewSimulator').classList.toggle('active', tab === 'simulator');
+        }
+
+        function changeSlide(direction) {
+            document.getElementById(`slide${currentSlide}`).classList.remove('active');
+            currentSlide += direction;
+            if (currentSlide < 1) currentSlide = 1;
+            if (currentSlide > totalSlides) currentSlide = totalSlides;
+
+            document.getElementById(`slide${currentSlide}`).classList.add('active');
+            document.getElementById('slideCounter').textContent = `Diapositiva ${currentSlide} de ${totalSlides}`;
+            document.getElementById('prevSlideBtn').disabled = (currentSlide === 1);
+            document.getElementById('nextSlideBtn').disabled = (currentSlide === totalSlides);
+        }
+
+        // Navegación por teclado
+        document.addEventListener('keydown', (e) => {
+            if (document.getElementById('viewSlides').classList.contains('active')) {
+                if (e.key === 'ArrowRight' || e.key === ' ') {
+                    if (currentSlide < totalSlides) changeSlide(1);
+                } else if (e.key === 'ArrowLeft') {
+                    if (currentSlide > 1) changeSlide(-1);
+                }
+            }
+        });
+
+        function launchSimulationScenario(scenarioId, algo, quantum, cs, aging) {
+            switchTab('simulator');
+            document.getElementById('simScenarioSelect').value = scenarioId;
+            document.getElementById('simAlgoSelect').value = algo;
+            document.getElementById('sliderQuantum').value = quantum;
+            document.getElementById('valQuantum').textContent = quantum;
+            document.getElementById('sliderCS').value = cs;
+            document.getElementById('valCS').textContent = cs;
+            document.getElementById('sliderAging').value = aging;
+            document.getElementById('valAging').textContent = aging;
+            resetSimulation();
+        }
+
+        // ====================================================================
+        // MOTOR DETERMINISTA DEL SIMULADOR EN JAVASCRIPT (MODELO CANÓNICO C++)
+        // ====================================================================
+        const SCENARIOS_DATA = {
+            1: [
+                { pid: 1, name: "Analitica_Batch", arr: 0, pri: 3, bursts: [{t: 'CPU', d: 35}] },
+                { pid: 2, name: "API_Login",       arr: 1, pri: 2, bursts: [{t: 'CPU', d: 2}] },
+                { pid: 3, name: "API_Payment",     arr: 2, pri: 1, bursts: [{t: 'CPU', d: 3}] },
+                { pid: 4, name: "API_Profile",     arr: 3, pri: 2, bursts: [{t: 'CPU', d: 2}] },
+                { pid: 5, name: "API_Catalog",     arr: 4, pri: 2, bursts: [{t: 'CPU', d: 2}] }
+            ],
+            2: [
+                { pid: 1, name: "Web_Search",    arr: 0, pri: 1, bursts: [{t: 'CPU', d: 3}, {t: 'IO', d: 6}, {t: 'CPU', d: 2}] },
+                { pid: 2, name: "DB_Report",     arr: 1, pri: 3, bursts: [{t: 'CPU', d: 6}, {t: 'IO', d: 4}, {t: 'CPU', d: 5}] },
+                { pid: 3, name: "File_Upload",   arr: 2, pri: 2, bursts: [{t: 'CPU', d: 2}, {t: 'IO', d: 8}, {t: 'CPU', d: 3}] },
+                { pid: 4, name: "API_Auth",      arr: 4, pri: 1, bursts: [{t: 'CPU', d: 2}, {t: 'IO', d: 3}, {t: 'CPU', d: 1}] },
+                { pid: 5, name: "Cache_Worker",  arr: 6, pri: 2, bursts: [{t: 'CPU', d: 4}, {t: 'IO', d: 2}, {t: 'CPU', d: 2}] }
+            ],
+            3: [
+                { pid: 1, name: "Tarea_Fondo_Batch", arr: 0, pri: 5, bursts: [{t: 'CPU', d: 25}] },
+                { pid: 2, name: "Urgente_Alarma_1",   arr: 1, pri: 1, bursts: [{t: 'CPU', d: 3}] },
+                { pid: 3, name: "Urgente_Alarma_2",   arr: 4, pri: 1, bursts: [{t: 'CPU', d: 3}] },
+                { pid: 4, name: "Urgente_Alarma_3",   arr: 7, pri: 1, bursts: [{t: 'CPU', d: 3}] },
+                { pid: 5, name: "Urgente_Alarma_4",   arr: 10, pri: 1, bursts: [{t: 'CPU', d: 3}] },
+                { pid: 6, name: "Urgente_Alarma_5",   arr: 13, pri: 2, bursts: [{t: 'CPU', d: 4}] },
+                { pid: 7, name: "Urgente_Alarma_6",   arr: 17, pri: 2, bursts: [{t: 'CPU', d: 4}] }
+            ]
+        };
+
+        const PROCESS_COLORS = {
+            1: "#2b5b84",
+            2: "#27ae60",
+            3: "#2980b9",
+            4: "#8e44ad",
+            5: "#e67e22",
+            6: "#16a085",
+            7: "#d35400"
+        };
+
+        // Estado del Simulador
+        let simState = {
+            tick: 0,
+            isPlaying: false,
+            timer: null,
+            speed: 300,
+            scenarioId: 1,
+            algo: 'rr',
+            quantum: 4,
+            csPenalty: 1,
+            agingTh: 5,
+            
+            // Entidades del Kernel
+            processes: [],
+            readyQueue: [],
+            ioQueue: [],
+            runningProc: null,
+            pendingProc: null,
+            cpuState: 'IDLE', // 'IDLE', 'RUNNING', 'CONTEXT_SWITCH'
+            csRemaining: 0,
+            lastRunningPid: -1,
+            quantumUsed: 0,
+
+            // Métricas y Gantt
+            gantt: [],
+            busyTicks: 0,
+            csTicks: 0,
+            csCount: 0
+        };
+
+        function initSimulation() {
+            simState.tick = 0;
+            simState.isPlaying = false;
+            clearInterval(simState.timer);
+            simState.timer = null;
+
+            const baseProcs = SCENARIOS_DATA[simState.scenarioId];
+            simState.processes = baseProcs.map(p => ({
+                pid: p.pid,
+                name: p.name,
+                arr: p.arr,
+                basePri: p.pri,
+                dynPri: p.pri,
+                bursts: JSON.parse(JSON.stringify(p.bursts)),
+                burstIdx: 0,
+                remBurst: p.bursts[0].d,
+                state: 'NEW',
+                firstRun: -1,
+                completionTime: -1,
+                waitTime: 0,
+                readyTicks: 0,
+                totalCpu: p.bursts.filter(b => b.t === 'CPU').reduce((acc, b) => acc + b.d, 0)
+            }));
+
+            simState.readyQueue = [];
+            simState.ioQueue = [];
+            simState.runningProc = null;
+            simState.pendingProc = null;
+            simState.cpuState = 'IDLE';
+            simState.csRemaining = 0;
+            simState.lastRunningPid = -1;
+            simState.quantumUsed = 0;
+
+            simState.gantt = [];
+            simState.busyTicks = 0;
+            simState.csTicks = 0;
+            simState.csCount = 0;
+
+            document.getElementById('kernelLogEl').innerHTML = `<div class="log-entry"><span class="log-time">[Tick 0]</span> Simulación reiniciada. Algoritmo: <b>${simState.algo.toUpperCase()}</b>.</div>`;
+            updateUI();
+        }
+
+        function logKernel(msg, type = 'normal') {
+            const el = document.getElementById('kernelLogEl');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            let cls = '';
+            if (type === 'preempt') cls = 'log-preempt';
+            else if (type === 'aging') cls = 'log-aging';
+            else if (type === 'dispatch') cls = 'log-dispatch';
+            entry.innerHTML = `<span class="log-time">[Tick ${simState.tick}]</span> <span class="${cls}">${msg}</span>`;
+            el.appendChild(entry);
+            el.scrollTop = el.scrollHeight;
+        }
+
+        // Criterio de Selección de Siguiente Proceso
+        function getNextReadyProcess() {
+            if (simState.readyQueue.length === 0) return null;
+
+            if (simState.algo === 'fcfs' || simState.algo === 'rr') {
+                return simState.readyQueue.shift();
+            } else if (simState.algo === 'srtf') {
+                // Menor tiempo restante de CPU
+                let minIdx = 0;
+                for (let i = 1; i < simState.readyQueue.length; i++) {
+                    if (simState.readyQueue[i].remBurst < simState.readyQueue[minIdx].remBurst) {
+                        minIdx = i;
+                    }
+                }
+                return simState.readyQueue.splice(minIdx, 1)[0];
+            } else if (simState.algo === 'priority_strict' || simState.algo === 'priority_aging') {
+                // Menor valor numérico de prioridad = Mayor prioridad
+                let topIdx = 0;
+                for (let i = 1; i < simState.readyQueue.length; i++) {
+                    const p1 = simState.readyQueue[i];
+                    const pTop = simState.readyQueue[topIdx];
+                    if (p1.dynPri < pTop.dynPri) {
+                        topIdx = i;
+                    } else if (p1.dynPri === pTop.dynPri) {
+                        if (p1.arr < pTop.arr) topIdx = i;
+                    }
+                }
+                return simState.readyQueue.splice(topIdx, 1)[0];
+            }
+            return simState.readyQueue.shift();
+        }
+
+        // Evaluar Preempción (Desalojo)
+        function shouldPreempt(candidate = null) {
+            if (simState.cpuState !== 'RUNNING' || !simState.runningProc) return false;
+
+            if (simState.algo === 'rr') {
+                return (simState.quantumUsed >= simState.quantum && simState.readyQueue.length > 0);
+            } else if (simState.algo === 'srtf' && candidate) {
+                return (candidate.remBurst < simState.runningProc.remBurst);
+            } else if ((simState.algo === 'priority_strict' || simState.algo === 'priority_aging') && candidate) {
+                return (candidate.dynPri < simState.runningProc.dynPri);
+            }
+            return false;
+        }
+
+        // Ejecutar 1 Tick
+        function stepTick() {
+            const allCompleted = simState.processes.every(p => p.state === 'TERMINATED');
+            if (allCompleted) {
+                logKernel("🎉 Todos los procesos han completado su ejecución con éxito.");
+                if (simState.isPlaying) togglePlayPause();
+                return;
+            }
+
+            const current = simState.tick;
+
+            // 1. Llegadas de procesos NEW
+            simState.processes.forEach(p => {
+                if (p.state === 'NEW' && p.arr === current) {
+                    p.state = 'READY';
+                    simState.readyQueue.push(p);
+                    logKernel(`Proceso P${p.pid} (${p.name}) entra al sistema en estado READY.`);
+
+                    if (shouldPreempt(p)) {
+                        logKernel(`⚡ DESALOJO: P${p.pid} tiene mayor prioridad/menor burst que P${simState.runningProc.pid}. Preempting...`, 'preempt');
+                        simState.readyQueue.push(simState.runningProc);
+                        simState.runningProc.state = 'READY';
+                        simState.runningProc = null;
+                        simState.cpuState = 'IDLE';
+                        simState.quantumUsed = 0;
+                    }
+                }
+            });
+
+            // 2. Progreso de Procesos en E/S
+            for (let i = simState.ioQueue.length - 1; i >= 0; i--) {
+                const p = simState.ioQueue[i];
+                p.remBurst--;
+                if (p.remBurst <= 0) {
+                    simState.ioQueue.splice(i, 1);
+                    p.burstIdx++;
+                    if (p.burstIdx < p.bursts.length) {
+                        p.state = 'READY';
+                        p.remBurst = p.bursts[p.burstIdx].d;
+                        simState.readyQueue.push(p);
+                        logKernel(`Proceso P${p.pid} (${p.name}) finalizó E/S y pasa a READY.`);
+                        if (shouldPreempt(p)) {
+                            logKernel(`⚡ DESALOJO por retorno de E/S de P${p.pid}.`, 'preempt');
+                            simState.readyQueue.push(simState.runningProc);
+                            simState.runningProc.state = 'READY';
+                            simState.runningProc = null;
+                            simState.cpuState = 'IDLE';
+                            simState.quantumUsed = 0;
+                        }
+                    } else {
+                        p.state = 'TERMINATED';
+                        p.completionTime = current;
+                        logKernel(`Proceso P${p.pid} (${p.name}) TERMINADO en E/S.`);
+                    }
+                }
+            }
+
+            // 3. Mecanismo de Aging (Envejecimiento Dinámico)
+            if (simState.algo === 'priority_aging') {
+                simState.readyQueue.forEach(p => {
+                    p.readyTicks++;
+                    if (p.readyTicks >= simState.agingTh && p.dynPri > 1) {
+                        p.dynPri--;
+                        p.readyTicks = 0;
+                        logKernel(`🔥 AGING: P${p.pid} (${p.name}) promovido a Prioridad ${p.dynPri} tras esperar ${simState.agingTh} ticks.`, 'aging');
+                    }
+                });
+            }
+
+            // 4. Preempción en Round Robin por Quantum
+            if (simState.algo === 'rr' && shouldPreempt()) {
+                logKernel(`⏰ Quantum expirado (${simState.quantum} ticks) para P${simState.runningProc.pid}. Desalojando a READY.`, 'preempt');
+                simState.readyQueue.push(simState.runningProc);
+                simState.runningProc.state = 'READY';
+                simState.runningProc = null;
+                simState.cpuState = 'IDLE';
+                simState.quantumUsed = 0;
+            }
+
+            // 5. Despacho si CPU está IDLE
+            if (simState.cpuState === 'IDLE' && simState.readyQueue.length > 0) {
+                const nextP = getNextReadyProcess();
+                simState.quantumUsed = 0;
+                const needsCS = (simState.lastRunningPid !== -1 && simState.lastRunningPid !== nextP.pid && simState.csPenalty > 0);
+
+                if (needsCS) {
+                    simState.cpuState = 'CONTEXT_SWITCH';
+                    simState.csRemaining = simState.csPenalty;
+                    simState.pendingProc = nextP;
+                    simState.csCount++;
+                    logKernel(`🔄 Conmutación de Contexto hacia P${nextP.pid} (Costo: ${simState.csPenalty} tick).`, 'dispatch');
+                } else {
+                    simState.runningProc = nextP;
+                    simState.runningProc.state = 'RUNNING';
+                    if (simState.runningProc.firstRun === -1) simState.runningProc.firstRun = current;
+                    simState.cpuState = 'RUNNING';
+                    logKernel(`▶ CPU despacha a P${nextP.pid} (${nextP.name}).`, 'dispatch');
+                }
+                simState.lastRunningPid = nextP.pid;
+            }
+
+            // 6. Contabilizar Espera de los Procesos en READY
+            simState.readyQueue.forEach(p => p.waitTime++);
+
+            // 7. Registro de Gantt
+            if (simState.cpuState === 'CONTEXT_SWITCH') {
+                simState.gantt.push({ t: current, pid: -2, label: 'CS' });
+                simState.csTicks++;
+                simState.csRemaining--;
+                if (simState.csRemaining <= 0) {
+                    simState.runningProc = simState.pendingProc;
+                    simState.runningProc.state = 'RUNNING';
+                    if (simState.runningProc.firstRun === -1) simState.runningProc.firstRun = current + 1;
+                    simState.pendingProc = null;
+                    simState.cpuState = 'RUNNING';
+                }
+            } else if (simState.cpuState === 'RUNNING' && simState.runningProc) {
+                simState.gantt.push({ t: current, pid: simState.runningProc.pid, label: `P${simState.runningProc.pid}` });
+                simState.busyTicks++;
+                simState.quantumUsed++;
+                simState.runningProc.remBurst--;
+
+                // Si terminó la ráfaga de CPU
+                if (simState.runningProc.remBurst <= 0) {
+                    const p = simState.runningProc;
+                    p.burstIdx++;
+                    if (p.burstIdx < p.bursts.length) {
+                        const nextBurst = p.bursts[p.burstIdx];
+                        if (nextBurst.t === 'IO') {
+                            p.state = 'WAITING';
+                            p.remBurst = nextBurst.d;
+                            simState.ioQueue.push(p);
+                            logKernel(`Proceso P${p.pid} pasa a E/S (duración: ${nextBurst.d} ticks).`);
+                        } else {
+                            p.state = 'READY';
+                            p.remBurst = nextBurst.d;
+                            simState.readyQueue.push(p);
+                        }
+                    } else {
+                        p.state = 'TERMINATED';
+                        p.completionTime = current + 1;
+                        logKernel(`✅ Proceso P${p.pid} (${p.name}) FINALIZÓ. Retorno T=${p.completionTime - p.arr}, Espera W=${p.waitTime}.`);
+                    }
+                    simState.runningProc = null;
+                    simState.cpuState = 'IDLE';
+                    simState.quantumUsed = 0;
+                }
+            } else {
+                simState.gantt.push({ t: current, pid: -1, label: 'IDLE' });
+            }
+
+            simState.tick++;
+            updateUI();
+        }
+
+        // ====================================================================
+        // RENDERIZADO VISUAL REACTIVO
+        // ====================================================================
+        function updateUI() {
+            // Reloj
+            document.getElementById('hudClock').textContent = `Tick ${simState.tick}`;
+
+            // Métricas calculadas
+            const completed = simState.processes.filter(p => p.state === 'TERMINATED');
+            if (completed.length > 0) {
+                const avgT = (completed.reduce((acc, p) => acc + (p.completionTime - p.arr), 0) / completed.length).toFixed(1);
+                const avgW = (completed.reduce((acc, p) => acc + p.waitTime, 0) / completed.length).toFixed(1);
+                const avgR = (completed.reduce((acc, p) => acc + (p.firstRun - p.arr), 0) / completed.length).toFixed(1);
+                document.getElementById('hudAvgT').textContent = avgT;
+                document.getElementById('hudAvgW').textContent = avgW;
+                document.getElementById('hudAvgR').textContent = avgR;
+            } else {
+                document.getElementById('hudAvgT').textContent = "-";
+                document.getElementById('hudAvgW').textContent = "-";
+                document.getElementById('hudAvgR').textContent = "-";
+            }
+
+            const total = simState.tick > 0 ? simState.tick : 1;
+            document.getElementById('hudCPUUtil').textContent = ((simState.busyTicks / total) * 100).toFixed(1) + "%";
+            document.getElementById('hudCSOverhead').textContent = ((simState.csTicks / total) * 100).toFixed(1) + "%";
+            document.getElementById('hudCSTotal').textContent = simState.csCount;
+
+            // CPU Core
+            const cpuEl = document.getElementById('cpuCoreEl');
+            const cpuBadge = document.getElementById('cpuBadgeState');
+            const statusBadge = document.getElementById('cpuStatusBadge');
+            const procName = document.getElementById('cpuProcName');
+            const procSub = document.getElementById('cpuProcSub');
+
+            cpuEl.className = 'cpu-core';
+            if (simState.cpuState === 'RUNNING' && simState.runningProc) {
+                cpuEl.classList.add('running');
+                cpuBadge.textContent = 'RUNNING';
+                statusBadge.className = 'cpu-status-badge status-running';
+                statusBadge.textContent = 'EJECUTANDO';
+                procName.textContent = `P${simState.runningProc.pid}: ${simState.runningProc.name}`;
+                procSub.textContent = `Ráfaga Restante: ${simState.runningProc.remBurst} ticks | Pri: ${simState.runningProc.dynPri}`;
+            } else if (simState.cpuState === 'CONTEXT_SWITCH') {
+                cpuEl.classList.add('cs');
+                cpuBadge.textContent = 'CONTEXT_SWITCH';
+                statusBadge.className = 'cpu-status-badge status-cs';
+                statusBadge.textContent = 'CONMUTACIÓN DE CONTEXTO';
+                procName.textContent = `Cambiando a P${simState.pendingProc ? simState.pendingProc.pid : '?'}`;
+                procSub.textContent = `Sobrecarga restante: ${simState.csRemaining} ticks`;
+            } else {
+                cpuBadge.textContent = 'IDLE';
+                statusBadge.className = 'cpu-status-badge status-idle';
+                statusBadge.textContent = 'INACTIVO';
+                procName.textContent = 'CPU Desocupada';
+                procSub.textContent = 'Esperando procesos en READY...';
+            }
+
+            // Cola de Listos
+            const readyEl = document.getElementById('readyQueueEl');
+            document.getElementById('badgeReadyCount').textContent = `${simState.readyQueue.length} en cola`;
+            if (simState.readyQueue.length === 0) {
+                readyEl.innerHTML = '<span class="empty-queue">Cola vacía</span>';
+            } else {
+                readyEl.innerHTML = '';
+                simState.readyQueue.forEach(p => {
+                    const card = document.createElement('div');
+                    card.className = 'proc-card';
+                    if (p.dynPri < p.basePri) card.classList.add('promoted');
+                    card.innerHTML = `
+                        <div class="proc-card-pid">P${p.pid} ${p.dynPri < p.basePri ? '🔥' : ''}</div>
+                        <div style="font-weight:600; font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p.name}</div>
+                        <div class="proc-card-burst">Rem: <b>${p.remBurst}</b></div>
+                        <div class="proc-card-pri">Pri: <span>${p.dynPri}</span> | W: ${p.waitTime}</div>
+                    `;
+                    readyEl.appendChild(card);
+                });
+            }
+
+            // Cola de E/S
+            const ioEl = document.getElementById('ioQueueEl');
+            document.getElementById('badgeIOCount').textContent = `${simState.ioQueue.length} en E/S`;
+            if (simState.ioQueue.length === 0) {
+                ioEl.innerHTML = '<span class="empty-queue">Sin procesos bloqueados</span>';
+            } else {
+                ioEl.innerHTML = '';
+                simState.ioQueue.forEach(p => {
+                    const card = document.createElement('div');
+                    card.className = 'proc-card';
+                    card.style.borderColor = '#f59e0b';
+                    card.innerHTML = `
+                        <div class="proc-card-pid" style="color:#f59e0b;">P${p.pid}</div>
+                        <div style="font-weight:600; font-size:11px;">${p.name}</div>
+                        <div class="proc-card-burst">E/S Rest: <b>${p.remBurst}</b></div>
+                    `;
+                    ioEl.appendChild(card);
+                });
+            }
+
+            // Diagrama de Gantt
+            const ganttTrack = document.getElementById('ganttTrackEl');
+            const ganttRuler = document.getElementById('ganttRulerEl');
+            document.getElementById('badgeGanttTicks').textContent = `${simState.gantt.length} Ticks`;
+
+            ganttTrack.innerHTML = '';
+            ganttRuler.innerHTML = '';
+
+            const unitWidth = Math.max(14, Math.floor(800 / Math.max(simState.gantt.length, 30)));
+
+            simState.gantt.forEach((seg, idx) => {
+                const block = document.createElement('div');
+                block.className = 'gantt-block';
+                block.style.width = `${unitWidth}px`;
+
+                if (seg.pid === -2) {
+                    block.classList.add('cs-block');
+                    block.textContent = 'CS';
+                    block.title = `Tick ${seg.t}: Cambio de Contexto`;
+                } else if (seg.pid === -1) {
+                    block.classList.add('idle-block');
+                    block.textContent = '';
+                    block.title = `Tick ${seg.t}: CPU Inactiva`;
+                } else {
+                    block.style.background = PROCESS_COLORS[seg.pid] || '#2563eb';
+                    block.textContent = `P${seg.pid}`;
+                    block.title = `Tick ${seg.t}: Proceso P${seg.pid}`;
+                }
+                ganttTrack.appendChild(block);
+
+                if (idx % 5 === 0 || idx === simState.gantt.length - 1) {
+                    const mark = document.createElement('span');
+                    mark.style.position = 'absolute';
+                    mark.style.left = `${idx * unitWidth}px`;
+                    mark.textContent = idx;
+                    ganttRuler.appendChild(mark);
+                }
+            });
+        }
+
+        // ====================================================================
+        // EVENT HANDLERS Y CONTROLES
+        // ====================================================================
+        function togglePlayPause() {
+            simState.isPlaying = !simState.isPlaying;
+            const btn = document.getElementById('btnPlayPause');
+            if (simState.isPlaying) {
+                btn.innerHTML = '⏸ Pausar';
+                btn.classList.add('paused');
+                simState.timer = setInterval(stepTick, simState.speed);
+            } else {
+                btn.innerHTML = '▶ Iniciar';
+                btn.classList.remove('paused');
+                clearInterval(simState.timer);
+                simState.timer = null;
             }
         }
-        function nextSlide() {
-            if (current < slides.length - 1) showSlide(current + 1);
+
+        function resetSimulation() {
+            if (simState.isPlaying) togglePlayPause();
+            initSimulation();
         }
-        function prevSlide() {
-            if (current > 0) showSlide(current - 1);
+
+        function onScenarioChange() {
+            simState.scenarioId = parseInt(document.getElementById('simScenarioSelect').value);
+            resetSimulation();
         }
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') nextSlide();
-            else if (e.key === 'ArrowLeft' || e.key === 'PageUp') prevSlide();
+
+        function onAlgoChange() {
+            simState.algo = document.getElementById('simAlgoSelect').value;
+            document.getElementById('groupQuantum').style.display = (simState.algo === 'rr') ? 'flex' : 'none';
+            document.getElementById('groupAging').style.display = (simState.algo === 'priority_aging') ? 'flex' : 'none';
+            resetSimulation();
+        }
+
+        function onParamChange() {
+            simState.quantum = parseInt(document.getElementById('sliderQuantum').value);
+            document.getElementById('valQuantum').textContent = simState.quantum;
+
+            simState.csPenalty = parseInt(document.getElementById('sliderCS').value);
+            document.getElementById('valCS').textContent = simState.csPenalty;
+
+            simState.agingTh = parseInt(document.getElementById('sliderAging').value);
+            document.getElementById('valAging').textContent = simState.agingTh;
+
+            resetSimulation();
+        }
+
+        function onSpeedChange() {
+            simState.speed = parseInt(document.getElementById('sliderSpeed').value);
+            document.getElementById('valSpeed').textContent = `${simState.speed}ms`;
+            if (simState.isPlaying) {
+                clearInterval(simState.timer);
+                simState.timer = setInterval(stepTick, simState.speed);
+            }
+        }
+
+        // Inicialización
+        window.addEventListener('DOMContentLoaded', () => {
+            initSimulation();
         });
-        showSlide(0);
     </script>
 </body>
 </html>
