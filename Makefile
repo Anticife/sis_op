@@ -21,7 +21,7 @@ SRCS = $(SRC_DIR)/Process.cpp \
 OBJS = $(SRCS:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
 DEPS = $(OBJS:.o=.d)
 
-.PHONY: all clean test debug run pdf plots web live
+.PHONY: all clean test debug run pdf plots web live monitor
 
 all: $(TARGET)
 
@@ -66,6 +66,9 @@ web: all
 live: all
 	@echo "Ejecutando ./simulador en modo TIEMPO REAL (1 seg/tick) para observar procesos en 'ps --forest'..."
 	./$(TARGET) --live --scenario scenarios/escenario2_io_bursts.csv --algo rr --tick-ms 1000
+
+monitor:
+	watch -n 0.5 "ps -C simulador -o pid,ppid,stat,ni,pcpu,wchan:18,etime,comm,args --forest || true"
 
 pdf:
 	@echo "Compilando informe técnico en PDF..."

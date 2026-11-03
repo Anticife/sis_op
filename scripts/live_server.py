@@ -7,7 +7,7 @@ Permite:
    para que el árbol de procesos hijos (R+, S+, T+, Z+ <defunct>) exista durante 30-45 segundos
    y sea observable tanto desde cualquier terminal Linux (watch ps) como desde la interfaz web.
 2. Consultar en vivo (/api/live) la salida real de:
-   - ps -C simulador -o pid,ppid,stat,ni,%cpu,wchan:18,elapsed,comm,args --forest
+   - ps -C simulador -o pid,ppid,stat,ni,pcpu,wchan:18,etime,comm,args --forest
    - ps aux --sort=-%cpu | head -12
    junto con el estado instantáneo del planificador (/tmp/simulador_live_state.json).
 """
@@ -235,7 +235,8 @@ def main():
     print(f"  Binario C++17 conectado: {SIM_BIN}")
     print("  Cuando inicies la simulación en la web (o con './simulador --live' en consola),")
     print("  también podrás ver los procesos reales en otra terminal con:")
-    print("    watch -n 0.5 \"ps -C simulador -o pid,ppid,stat,ni,%cpu,wchan:18,elapsed,comm,args --forest\"")
+    print("    make monitor")
+    print("    watch -n 0.5 \"ps -C simulador -o pid,ppid,stat,ni,pcpu,wchan:18,etime,comm,args --forest || true\"")
     print("    watch -n 1 \"ps aux --sort=-%cpu | head -15\"")
     print("  Presiona Ctrl+C para detener.")
     print("=" * 80)
