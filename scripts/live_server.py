@@ -153,6 +153,8 @@ class PosixSimulatorHandler(SimpleHTTPRequestHandler):
             return
 
         if parsed.path == "/api/live":
+            if ACTIVE_PROC is not None:
+                ACTIVE_PROC.poll()
             ps_forest, ps_top, running_in_os = get_real_ps_outputs()
             sim_state = None
             if os.path.exists(LIVE_STATE_FILE):
